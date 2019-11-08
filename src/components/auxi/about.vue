@@ -1,0 +1,51 @@
+<template>
+  <div id="band" style="width:100%;">
+    <div style="position: absolute;margin-left: 5%;margin-top: 2%">
+      <div>
+        <p><span style="font-weight:900;font-size:36px">{{title}}</span></p>
+      </div>
+
+      <div style="margin-top: 10%;">
+        <p v-for="(i,j) in word">
+          <b>{{j+1}}.&nbsp;&nbsp;{{i}}</b>
+        </p>
+      </div>
+
+      <div style="margin-top: 5%;">
+        <p >
+          <a href="https://github.com/zouzhicun/">https://github.com/zouzhicun/solve</a>
+        </p>
+      </div>    
+    </div>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: 'version',
+    data () {
+      return {
+        title: 'solve 0.0.1',
+        word: [
+          'Simple cOmmand deLiver serVEr - SOLVE',
+          '开始于20181109',
+          '基于SSH实现命令的分发',
+          '灵活配置, 使用jinja模板变量，可以由配置信息进行替换',
+          'playbook为命令集合，在单行shell语句中增加主机跳转、文件上下传、全局变量设置语法',
+          '可以使用&后台运行多个命令，并由wait检测结果',
+          '基于开源的项目实现',
+          '前后端分离',
+          '后端django-restful',
+          '前端vue',
+          '使用redis作为数据存储，账号使用sqlite存储',
+          '持续更新中......',
+
+        ]
+      }
+    },
+    mounted () {
+      window.particlesJS.load('band', '/static/particlesjs-config.json')
+    }
+  }
+</script>
+

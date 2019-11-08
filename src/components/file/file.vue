@@ -1,0 +1,159 @@
+<template>
+  <Card>
+    <div>
+      <Card>
+         <div slot="title" style="padding-bottom: 30px;">
+           <div style="float:left">
+             <Button  type="info" @click="createDirFlag = true">新建文件夹</Button>
+             <Button  type="success" @click="gobackdir">返回上一级</Button>
+           </div>
+           <div style="float:left;padding:5px">
+             <p v-if="currentPath === ''" > | /</p>
+             <p v-else> | {{currentPath}}</p>
+           </div>
+         </div>
+         <div style="clear:both">
+           <file-list v-for="(item, i) in currentDirs" :key="item" :introText="item" listType="dir" @changedir="changedir">
+           </file-list>
+           <file-list v-for="(item, i) in currentFiles" :key="item" :introText="item" listType="file" @copypath="copypath" :url="downloadUrlRoot">
+           </file-list>
+         </div>
+      </Card>
+
+      <Upload multiple type="drag" :action="uploadUrl" :headers='myheader' :on-success="refresh" ref="upload">
+        <div style="padding: 20px 0" >
+          <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+          <p>点击或拖拽到此上传</p>
+        </div>
+      </Upload>
+
+      <Modal v-model="createDirFlag" width="50%" :closable="false">
+        <div>
+           <Input v-model="createDirName" placeholder="请输入新建文件夹名" clearable/>
+        </div>
+        <div slot="footer">
+          <Button type="primary"  @click="realCreateDir">新建</Button>
+        </div>
+      </Modal>
+
+    </div>
+  </Card>
+  
+
+</template>
+
+<script>
+import axios from 'axios'
+import util from '@/libs/util'
+import fileList from './components/fileList.vue'
+export default {
+  components: {
+    fileList
+  },
+  data () {
+    return {
+      baseurl: this.$store.getters.sessionGet('baseurl'),
+      currentDirs: [],
+      currentFiles: [],
+      currentPath: '/',
+      fullCurrentPath: '',
+      createDirFlag: false,
+      createDirName: '',
+      myheader: {
+        'Authorization': sessionStorage.getItem('jwt')
+      }
+    }
+  },
+  computed: {
+    uploadUrl () {
+      return this.baseurl + '/file/?path=' + this.currentPath
+    },
+    downloadUrlRoot () {
+      return this.baseurl + '/file/download?file=' + this.currentPath
+    },
+  },
+  methods: {
+    // clearFiles () {
+    //   this.$refs.upload.clearFiles();
+    // },
+    refresh (f) {
+      util.notice(this, f.msg, 'info')
+      this.getFileInfo(this.currentPath)
+    },
+    realCreateDir () {
+      // this.createDirName = this.createDirName.trim()
+      if (this.createDirName === '') {
+        this.$Message.error('文件夹名不能为空')
+      } else if (util.existSpace(this.createDirName)) {
+        this.$Message.error('文件夹名左右两端不能存在空格')
+      } else {
+        this.createDirFlag = false
+        let path = this.currentPath + '/' + this.createDirName
+        path = path.replace('//','/')
+        this.$Message.success('开始提交')
+        axios.get(`${this.baseurl}/file/create?path=${path}`)
+          .then(res => {
+            // console.log(res.data)
+            if (res.data['status'] > 0) {
+              this.getFileInfo(path)
+            } else {
+              util.notice(this, res.data['msg'], 'error')
+            }
+          }).catch(error => {
+            util.notice(this, error, 'error')
+          });
+      }
+    },
+    changedir (folder) {
+      this.currentPath = this.currentPath + '/' +folder
+      this.getFileInfo(this.currentPath)
+    },
+    copypath (filename) {
+      let fullpath = this.fullCurrentPath + '/' + filename
+      fullpath = fullpath.replace('///','/')
+      fullpath = fullpath.replace('//','/')
+      fullpath = fullpath.replace('/./','/')
+      util.copy(this,fullpath)
+    },
+    gobackdir () {
+      this.currentPath = this.currentPath
+      if (this.currentPath != '/' && this.currentPath != '') {
+        let y=this.currentPath.split('/')
+        this.currentPath=''
+        let d=y.slice(0,-1)
+        d.forEach((a,b) => {
+          this.currentPath=this.currentPath+'/'+a
+          }
+        )
+        this.currentPath = this.currentPath.substring(1)
+      } else {
+        util.notice(this, '已经是最上级目录了！', 'info')
+      }
+      this.getFileInfo(this.currentPath)
+    },
+    getFileInfo (path){
+      axios.get(`${this.baseurl}/file/list?path=${path}`)
+        .then(res => {
+          if (res.data['status'] > 0) {
+            this.currentFiles = res.data['files']
+            this.currentDirs = res.data['dirs']
+            this.currentPath = path.replace('//','/')
+            sessionStorage.setItem('file_current_path',this.currentPath)
+            this.fullCurrentPath = res.data['path']
+          } else {
+            util.notice(this, res.data['msg'], 'error')
+          }
+        }).catch(error => {
+          util.notice(this, error, 'error')
+        });
+    }
+  },
+  mounted () {
+    let p = sessionStorage.getItem('file_current_path')
+    if ( p ){
+      this.currentPath = p
+    }
+    this.getFileInfo(this.currentPath)
+  }
+};
+</script>
