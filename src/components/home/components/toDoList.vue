@@ -18,7 +18,7 @@
       </Col>
       <Col span="22">
         <Row type="flex" justify="start" align="middle">
-          <p  @click="delTodo(item.title)" >{{ item.title }}</p>
+          <p  @dblclick="delTodo(item.title)" >{{ item.title }}</p>
         </Row>
       </Col>
     </div>

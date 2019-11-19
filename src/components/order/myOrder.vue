@@ -2,17 +2,13 @@
   <div>
     <Row>
       <Card>
-        <p slot="title">
-          <Icon type="md-cart"></Icon>
-          我的工单
-        </p>
         <Row>
           <Col span="24">
             <Table border :columns="columns" :data="tableData" stripe @on-row-dblclick="orderDetail" size="small"></Table>
           </Col>
         </Row>
         <br>
-        <Page :total="pageNumber" @on-change="getCurrentPage" :current="currentPage" :page-size="pagesize" show-elevator show-total></Page>
+        <Page :total="pageNumber" @on-change="getCurrentPage" @on-page-size-change="getCurrentPageNew" :current="currentPage" :page-size="pagesize" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
       </Card>
     </Row>
   </div>
@@ -110,9 +106,10 @@
             }
           }
         ],
-        pagesize: 16,
-        pageNumber: 1,
+        pagesize: 18,
+        pageNumber: 0,
         currentPage: 1,
+        pageSizeOpts: [10,20,40,80,100,200],
         tableData: []
       }
     },
@@ -133,6 +130,10 @@
           .catch(error => {
             util.notice(this, error, 'error')
           });
+      },
+      getCurrentPageNew (pagesize) {
+        this.pagesize=pagesize
+        this.getCurrentPage(1)
       },
       getCurrentPage (vl) {
         if (!vl) {

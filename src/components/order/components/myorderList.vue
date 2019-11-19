@@ -15,7 +15,9 @@
     <Row>
       <Card>
         <div slot="title">
-          <p>工单{{ this.workid }}详细信息</p>
+          <Poptip  :content="playbook" trigger="hover" placement="bottom">
+            <p>工单{{ this.workid }}详细信息</p>
+          </Poptip>
           <br>
           <br>
           <Tooltip content="返回" placement="bottom">
@@ -161,6 +163,7 @@
           }
         ],
         workid: '',
+        playbook: '',
         targetAmount: 0,
         columnsName: [
           {
@@ -441,6 +444,7 @@
             if (res.data['status']>=1) {
               this.TableDataNew = res.data['data']
               this.targetAmount = this.TableDataNew.length
+              this.playbook = res.data['playbook']
               this.TableDataNew.forEach((item) => {
                 if (item['begin_date']) { item['begin_date'] = util.formatDate(parseFloat(item['begin_date'])); }
                 if (item['end_date']) { item['end_date'] = util.formatDate(parseFloat(item['end_date'])); }

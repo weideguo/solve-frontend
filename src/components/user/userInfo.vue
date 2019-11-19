@@ -3,8 +3,8 @@
     <Col span="24">
       <Card>
         <div slot="title">
-          <Icon type="md-people"></Icon>
-          <b>用户列表</b>
+          <!--Icon type="md-people"></Icon>
+          <b>用户列表</b-->
           <Button type="info" icon="md-add" shape="circle" size="small" @click="addUser"></Button>
         </div>
         

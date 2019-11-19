@@ -2,11 +2,10 @@
   <div>
     <Row>
       <Card>
-        <p slot="title">
+        <!--p slot="title">
           <Icon type="md-flower"></Icon>
           可执行列表
-        </p>
-        
+        </p-->
         <Row>
           <Col span="24">
             <Table border stripe :columns="columns" :data="tableData" size="small" @on-row-dblclick="quickShow"></Table>
