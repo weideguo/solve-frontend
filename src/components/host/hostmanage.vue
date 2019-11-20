@@ -342,10 +342,12 @@
             delete info[item]
           })
           this.formItemNew = util.dictDeepCopy(this.formItemOrigin)
+          console.log(this.formItemOrigin)
           this.formItemNew.forEach((item, i) => {
             item['value'] = info[item['key']]
           })
           this.formItem = this.formItemNew
+          console.log(this.formItem)
         } else {
           // util.notice(this, '当前项不在此查看详细', 'info')
           this.$Message.info('当前项不能在此查看与修改')

@@ -178,9 +178,17 @@
         this.isAdd = false
         this.modelTitle = this.filter+" 更新信息"
         this.opentarget = paramsDict['name']
-        let formItemNew = util.dict2arry(JSON.parse(paramsDict['info']), 'key', 'value', this.itemSort);
+        let formItemNew = util.dict2arry(JSON.parse(paramsDict['info']), 'key', 'value', this.itemSort)
+        formItemNew.forEach((item, i) => {
+          this.formItemOrigin.forEach((item2, i2) => {
+            if (item['key'] === item2['key']) {
+              item['comment'] = item2['comment']
+            }
+          })
+        })
         formItemNew.forEach((item, i) => {
           item['label'] = item['key']
+          
           if (item['key'] === 'const') {
             item['select'] = this.constKeyList
           }
@@ -218,8 +226,6 @@
       },
       formInfoCommit (data) {
         this.switchFormInfo = false
-        // console.log(data)
-        // axios.post(`${this.baseurl}/config?key=job_xxxxxbbb&type=list`, ['a','b','中文','wew'])
         axios.post(`${this.baseurl}/config?key=tmpl_${this.$route.name}`, data)
           .then(res => {
             if (res.data['status'] >= 1) {

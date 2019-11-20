@@ -24,33 +24,34 @@
       </div>
         <Tabs>
           <TabPane label="简单命令分发系统" name="custom">
-            <Form ref="formLogin" :model="formInline" :rules="ruleInline" inline>
-              <FormItem prop="user" style="width: 100%">
-                <Input v-model="formInline.user" placeholder="username" clearable></Input>
-              </FormItem>
-              <FormItem prop="password" style="width: 100%">
-                <Input type="password" v-model="formInline.password" placeholder="password" clearable></Input>
-              </FormItem>
-              
-              <FormItem prop="baseurl" style="width: 100%">
-                <Select v-model="formInline.baseurl" placeholder="project & baseurl" clearable>
-                  <Option v-for="i in baseurlConfig" :value="JSON.stringify(i)" :key="i[0]">
-                    {{ i[0] }} ---- {{ i[1] }}
-                  </Option>
-                </Select>
-              </FormItem>
-
-              <FormItem style="width: 100%">
-                <Button type="primary" @click="authdata()" style="width: 100%" size="large">登录</Button>
-              </FormItem>
-            </Form> 
-            
-            <p style="margin-left: 25%;">
-              2019 © Powerd By <a href="/#/about">wdg</a> 使用chrome获得最佳体验
-            </p>
           </TabPane>
-
         </Tabs>
+
+        <Form ref="formLogin" :model="formInline" :rules="ruleInline" inline>
+          <FormItem prop="user" style="width: 100%">
+            <Input v-model="formInline.user" placeholder="username" clearable></Input>
+          </FormItem>
+          <FormItem prop="password" style="width: 100%">
+            <Input type="password" v-model="formInline.password" placeholder="password" clearable></Input>
+          </FormItem>
+          
+          <FormItem prop="baseurl" style="width: 100%">
+            <Select v-model="formInline.baseurl" placeholder="project & baseurl" clearable>
+              <Option v-for="i in baseurlConfig" :value="JSON.stringify(i)" :key="i[0]">
+                {{ i[0] }} ---- {{ i[1] }}
+              </Option>
+            </Select>
+          </FormItem>
+          
+          <FormItem style="width: 100%">
+            <Button type="primary" @click="authdata()" style="width: 100%" size="large">登录</Button>
+          </FormItem>
+        </Form> 
+        
+        <p style="margin-left: 25%;">
+          2019 © Powerd By <a href="/#/about">wdg</a> 使用chrome获得最佳体验
+        </p>
+
       </Card>
     </div>
   </div>
