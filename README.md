@@ -30,6 +30,9 @@ vim config/index.js
 vim src/config/config.js
 
 # 安装依赖项 
+npm install -g webpack
+npm install -g webpack-cli
+npm install -g vue-cli
 # package.json和package-lock.json指定
 # 如果存在错误，则需要手动安装没有正确安装的模块
 npm install              
