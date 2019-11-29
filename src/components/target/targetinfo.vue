@@ -226,7 +226,7 @@
       },
       formInfoCommit (data) {
         this.switchFormInfo = false
-        axios.post(`${this.baseurl}/config?key=tmpl_${this.$route.name}`, data)
+        axios.post(`${this.baseurl}/config/?key=tmpl_${this.$route.name}`, data)
           .then(res => {
             if (res.data['status'] >= 1) {
               util.notice(this, '更改成功', 'success')
@@ -284,7 +284,7 @@
           });
       },
       reflashTmpl () {
-        axios.get(`${this.baseurl}/config?key=tmpl_${this.$route.name}`)
+        axios.get(`${this.baseurl}/config/?key=tmpl_${this.$route.name}`)
           .then(res => {
             this.formItemInfo = util.dictDeepCopy(res.data['data'])
             this.formItemOrigin = util.dict2arry(res.data['data'], 'key', 'comment', this.itemSort)
