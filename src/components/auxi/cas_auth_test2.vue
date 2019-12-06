@@ -3,25 +3,21 @@
     <div style="margin-left: 50px">
       <br/><br/>
       <p><span style="font-size: 50px">CAS使用测试</span></p>
-      
+
       <br/><br/>
       <p>ticket: {{ticket}}</p>
 
       <br/><br/>
       <Button @click.native="login()">login</Button>
-      <span>访问后端获取cas的登陆地址。然后前端重定向到cas的地址。cas登陆后重新返回前端页面(由url中的指定返回页面)，cas登陆状态由cas的cookie/session机制保持。</span>
-
-      <br/><br/>
-      <Button @click.native="vertify()">vertify ticket</Button>
-      <span>连接后端验证cas登陆后传过来的ticket，后端验证通过后返回jwt。在jwt有效期内前后端通过jwt维持登陆信息，不必再通过cas验证。</span>
+      
 
       <br/><br/>
       <Button @click.native="logout()">logout</Button>
-      <span>登出。连接后端清空jwt，获取cas的登出地址。然后前端重定向至cas的地址。cas清空登陆状态后重定向至前端页面。</span>
+      
 
       <br/><br/>
       <Button @click.native="test()">test</Button>
-      <span>测试使用jwt连接后端</span>
+      
     </div>
   </div>
 </template>
@@ -76,6 +72,7 @@
         axios.get(`${this.baseurl}/cas/serviceValidate?ticket=${this.ticket}&service=${this.service}`)
           .then(res => {
             this.jwt = 'JWT '+res.data['token']
+            this.test()
           })
           .catch(error => {
             // util.notice(this, error, 'error');
@@ -118,6 +115,9 @@
       }
       // 原始#后面的字符不会传输到后端
       this.service=this.service.replace('#','%23')
+      if (this.ticket) {
+        this.vertify()
+      }
     }
   }
 </script>
