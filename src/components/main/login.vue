@@ -137,7 +137,7 @@
           if (valid) {
             let project = JSON.parse(this.formInline.baseurl)[0]
             let baseurl = JSON.parse(this.formInline.baseurl)[1]
-            axios.post(baseurl + '/api-token-auth/', {
+            axios.post(baseurl + '/login/', {
                 'username': this.formInline.user,
                 'password': this.formInline.password
               })

@@ -58,7 +58,7 @@
         }
       },
       handleUnlock () {
-        axios.post(this.baseurl + '/api-token-auth/', {
+        axios.post(this.baseurl + '/login/', {
           'username': sessionStorage.getItem('user'),
           'password': this.password
           }).then(res => {

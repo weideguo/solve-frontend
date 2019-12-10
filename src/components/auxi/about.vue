@@ -8,11 +8,17 @@
       <p>ticket: {{ticket}}</p>
 
       <br/><br/>
+      <Button @click.native="verify_as_proxy()">verify as proxy</Button>
+      <span>跟vertify ticket类似，但增加回调地址以获取pgtId。可以由pgtId获取proxyTicket，由proxyTicket可以让其他服务验证这个服务的登陆状态。</span>
+      <br/><br/>
+      <hr/>
+      
+      <br/><br/>
       <Button @click.native="login()">login</Button>
       <span>访问后端获取cas的登陆地址。然后前端重定向到cas的地址。cas登陆后重新返回前端页面(由url中的指定返回页面)，cas登陆状态由cas的cookie/session机制保持。</span>
 
       <br/><br/>
-      <Button @click.native="vertify()">vertify ticket</Button>
+      <Button @click.native="verify()">vertify ticket</Button>
       <span>连接后端验证cas登陆后传过来的ticket，后端验证通过后返回jwt。在jwt有效期内前后端通过jwt维持登陆信息，不必再通过cas验证。</span>
 
       <br/><br/>
@@ -22,6 +28,8 @@
       <br/><br/>
       <Button @click.native="test()">test</Button>
       <span>测试使用jwt连接后端</span>
+
+
     </div>
   </div>
 </template>
@@ -72,7 +80,7 @@
             console.log(error)
           })
       },
-      vertify () {
+      verify () {
         axios.get(`${this.baseurl}/cas/serviceValidate?ticket=${this.ticket}&service=${this.service}`)
           .then(res => {
             this.jwt = 'JWT '+res.data['token']
@@ -91,6 +99,19 @@
             if (res.data['status'] === 1) {
               window.location = res.data['cas_logout_url'] 
             }
+          })
+          .catch(error => {
+            // util.notice(this, error, 'error');
+            console.log(error)
+          });
+      },
+
+      verify_as_proxy () {
+        let pgtUrl='https://192.168.59.132:9000/api/v1/cas/callback'
+        axios.get(`${this.baseurl}/cas/serviceValidate?ticket=${this.ticket}&service=${this.service}&pgtUrl=${pgtUrl}`)
+          .then(res => {
+            this.jwt = 'JWT '+res.data['token']
+            console.log(res.data)
           })
           .catch(error => {
             // util.notice(this, error, 'error');
