@@ -41,6 +41,7 @@
             key: 'user',
             align: 'center',
             width: 100,
+            tooltip: true,
             sortable: true
           },
           {

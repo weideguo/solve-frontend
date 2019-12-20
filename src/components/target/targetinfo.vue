@@ -161,6 +161,7 @@
         } else {
           searchWord = this.$route.name + '*'
         }
+        searchWord = encodeURIComponent(searchWord)
         axios.get(`${this.baseurl}/targetinfo/get?filter=${searchWord}&page=${vl}&pagesize=${this.pageSize}`)
           .then(res => {
             this.tableData = res.data['data']

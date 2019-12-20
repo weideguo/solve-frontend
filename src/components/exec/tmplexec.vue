@@ -15,7 +15,7 @@
           </Col>
         </Row>
         <br>
-        <Page :total="pageNumber" @on-change="getCurrentPage" :current="currentPage" :page-size="pagesize" show-elevator show-total></Page>
+        <Page :total="pageNumber" @on-change="getCurrentPage" :current="currentPage" :page-size="pagesize" @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
       </Card>
     </Row>
     
@@ -235,6 +235,7 @@
         pagesize: 16,
         pageNumber: 1,
         currentPage: 1,
+        pageSizeOpts: [10,20,40,80,100,200],
         filter: ''
       }
     },
@@ -345,6 +346,10 @@
               util.notice(this, error, 'error')
             })
         }
+      },
+      getCurrentPageNew (pagesize) {
+        this.pagesize=pagesize
+        this.getCurrentPage(1)
       },
       getCurrentPage (vl) {
         this.filter = this.$route.name + ':*'

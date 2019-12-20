@@ -23,6 +23,7 @@
         <br>
       </div>
         <Tabs ref="formX" >
+          <!--TabPane label="简单命令分发系统" name="simple"-->
           <TabPane label="简单命令分发系统" name="simple">
           
             <Form ref="formLogin" :model="formInline" :rules="ruleInline" inline>
@@ -47,7 +48,8 @@
             </Form> 
           
           </TabPane>
-          <TabPane label="简单命令分发系统-cas" name="cas">
+          <!--TabPane v-if="false" label="简单命令分发系统-cas" name="cas"-->
+          <TabPane v-if="true" label="简单命令分发系统-cas" name="cas">
             <br/><br/>
             <Form ref="formLoginCAS" :model="formInline" :rules="ruleCAS" inline>
               <FormItem prop="baseurl" style="width: 100%">

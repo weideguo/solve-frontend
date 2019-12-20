@@ -12,7 +12,7 @@
           </Col>
         </Row>
         <br>
-        <Page :total="pageNumber" @on-change="getCurrentPage" :current="currentPage" :page-size="this.pagesize" show-elevator show-total></Page>
+        <Page :total="pageNumber" @on-change="getCurrentPage" :current="currentPage" :page-size="pagesize"  @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
       </Card>
     </Row>
 
@@ -27,12 +27,20 @@
 
         <Form ref="varsForm" :label-width="100" :model="formItem" :rules="formValidate">
           <p v-if="JSON.stringify(formItem) === '{}'" style="text-align: center">没有需要设置的session参数</p>
-          <FormItem v-else v-for="k in formKey" :prop="k" :key="k" :label="k">
-            <Input v-model="formItem[k]" type="text" placeholder="please input" clearable></Input>
-          </FormItem>    
+          <div v-else>
+            <FormItem v-for="k in formKey" :prop="k" :key="k" :label="k">
+              <Input v-model="formItem[k]" type="text" placeholder="please input" clearable></Input>
+            </FormItem> 
+            <div style="float:right;" >
+              <Tooltip content="只是保存session，可选" placement="bottom">
+                <Button @click="saveSession" type="primary" ghost>保存</Button>
+              </Tooltip>
+            </div>
+            <div  style="clear:both"></div>
+          </div>   
         </Form>
       </div>
-
+      
       <div v-else-if="current === 1">
         <div>
           <Icon type="md-pin"></Icon>
@@ -206,6 +214,7 @@
         pagesize: 16,
         pageNumber: 1,
         currentPage: 1,
+        pageSizeOpts: [10,20,40,80,100,200],
         filter: ''
       }
     },
@@ -232,6 +241,15 @@
           })   
         }
          
+      },
+      saveSession () {
+        axios.post(`${this.baseurl}/mysession/?filter=${this.openinfo['name']}`, this.formItem)
+          .then(res => {
+            util.notice(this, 'session保存成功', 'info')
+          })
+          .catch(error => {
+            util.notice(this, error, 'error')
+          })
       },
       summary () {
         let rowinfo = util.dictDeepCopy(this.openinfo)
@@ -316,6 +334,10 @@
         this.execInfo['name'] = this.execInfo['name_s'];
         delete this.execInfo['name_s'];
         util.openPageEx(this, 'execdetail', {row: this.execInfo, tag: 'update'})
+      },
+      getCurrentPageNew (pagesize) {
+        this.pagesize=pagesize
+        this.getCurrentPage(1)
       },
       getCurrentPage (vl) {
         this.filter = this.$route.name + ':*'
