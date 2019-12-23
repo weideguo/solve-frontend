@@ -162,7 +162,7 @@
           searchWord = this.$route.name + '*'
         }
         searchWord = encodeURIComponent(searchWord)
-        axios.get(`${this.baseurl}/targetinfo/get?filter=${searchWord}&page=${vl}&pagesize=${this.pageSize}`)
+        axios.get(`${this.baseurl}/target/get?filter=${searchWord}&page=${vl}&pagesize=${this.pageSize}`)
           .then(res => {
             this.tableData = res.data['data']
             this.tableData.forEach((item) => {
@@ -258,7 +258,7 @@
       },
       realDelTarget () {
         let t = this.delname
-        axios.get(`${this.baseurl}/targetinfo/del?target=${t}`)
+        axios.get(`${this.baseurl}/target/del?target=${t}`)
           .then(res => {
             if (res.data['status'] === 1) {
               this.getCurrentPage();
@@ -272,7 +272,7 @@
           });
       },
       addTarget (info) {
-        axios.post(`${this.baseurl}/targetinfo/`, info)
+        axios.post(`${this.baseurl}/target/`, info)
           .then(res => {
             if (res.data['status'] >= 1) {
               util.notice(this, `${info['name']} ${res.data['msg']}`, 'success')
@@ -299,7 +299,7 @@
           .catch(error => {
             util.notice(this, error, 'error')
           })
-        axios.get(`${this.baseurl}/targetinfo/info?filter=const*`)
+        axios.get(`${this.baseurl}/target/info?filter=const*`)
           .then(res => {
             this.constKeyList = res.data['data']
           })

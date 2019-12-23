@@ -361,7 +361,7 @@
         }
         this.currentPage = parseInt(vl)
         sessionStorage.setItem('tmplexec_currentpage', vl)
-        axios.get(`${this.baseurl}/executioninfo/get?filter=${this.filter}&page=${vl}&pagesize=${this.pagesize}`)
+        axios.get(`${this.baseurl}/executionInfo/get?filter=${this.filter}&page=${vl}&pagesize=${this.pagesize}`)
           .then(res => {
             this.tableData = res.data.data;
             this.tableData.forEach((item) => {
@@ -379,7 +379,7 @@
       },
       realDelTarget () {
         let t = this.delname
-        axios.get(`${this.baseurl}/executioninfo/del?target=${t}`)
+        axios.get(`${this.baseurl}/executionInfo/del?target=${t}`)
           .then(res => {
             if (res.data['status'] === 1) {
               this.getCurrentPage();
@@ -393,7 +393,7 @@
           });
       },
       addTarget (info) {
-        axios.post(`${this.baseurl}/executioninfo/`, info)
+        axios.post(`${this.baseurl}/executionInfo/`, info)
           .then(res => {
             this.addName = info['name'].split('tmpl:')[1]
             if (res.data['status'] >= 1) {

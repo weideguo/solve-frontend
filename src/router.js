@@ -131,7 +131,7 @@ export const appRouter = [
         },
         icon: 'md-compass',
         component: resolve => {
-          require(['./components/target/targetinfo.vue'], resolve)
+          require(['./components/target/target.vue'], resolve)
         }
       },
       {
@@ -143,7 +143,7 @@ export const appRouter = [
         },
         icon: 'md-desktop',
         component: resolve => {
-          require(['./components/target/targetinfo.vue'], resolve)
+          require(['./components/target/target.vue'], resolve)
         }
       },
       {
@@ -155,7 +155,7 @@ export const appRouter = [
         },
         icon: 'md-code',
         component: resolve => {
-          require(['./components/target/targetinfo.vue'], resolve)
+          require(['./components/target/target.vue'], resolve)
         }
       },
       {
@@ -167,7 +167,7 @@ export const appRouter = [
         },
         icon: 'md-grid',
         component: resolve => {
-          require(['./components/target/targetinfo.vue'], resolve)
+          require(['./components/target/target.vue'], resolve)
         }
       },
       {
@@ -179,7 +179,7 @@ export const appRouter = [
         },
         icon: 'md-apps',
         component: resolve => {
-          require(['./components/target/targetinfo.vue'], resolve)
+          require(['./components/target/target.vue'], resolve)
         }
       }
     ]
