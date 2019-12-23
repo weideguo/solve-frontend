@@ -269,7 +269,7 @@
           this.showContent = []
         }
         this.tmplInfo = []
-        axios.get(`${this.baseurl}/executioninfo/get?filter=${params['tmpl']}`)
+        axios.get(`${this.baseurl}/executionInfo/get?filter=${params['tmpl']}`)
           .then(res => {
             this.tmplInfo = util.dict2arry(res.data['data'][0],'key', 'value',this.tmplInfoSort)
           })
@@ -349,7 +349,7 @@
         }
         this.currentPage = parseInt(vl)
         sessionStorage.setItem('exec_currentpage', vl);
-        axios.get(`${this.baseurl}/executioninfo/get?filter=${this.filter}&page=${vl}&pagesize=${this.pagesize}`)
+        axios.get(`${this.baseurl}/executionInfo/get?filter=${this.filter}&page=${vl}&pagesize=${this.pagesize}`)
           .then(res => {
             this.tableData = res.data['data']
             this.tableData.forEach((item) => {
@@ -367,7 +367,7 @@
       },
       realDelTarget () {
         let t = this.delname
-        axios.get(`${this.baseurl}/executioninfo/del?target=${t}`)
+        axios.get(`${this.baseurl}/executionInfo/del?target=${t}`)
           .then(res => {
             if (res.data['status'] === 1) {
               this.getCurrentPage();

@@ -91,7 +91,7 @@
           if (this.info['tmpl'] === '') {
             this.target_type = ''
           } else {
-            axios.get(`${this.baseurl}/executioninfo/get?filter=${this.info['tmpl']}`)
+            axios.get(`${this.baseurl}/executionInfo/get?filter=${this.info['tmpl']}`)
               .then(res => {
                 try {
                   this.target_type = res.data['data'][0]['target_type']
@@ -130,7 +130,7 @@
       },
       addinfo (info) {
         try {
-          axios.post(`${this.baseurl}/executioninfo/add`, info)
+          axios.post(`${this.baseurl}/executionInfo/add`, info)
             .then(res => {
               if (res.data['status'] >= 1) {
                 util.notice(this, `${info['name']} ${res.data['msg']}`, 'success');
@@ -208,7 +208,7 @@
         });
       },
       reflashTmpl () {
-        axios.get(`${this.baseurl}/executioninfo/info?filter=tmpl*`)
+        axios.get(`${this.baseurl}/executionInfo/info?filter=tmpl*`)
           .then(res => {
             this.tmplList = res.data['data']
           }).catch(error => {
