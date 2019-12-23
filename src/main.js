@@ -10,7 +10,7 @@ import particles from 'particles.js/particles'
 import { MainRoute } from './router'
 import util from './libs/util'
 import App from './App.vue'
-import store from './mystore'
+import store from './store'
 
 Vue.config.productionTip = false
 Vue.use(particles)

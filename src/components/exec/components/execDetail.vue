@@ -149,11 +149,11 @@
         if (this.$route.query['row']) {
           this.fromData = this.$route.query['row']
           tag = this.$route.query['tag']
-          sessionStorage.setItem('myexec_data', JSON.stringify(this.$route.query['row']))
-          sessionStorage.setItem('myexec_data_is_add',this.$route.query['tag'])
+          sessionStorage.setItem('exe_data', JSON.stringify(this.$route.query['row']))
+          sessionStorage.setItem('exe_data_is_add',this.$route.query['tag'])
         } else {
-          this.fromData = JSON.parse(sessionStorage.getItem('myexec_data'))
-          tag = sessionStorage.getItem('myexec_data_is_add')
+          this.fromData = JSON.parse(sessionStorage.getItem('exe_data'))
+          tag = sessionStorage.getItem('exe_data_is_add')
         }
         try {
           // Object.keys(this.fromData).forEach((item,i) => {

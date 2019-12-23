@@ -71,31 +71,31 @@ export const locking = {
 
 export const appRouter = [
   {
-    path: '/myorder',
+    path: '/order',
     icon: 'md-cart',
-    name: 'myorder',
+    name: 'order',
     title: '工单',
-    redirect: '/myorder/order',
+    redirect: '/order/order',
     component: Main,
     children: [
       {
         path: 'order',
-        name: 'order',
+        name: 'orderInfo',
         title: '我的工单',
         icon: 'md-cart',
         meta: {
           title: '我的工单'
         },
         component: resolve => {
-          require(['./components/order/myOrder.vue'], resolve)
+          require(['./components/order/order.vue'], resolve)
         }
       }
     ]
   },
   {
-    path: '/hostmanage',
+    path: '/host',
     icon: 'md-laptop',
-    name: 'hostmanage',
+    name: 'ohost',
     title: '主机管理',
     redirect: '/',
     component: Main,
@@ -109,7 +109,7 @@ export const appRouter = [
         },
         icon: 'md-laptop',
         component: resolve => {
-          require(['./components/host/hostmanage.vue'], resolve)
+          require(['./components/host/host.vue'], resolve)
         }
       }
     ]
@@ -201,7 +201,7 @@ export const appRouter = [
         },
         icon: 'md-flower',
         component: resolve => {
-          require(['./components/exec/preexec.vue'], resolve)
+          require(['./components/exec/exec.vue'], resolve)
         }
       },
       {
@@ -221,14 +221,14 @@ export const appRouter = [
   {
     path: '/file',
     icon: 'md-briefcase',
-    name: 'file',
+    name: 'ofile',
     title: '任务执行',
     redirect: '/',
     component: Main,
     children: [
       {
-        path: 'myfile',
-        name: 'myfile',
+        path: 'file',
+        name: 'file',
         title: '文件管理',
         meta: {
           title: '文件管理'
@@ -266,7 +266,7 @@ export const appRouter = [
 
 export const home = {
   path: '/',
-  name: 'myhome',
+  name: 'home',
   title: '首页',
   redirect: '/home',
   component: Main,
@@ -285,28 +285,28 @@ export const home = {
   ]
 }
 
-export const orderList = {
-  path: '/myorder',
-  name: 'myorder',
+export const orderDetail = {
+  path: '/order',
+  name: 'order',
   title: '工单',
-  redirect: '/myorder/order',
+  redirect: '/order/orderDetail',
   component: Main,
   children: [
     {
-      path: 'orderlist',
-      name: 'orderlist',
+      path: 'orderDetail',
+      name: 'orderDetail',
       title: '工单详情',
       meta: {
         title: '工单详情'
       },
       component: resolve => {
-        require(['./components/order/components/myorderList.vue'], resolve)
+        require(['./components/order/components/orderDetail.vue'], resolve)
       }
     }
   ]
 }
 
-export const myexec = {
+export const execDetail = {
   path: '/execution',
   name: 'execution',
   title: '任务执行',
@@ -314,14 +314,14 @@ export const myexec = {
   component: Main,
   children: [
     {
-      path: 'execdetail',
-      name: 'execdetail',
+      path: 'execDetail',
+      name: 'execDetail',
       title: '任务详情',
       meta: {
         title: '任务详情'
       },
       component: resolve => {
-        require(['./components/exec/components/myexec.vue'], resolve)
+        require(['./components/exec/components/execDetail.vue'], resolve)
       }
     }
   ]
@@ -332,8 +332,8 @@ export const MainRoute = [
   loginRouter,
   locking,
   ...appRouter,    // 将一个数组转为用逗号分隔的参数序列
-  orderList,
-  myexec,
+  orderDetail,
+  execDetail,
   version,
   page401,
   page500,

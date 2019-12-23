@@ -29,9 +29,18 @@
           <Tooltip content="汇总" placement="bottom" style="margin-left: 20px">
             <Button type="primary" shape="circle" icon="md-bookmarks" ghost @click.native="summary()"></Button>
           </Tooltip>
+          <i-switch size="large" @on-change="finishFilter" style="margin-left: 50px">
+            <span slot="open">过滤</span>
+            <span slot="close">全部</span>
+          </i-switch>
+
           <Tooltip disabled style="float:right;margin-right: 50px">
             <b>
-            总执行数目： <font color="#FF0000">{{targetAmount}}</font>
+            执行中： <font color="#EEB422"> {{sum['executing']}} </font>
+            执行失败： <font color="#FF0000"> {{sum['fail']}} </font>
+            执行成功： <font color="#228B22"> {{sum['done']}} </font>
+            当前数量： <font color="#0000FF">{{targetAmount}}</font>
+            总执行： <font color="#0000FF">{{sum['all']}}</font>
             </b>
           </Tooltip>
         </div>
@@ -99,7 +108,7 @@
 
           <Divider v-if="checkChangable.length > 0">changable</Divider>
           <FormItem v-for="(item, i) in checkChangable" :key="item.key" v-bind:label="item.key">
-            <Input v-if="item.key === 'begin_host'" v-model="item.value"></Input>
+            <Input v-if="item.key === 'begin_host'" v-model="item.value" placeholder="请输入在哪个主机开始执行（根据情况可以不输入）"></Input>
             <InputNumber v-else-if="item.key === 'begin_line'" v-model="item.value" :max="parseInt(selectParams.playbook_rownum)" :min="1"></InputNumber>
           </FormItem>
         </Form>
@@ -117,7 +126,7 @@
   import axios from 'axios'
   //
   export default {
-    name: 'myorder-list',
+    name: 'orderList',
     data () {
       return {
         baseurl: this.$store.getters.sessionGet('baseurl'),
@@ -165,6 +174,11 @@
         workid: '',
         playbook: '',
         targetAmount: 0,
+        sum: {
+          'executing': 0,
+          'done': 0,
+          'fail': 0,
+          'all': 0},
         columnsName: [
           {
             title: 'exe info',
@@ -231,18 +245,7 @@
                     },
                     on: {
                       click: () => {
-                        axios.get(`${this.baseurl}/order/abort?target_id=${params.row['target_id']}`)
-                          .then(res => {
-                            if (parseFloat(res.data.abort_time)) {
-                              util.notice(this, '请勿重复中止： ' + params.row['target'], 'warning');
-                            } else {
-                              util.notice(this, '中止： ' + params.row['target'], 'success');
-                            }
-                            this.getCurrentPage();
-                          })
-                          .catch(error => {
-                            util.notice(this, error, 'error');
-                          });
+                        this.abort(params.row)
                       }
                     }
                   }, '中止')
@@ -331,10 +334,29 @@
         checkReadonly: [],
         checkChangable: [],
         runTitle: '',
-        currentTarget: ''
+        currentTarget: '',
+        finishOnly: false
       }
     },
     methods: {
+      abort (params) {
+        axios.get(`${this.baseurl}/order/abort?target_id=${params['target_id']}`)
+          .then(res => {
+            if (parseFloat(res.data.abort_time)) {
+              util.notice(this, '请勿重复中止： ' + params['target'], 'warning')
+            } else {
+              util.notice(this, '中止： ' + params['target'], 'success')
+            }
+            if (this.finishOnly) {
+              this.getCurrentPage(1)
+            } else {
+              this.getCurrentPage()
+            }
+          })
+          .catch(error => {
+            util.notice(this, error, 'error')
+          })
+      },
       continueRun (params, index) {
         this.runTitle = '继续运行信息'
         this.getRerunInfo(params, params['target_id'])
@@ -347,7 +369,7 @@
         this.checkSession = this.checkReadonly = this.checkChangable = []
         this.modalRerun = true
         this.selectParams = params
-        axios.get(`${this.baseurl}/myexecution/rerun_info?work_id=${this.workid}&target=${this.selectParams['target']}&target_id=${target_id}`)
+        axios.get(`${this.baseurl}/execution/rerun_info?work_id=${this.workid}&target=${this.selectParams['target']}&target_id=${target_id}`)
           .then(res => {
             this.checkSession = util.dict2arry(res.data['data']['session'], 'key', 'value')
             this.checkReadonly = util.dict2arry(res.data['data']['readonly'], 'key', 'value')
@@ -367,7 +389,7 @@
         }
         this.selectParams['exe_status'] = 'rerun'
         this.modalRerun = false
-        axios.get(`${this.baseurl}/myexecution/rerun?work_id=${this.workid}&target=${this.selectParams['target']}&target_id=${this.selectParams['target_id']}&begin_host=${begin_host}&begin_line=${begin_line}`)
+        axios.get(`${this.baseurl}/execution/rerun?work_id=${this.workid}&target=${this.selectParams['target']}&target_id=${this.selectParams['target_id']}&begin_host=${begin_host}&begin_line=${begin_line}`)
           .then(res => {
             console.log(res.data)
           })
@@ -412,7 +434,11 @@
       },
       refreshCurrentPage () {
         try {
-          this.getCurrentPage();
+          if (this.finishOnly) {
+            this.getCurrentPage(1)
+          } else {
+            this.getCurrentPage()
+          }
           util.notice(this, '刷新成功', 'fast');
         } catch (err) {
           util.notice(this, err, 'error');
@@ -432,16 +458,25 @@
         this.summary()
         util.notice(this, '刷新成功', 'fast')
       },
-      getCurrentPage () {
+      finishFilter () {
+        this.finishOnly = ! this.finishOnly
+        if (this.finishOnly) {
+          this.getCurrentPage(1)
+        } else {
+          this.getCurrentPage()
+        }
+      },
+      getCurrentPage (exclude='') {
         this.workid = this.$route.query['workid']
         if (this.workid) {
           sessionStorage.setItem('order_list_workid', this.workid)
         } else {
           this.workid = sessionStorage.getItem('order_list_workid');
         }
-        axios.get(`${this.baseurl}/order/detail?workid=${this.workid}`)
+        axios.get(`${this.baseurl}/order/detail?workid=${this.workid}&exclude=${exclude}`)
           .then(res => {
             if (res.data['status']>=1) {
+              this.sum = res.data['sum']
               this.TableDataNew = res.data['data']
               this.targetAmount = this.TableDataNew.length
               this.playbook = res.data['playbook']

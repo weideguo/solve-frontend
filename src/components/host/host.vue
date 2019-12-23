@@ -280,7 +280,7 @@
       onlineFilter () {
         this.isOnline = ! this.isOnline
         if (this.isOnline) {
-          axios.get(`${this.baseurl}/hostmanage/onlinedetail`)
+          axios.get(`${this.baseurl}/host/onlinedetail`)
             .then(res => {
               res.data['data'].forEach((item) => {
                  item['info'] = util.dictDeepCopy(item)
@@ -305,7 +305,7 @@
         searchWord = encodeURIComponent(searchWord)
         axios.get(`${this.baseurl}/targetinfo/get?filter=${searchWord}&page=${vl}&pagesize=${this.pageSize}`)
           .then(res => {
-            axios.get(`${this.baseurl}/hostmanage/online`)
+            axios.get(`${this.baseurl}/host/online`)
               .then(res2 => {
                 let onlinehost = [];
                 res.data['data'].forEach((item) => {
@@ -406,7 +406,7 @@
       closeConn (params) {
         if (params.row['ip']) {
           params.row['is_conn'] = 2
-          axios.get(`${this.baseurl}/hostmanage/kill?ip=${params.row['ip']}`)
+          axios.get(`${this.baseurl}/host/kill?ip=${params.row['ip']}`)
             .then(res => {
               if (res.data['status'] === 1) {
                 params.row['is_conn'] = 0
@@ -426,7 +426,7 @@
       createConn (params) {
         if (params.row['ip']) {
           params.row['is_conn'] = 3
-          axios.get(`${this.baseurl}/hostmanage/conn?ip=${params.row['ip']}`)
+          axios.get(`${this.baseurl}/host/conn?ip=${params.row['ip']}`)
             .then(res => {
               if (res.data['status'] === 1) {
                 params.row['is_conn'] = 1

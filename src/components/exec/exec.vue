@@ -243,7 +243,7 @@
          
       },
       saveSession () {
-        axios.post(`${this.baseurl}/mysession/?filter=${this.openinfo['name']}`, this.formItem)
+        axios.post(`${this.baseurl}/session/?filter=${this.openinfo['name']}`, this.formItem)
           .then(res => {
             util.notice(this, 'session保存成功', 'info')
           })
@@ -281,7 +281,7 @@
         if (parseInt(params.row['number'])){
           this.openinfo = params.row
           this.openinfo_s = params.row['name_s']
-          axios.get(`${this.baseurl}/mysession/?filter=${params.row['name']}`)
+          axios.get(`${this.baseurl}/session/?filter=${params.row['name']}`)
             .then(res => {
               this.openswitch = !this.openswitch
               this.formItem = res.data['vars']
@@ -319,10 +319,10 @@
           this.openswitch = false
           this.$Message.info('开始提交，请勿多次运行')
           this.sessionInfo = this.formItem
-          axios.post(`${this.baseurl}/myexecution/?filter=${this.openinfo['name']}`, this.sessionInfo)
+          axios.post(`${this.baseurl}/execution/?filter=${this.openinfo['name']}`, this.sessionInfo)
             .then(res => {
               util.notice(this, `${this.openinfo['name_s']} 开始执行`, 'info')
-              util.openPageEx(this, 'orderlist', {workid: res.data['data']})
+              util.openPageEx(this, 'orderDetail', {workid: res.data['data']})
             })
             .catch(error => {
               util.notice(this, error, 'error')
@@ -333,7 +333,7 @@
         this.execInfo = params.row;
         this.execInfo['name'] = this.execInfo['name_s'];
         delete this.execInfo['name_s'];
-        util.openPageEx(this, 'execdetail', {row: this.execInfo, tag: 'update'})
+        util.openPageEx(this, 'execDetail', {row: this.execInfo, tag: 'update'})
       },
       getCurrentPageNew (pagesize) {
         this.pagesize=pagesize
@@ -342,13 +342,13 @@
       getCurrentPage (vl) {
         this.filter = this.$route.name + ':*'
         if (!vl) {
-          vl = sessionStorage.getItem('preexec_currentpage')
+          vl = sessionStorage.getItem('exec_currentpage')
         }
         if (!vl) {
           vl = 1
         }
         this.currentPage = parseInt(vl)
-        sessionStorage.setItem('preexec_currentpage', vl);
+        sessionStorage.setItem('exec_currentpage', vl);
         axios.get(`${this.baseurl}/executioninfo/get?filter=${this.filter}&page=${vl}&pagesize=${this.pagesize}`)
           .then(res => {
             this.tableData = res.data['data']

@@ -1,14 +1,14 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 //
-import { appRouter, orderList, myexec, home } from './router'
+import { appRouter, orderDetail, execDetail, home } from './router'
 // import util from './libs/util'
 
 Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     menuList: appRouter,
-    newRouter: [...appRouter, orderList, myexec],
+    newRouter: [...appRouter, orderDetail, execDetail],
     currentPageName: home.children[0].name,
     currentPath: [home],
     pageOpenedList: JSON.parse(JSON.stringify(home.children))

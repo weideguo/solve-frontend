@@ -19,7 +19,7 @@
   import util from '@/libs/util'
 
   export default {
-    name: 'myOrder',
+    name: 'order',
     data () {
       return {
         baseurl: this.$store.getters.sessionGet('baseurl'),
@@ -116,7 +116,7 @@
     },
     methods: {
       orderDetail (paramsDict) {
-        util.openPageEx(this, 'orderlist', {workid: paramsDict['work_id']});
+        util.openPageEx(this, 'orderDetail', {workid: paramsDict['work_id']});
       },
       delete (params) {
         axios.get(`${this.baseurl}/order/del?workid=${params.row['work_id']}`)
@@ -138,14 +138,15 @@
       },
       getCurrentPage (vl) {
         if (!vl) {
-          vl = sessionStorage.getItem('myorder_currentpage')
+          vl = sessionStorage.getItem('order_currentpage')
         }
         if (!vl) {
           vl = 1
         }
         this.currentPage = parseInt(vl)
-        sessionStorage.setItem('myorder_currentpage', vl);
-        axios.get(`${this.baseurl}/myorder/?page=${vl}&pagesize=${this.pagesize}`)
+        sessionStorage.setItem('order_currentpage', vl);
+        // axios.get(`${this.baseurl}/order/?page=${vl}&pagesize=${this.pagesize}`)
+        axios.get(`${this.baseurl}/order/?page=${vl}&pagesize=${this.pagesize}`)
           .then(res => {
             this.tableData = res.data['data']
             this.tableData.forEach((item) => {

@@ -1,31 +1,44 @@
 <template>
   <Card>
     <div>
+      <div slot="title" style="padding-bottom: 30px;">
+        <div style="float:left">
+          <Button  type="info" @click="createDirFlag = true">新建文件夹</Button>
+          <Button  type="success" @click="gobackdir">返回上一级</Button>
+        </div>
+        <div style="float:left;padding:5px">
+          <p v-if="currentPath === ''" > | /</p>
+          <p v-else> | {{currentPath}}</p>
+        </div>
+      </div>
+      <br/>
       <Card>
-         <div slot="title" style="padding-bottom: 30px;">
-           <div style="float:left">
-             <Button  type="info" @click="createDirFlag = true">新建文件夹</Button>
-             <Button  type="success" @click="gobackdir">返回上一级</Button>
-           </div>
-           <div style="float:left;padding:5px">
-             <p v-if="currentPath === ''" > | /</p>
-             <p v-else> | {{currentPath}}</p>
-           </div>
-         </div>
-         <div style="clear:both">
-           <file-list v-for="(item, i) in currentDirs" :key="item" :introText="item" listType="dir" @changedir="changedir">
-           </file-list>
-           <file-list v-for="(item, i) in currentFiles" :key="item" :introText="item" listType="file" @copypath="copypath" :url="downloadUrlRoot">
-           </file-list>
-         </div>
+        <Row style="clear:both">
+          <div>
+            <Col span="8">
+              <div >
+                <file-list v-for="(item, i) in currentDirs" :key="item" :introText="item" listType="dir" @changedir="changedir">
+                </file-list>
+                <file-list v-for="(item, i) in currentFiles" :key="item" :introText="item" listType="file" @copypath="copypath" :url="downloadUrlRoot">
+                </file-list>
+              </div>
+              <div>&ensp;</div>
+            </Col>
+    
+            <Col span="16" style="float:rigth">
+              <Upload multiple type="drag" :action="uploadUrl" :headers='myheader' :on-success="refresh" ref="upload"> 
+                <div style="padding: 25%;">
+                  <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+                  <p>点击或拖拽到此上传</p>
+                </div>
+              </Upload>        
+            </Col>
+          </div>
+        </Row>
       </Card>
 
-      <Upload multiple type="drag" :action="uploadUrl" :headers='myheader' :on-success="refresh" ref="upload">
-        <div style="padding: 20px 0" >
-          <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
-          <p>点击或拖拽到此上传</p>
-        </div>
-      </Upload>
+        
+       
 
       <Modal v-model="createDirFlag" width="50%" :closable="false">
         <div>

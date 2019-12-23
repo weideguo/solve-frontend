@@ -316,7 +316,7 @@
         x.forEach((item,i) => {
           delete tmplInfo[item]
         })
-        util.openPageEx(this, 'execdetail', {row: tmplInfo, tag: 'add'})
+        util.openPageEx(this, 'execDetail', {row: tmplInfo, tag: 'add'})
       },
       commitFormInfo (){
         this.switchFormInfo = false
