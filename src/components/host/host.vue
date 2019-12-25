@@ -303,7 +303,7 @@
           searchWord = this.$route.name + '*'
         }
         searchWord = encodeURIComponent(searchWord)
-        axios.get(`${this.baseurl}/targetinfo/get?filter=${searchWord}&page=${vl}&pagesize=${this.pageSize}`)
+        axios.get(`${this.baseurl}/target/get?filter=${searchWord}&page=${vl}&pagesize=${this.pageSize}`)
           .then(res => {
             axios.get(`${this.baseurl}/host/online`)
               .then(res2 => {
@@ -376,7 +376,7 @@
       },
       realDelTarget () {
         let t = this.delname
-        axios.get(`${this.baseurl}/targetinfo/del?target=${t}`)
+        axios.get(`${this.baseurl}/target/del?target=${t}`)
           .then(res => {
             // console.log(res.data.status);
             if (res.data['status'] === 1) {
@@ -391,7 +391,7 @@
           });
       },
       addTarget (info) {
-        axios.post(`${this.baseurl}/targetinfo/add`, info)
+        axios.post(`${this.baseurl}/target/add`, info)
           .then(res => {
             if (res.data['status'] >= 1) {
               util.notice(this, `${info['name']} ${res.data['msg']}`, 'success')
@@ -444,7 +444,7 @@
         }
       },
       reflashTmpl() {
-        // axios.get(`${this.baseurl}/targetinfo/get?filter=tmpl_${this.$route.name}`)
+        // axios.get(`${this.baseurl}/target/get?filter=tmpl_${this.$route.name}`)
         axios.get(`${this.baseurl}/config?key=tmpl_${this.$route.name}`)
           .then(res => {
             delete res.data['data']['name']

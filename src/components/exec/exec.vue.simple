@@ -28,17 +28,9 @@
         <Form ref="varsForm" :label-width="100" :model="formItem" :rules="formValidate">
           <p v-if="JSON.stringify(formItem) === '{}'" style="text-align: center">没有需要设置的session参数</p>
           <div v-else>
-            
             <FormItem v-for="k in formKey" :prop="k" :key="k" :label="k">
-              <Select v-if="formType[k] === 'select'" v-model="formItem[k]" :placeholder="formComment[k]" clearable>
-                <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
-              </Select>
-              <Select v-else-if="formType[k] === 'multiselect'" v-model="formItem[k]" :placeholder="formComment[k]" multiple>
-                <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
-              </Select>
-              <Input v-else v-model="formItem[k]" type="text" :placeholder="formComment[k]" clearable></Input>
-            </FormItem>
-
+              <Input v-model="formItem[k]" type="text" placeholder="please input" clearable></Input>
+            </FormItem> 
             <div style="float:right;" >
               <Tooltip content="只是保存session，可选" placement="bottom">
                 <Button @click="saveSession" type="primary" ghost>保存</Button>
@@ -100,7 +92,6 @@
   export default {
     data () {
       return {
-        yyy: '',
         baseurl: this.$store.getters.sessionGet('baseurl'),
         current: 0,
         openshow: false,
@@ -108,9 +99,6 @@
         showContent: [],
         openswitch: false,
         formItem: {},
-        formComment: {},
-        formType: {},
-        formConstrict: {},
         formKey: [],
         formValidate: {},
         openinfo: {},
@@ -293,55 +281,24 @@
         if (parseInt(params.row['number'])){
           this.openinfo = params.row
           this.openinfo_s = params.row['name_s']
-          axios.get(`${this.baseurl}/session/extend?filter=${params.row['name']}`)
+          axios.get(`${this.baseurl}/session/?filter=${params.row['name']}`)
             .then(res => {
               this.openswitch = !this.openswitch
-              let session_info = res.data['session']
-              session_info.forEach((item,i) => {
-                if (item['type'] === 'multiselect') {
-                  item['value'] = item['value'].split(" ")
-                }
-                if ( ((typeof item['constrict']) === 'object') && item['constrict'][0] ) {
-                  // [] 数字的值转成字符串
-                  let x=[]
-                  item['constrict'].forEach((item,i) => {
-                    x.push(String(item))
-                  })
-                  item['constrict'] = x
-                }
+              this.formItem = res.data['vars']
+              this.formKey = util.dictKeys(res.data['vars'])
+              this.formKey.forEach((item,i) => {
+                this.formValidate[item] = [
+                  {
+                    required: true,
+                    message: '不能为空',
+                    trigger: 'blur'
+                  },
+                  {
+                    validator: util.noLeftAndRightSpaceCheck,
+                    trigger: 'blur'
+                  }
+                ]
               })
-              console.log(session_info)
-              this.formItem = util.arry2dict(session_info)
-              // console.log(this.formItem)
-              this.formComment = util.arry2dict(session_info,'key','comment')
-              this.formType = util.arry2dict(session_info,'key','type')
-              this.formConstrict = util.arry2dict(session_info,'key','constrict')
-
-              // console.log(this.formConstrict)
-              this.formKey = util.dictKeys(this.formItem)
-              session_info.forEach((item,i) => {
-                if (item['type'] === 'multiselect') {
-                  this.formValidate[item['key']] = [
-                    {
-                      validator: util.validatorGenerator(item['constrict']),
-                      trigger: 'blur'
-                    }
-                  ]
-                } else {
-                  this.formValidate[item['key']] = [
-                    {
-                      required: true,
-                      message: '不能为空',
-                      trigger: 'blur'
-                    },
-                    {
-                      validator: util.validatorGenerator(item['constrict']),
-                      trigger: 'blur'
-                    }
-                  ]
-                }
-              })
-              console.log(this.formValidate)
               this.errFlag = false
             })
             .catch(error => {
