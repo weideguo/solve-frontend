@@ -55,26 +55,25 @@
     },
     data () {
       const nameCheck = (rule, value, callback) => {
-        if (value.search('^' + this.$route.name) > -1) {
-          callback()
-        } else {
-          callback(new Error('name必须以' + this.$route.name + '开头'))
-        }
+        // if (value.search('^' + this.$route.name) > -1) {
+        //   callback()
+        // } else {
+        //   callback(new Error('name必须以' + this.$route.name + '开头'))
+        // }
+        let f = util.validatorGenerator('^'+this.$route.name+'((.*\\S$)|$)')
+        f(rule, value, callback)
       }
       return {
         baseurl: this.$store.getters.sessionGet('baseurl'),
         searchWord: '',
         username: sessionStorage.getItem('user'),
         formItem: [],
+        constictStr: '',
         formItemValidate: {
           name: [
             {
               required: true,
               message: '请输入执行对象名',
-              trigger: 'blur'
-            },
-            {
-              validator: util.noLeftAndRightSpaceCheck,
               trigger: 'blur'
             },
             {

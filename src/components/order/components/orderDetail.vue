@@ -74,6 +74,12 @@
         <Table border stripe :columns="columnsDetailInfo" :data="dataDetailInfo" :show-header="false" no-data-text="命令不存在或者信息已经过期"></Table>
       </div>
       <div slot="footer">
+        <Tooltip content="上一条" placement="top">
+          <Button type="primary" shape="circle" icon="md-arrow-round-back" ghost @click.native="showDetailPre"></Button>
+        </Tooltip>
+        <Tooltip content="下一条" placement="top">
+          <Button type="primary" shape="circle" icon="md-arrow-forward" ghost @click.native="showDetailNext"></Button>
+        </Tooltip>
         <Tooltip content="刷新" placement="top" style="margin-right: 20px">
           <Button type="primary" shape="circle" icon="md-refresh" ghost @click.native="refreshDetailInfo"></Button>
         </Tooltip>
@@ -165,6 +171,7 @@
           {
             key: 'key',
             align: 'center',
+            sortType: 'desc',
             width: 150
           },
           {
@@ -401,8 +408,10 @@
         this.modalList = !this.modalList
         if (this.modalList) {
           this.currentTarget = params['target']
+          this.currentTargetId = params['target_id']
           axios.get(`${this.baseurl}/order/exelist?id=${params['target_id']}`)
             .then(res => {
+              this.exelist=res.data['exelist']
               this.dataDetail = []
               res.data['exelist'].forEach((item, index) => {
                 this.dataDetail.push({'index': index + 1, 'log_id': item})
@@ -413,11 +422,33 @@
             })
         }
       },
+      showDetailPre () {
+        if (this.detailIndex > 1) {
+          this.detailIndex=this.detailIndex-1
+        } else {
+          this.$Message.info('没有更前了')
+        }
+        this.realShowDetail(this.exelist[this.detailIndex-1],this.detailIndex)
+        console.log(this.exelist[this.detailIndex-1],this.detailIndex)
+      },
+      showDetailNext () {
+        if ( this.detailIndex < this.exelist.length ) {
+          this.detailIndex=this.detailIndex+1
+        } else {
+          this.$Message.info('没有更后了')
+        }
+        this.realShowDetail(this.exelist[this.detailIndex-1],this.detailIndex)
+        console.log(this.exelist[this.detailIndex-1],this.detailIndex)
+      },
       showDetail (params, index) {
+        this.realShowDetail(params['log_id'], params['index'])
+      },
+      realShowDetail (logID, index) {
         this.modalDetail = true
-        this.logID = params['log_id']
-        this.detailTitle = params['index'] + '-------------' + params['log_id']
-        this.refreshShowDetail(params['log_id'])
+        this.logID = logID
+        this.detailIndex = index
+        this.detailTitle = index + '-------------' + logID
+        this.refreshShowDetail(logID)
       },
       refreshShowDetail (logID) {
         axios.get(`${this.baseurl}/order/exedetail?id=${logID}`)

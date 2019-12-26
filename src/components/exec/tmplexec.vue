@@ -85,7 +85,7 @@
               trigger: 'blur'
             },
             {
-              validator: util.noLeftAndRightSpaceCheck,
+              validator: util.validatorGenerator(),
               trigger: 'blur'
             }
           ],
@@ -103,7 +103,7 @@
               trigger: 'blur'
             },
             {
-              validator: util.noLeftAndRightSpaceCheck,
+              validator: util.validatorGenerator(),
               trigger: 'blur'
             }
           ],
@@ -140,7 +140,7 @@
               if (value === 'all') {
                 return true
               } else {
-                return row.target === value
+                return row.target_type === value
               }
             }
           },
@@ -156,7 +156,7 @@
             key: 'playbook',
             tooltip: true,
             sortable: true,
-            sortType: 'desc',
+            // sortType: 'desc',
           },
           {
             title: 'comment',
@@ -321,7 +321,7 @@
       commitFormInfo (){
         this.switchFormInfo = false
         if ( this.job_type != this.job_type_old) {
-          axios.post(`${this.baseurl}/config?key=job_types&type=set`, this.job_type.split(','))
+          axios.post(`${this.baseurl}/config/?key=job_types&type=set`, this.job_type.split(','))
             .then(res => {
               if (res.data['status'] >= 1) {
                 util.notice(this, 'job_types 更改成功', 'success')
@@ -334,7 +334,7 @@
             })  
         }
         if ( this.target_type != this.target_type_old) {
-          axios.post(`${this.baseurl}/config?key=target_types&type=set`, this.target_type.split(','))
+          axios.post(`${this.baseurl}/config/?key=target_types&type=set`, this.target_type.split(','))
             .then(res => {
               if (res.data['status'] >= 1) {
                 util.notice(this, 'target_types 更改成功', 'success')
@@ -361,7 +361,7 @@
         }
         this.currentPage = parseInt(vl)
         sessionStorage.setItem('tmplexec_currentpage', vl)
-        axios.get(`${this.baseurl}/executionInfo/get?filter=${this.filter}&page=${vl}&pagesize=${this.pagesize}`)
+        axios.get(`${this.baseurl}/executionInfo/get?filter=${this.filter}&page=${vl}&pagesize=${this.pagesize}&orderby=name`)
           .then(res => {
             this.tableData = res.data.data;
             this.tableData.forEach((item) => {

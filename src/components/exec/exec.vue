@@ -36,6 +36,13 @@
               <Select v-else-if="formType[k] === 'multiselect'" v-model="formItem[k]" :placeholder="formComment[k]" multiple>
                 <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
               </Select>
+              <div v-else-if="formType[k] === 'upload'" >
+                <Input v-model="formItem[k]" type="text" :placeholder="formComment[k]" clearable style="width: 80%" readonly></Input>
+                <Upload style="float: right;" :show-upload-list="false" :action="uploadUrl" :headers='myheader' :on-success="uploadSuccess(formItem,k)" ref="upload">
+                  <Button icon="ios-cloud-upload-outline">上传文件</Button>
+                </Upload>
+                <div style="clear:both"></div>
+              </div>
               <Input v-else v-model="formItem[k]" type="text" :placeholder="formComment[k]" clearable></Input>
             </FormItem>
 
@@ -100,7 +107,9 @@
   export default {
     data () {
       return {
-        yyy: '',
+        myheader: {
+          'Authorization': sessionStorage.getItem('jwt')
+        },
         baseurl: this.$store.getters.sessionGet('baseurl'),
         current: 0,
         openshow: false,
@@ -116,7 +125,7 @@
         openinfo: {},
         tmplInfo: [],
         dataDetailInfo: [],
-        tmplInfoSort: ['name','target','playbook','job_type','comment'],
+        tmplInfoSort: ['name','target_type','playbook','job_type','comment'],
         dataDetailInfoSort: ['name','name_s','tmpl','number','target','comment'],
         columnsInfo: [
           {
@@ -148,7 +157,7 @@
           {
             title: '模板',
             key: 'tmpl',
-            sortType: 'desc',
+            // sortType: 'desc',
             width: 300,
             sortable: true
           },
@@ -310,7 +319,7 @@
                   item['constrict'] = x
                 }
               })
-              console.log(session_info)
+              // console.log(session_info)
               this.formItem = util.arry2dict(session_info)
               // console.log(this.formItem)
               this.formComment = util.arry2dict(session_info,'key','comment')
@@ -341,7 +350,7 @@
                   ]
                 }
               })
-              console.log(this.formValidate)
+              // console.log(this.formValidate)
               this.errFlag = false
             })
             .catch(error => {
@@ -392,7 +401,7 @@
         }
         this.currentPage = parseInt(vl)
         sessionStorage.setItem('exec_currentpage', vl);
-        axios.get(`${this.baseurl}/executionInfo/get?filter=${this.filter}&page=${vl}&pagesize=${this.pagesize}`)
+        axios.get(`${this.baseurl}/executionInfo/get?filter=${this.filter}&page=${vl}&pagesize=${this.pagesize}&orderby=name`)
           .then(res => {
             this.tableData = res.data['data']
             this.tableData.forEach((item) => {
@@ -422,7 +431,21 @@
           .catch(error => {
             util.notice(this, error, 'error')
           });
-      }
+      },
+      uploadSuccess (formItem,k) {
+        return function (f) {
+          console.log(formItem)
+          console.log(k)
+          formItem[k]=f.file
+          util.notice(this, f.msg, 'info')
+        }
+      },
+    },
+    computed: {
+      uploadUrl () {
+        let d = new Date()
+        return this.baseurl + '/file/?path=' + d.getFullYear()+''+d.getMonth()+''+d.getDate()+'/'+d.valueOf()
+      },
     },
     watch: {
       '$route': function () {

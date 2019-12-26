@@ -61,7 +61,7 @@
               trigger: 'blur'
             },
             {
-              validator: util.noLeftAndRightSpaceCheck,
+              validator: util.validatorGenerator(),
               trigger: 'blur'
             },
           ],
@@ -72,7 +72,7 @@
               trigger: 'blur'
             },
             {
-              validator: util.noLeftAndRightSpaceCheck,
+              validator: util.validatorGenerator(),
               trigger: 'blur'
             },
           ],
@@ -83,7 +83,7 @@
               trigger: 'blur'
             },
             {
-              validator: util.noLeftAndRightSpaceCheck,
+              validator: util.validatorGenerator(),
               trigger: 'blur'
             },
           ],
@@ -94,7 +94,7 @@
               trigger: 'blur'
             },
             {
-              validator: util.noLeftAndRightSpaceCheck,
+              validator: util.validatorGenerator(),
               trigger: 'blur'
             },
           ]

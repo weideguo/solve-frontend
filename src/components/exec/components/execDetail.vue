@@ -187,7 +187,7 @@
           this.openswitchAdd = !this.openswitchAdd
           let formdata = util.arry2dict(this.formItem, 'key', 'value')
           let selectedItem = (formdata['target']).split(',');
-          axios.get(`${this.baseurl}/targetinfo/info?filter=${this.target_type}*`)
+          axios.get(`${this.baseurl}/target/info?filter=${this.target_type}*`)
             .then(res => {
               this.treeData = []
               this.treeData.push(util.formateTreeData(res.data['data'], selectedItem));
