@@ -37,7 +37,7 @@
                 <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
               </Select>
               <div v-else-if="formType[k] === 'upload'" >
-                <Input v-model="formItem[k]" type="text" :placeholder="formComment[k]" clearable style="width: 80%" readonly></Input>
+                <Input v-model="formItem[k]" type="text" :placeholder="formComment[k]" clearable style="width: 80%"></Input>
                 <Upload style="float: right;" :show-upload-list="false" :action="uploadUrl" :headers='myheader' :on-success="uploadSuccess(formItem,k)" ref="upload">
                   <Button icon="ios-cloud-upload-outline">上传文件</Button>
                 </Upload>

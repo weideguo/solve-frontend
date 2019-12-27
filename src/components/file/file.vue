@@ -14,25 +14,29 @@
       <br/>
       <Card>
         <Row style="clear:both">
-          <div>
-            <Col span="8">
+          <!--外div稍微大一点以放置上传列表-->
+          <div :style="{height: defaultHeight+100+'px'}">
+            <Col span="8" style="z-index: 100000;" >
               <div >
                 <file-list v-for="(item, i) in currentDirs" :key="item" :introText="item" listType="dir" @changedir="changedir">
                 </file-list>
                 <file-list v-for="(item, i) in currentFiles" :key="item" :introText="item" listType="file" @copypath="copypath" :url="downloadUrlRoot">
                 </file-list>
               </div>
-              <div>&ensp;</div>
+              <div style="height:100px">&ensp;</div>
             </Col>
-    
-            <Col span="16" style="float:rigth">
+          
+            <Col span="24" style="position:absolute;">
               <Upload multiple type="drag" :action="uploadUrl" :headers='myheader' :on-success="refresh" ref="upload"> 
-                <div style="padding: 25%;">
-                  <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
-                  <p>点击或拖拽到此上传</p>
+                <div :style="{height: defaultHeight > changeHeight ? defaultHeight+'px' : changeHeight+'px'}">
+                  <div style="margin-left: 30%" :style="{padding: defaultHeight > changeHeight ? defaultHeight/2+'px' : changeHeight/2+'px'}">
+                    <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+                    <p>点击或拖拽到此上传</p>
+                  </div>
                 </div>
               </Upload>        
             </Col>
+
           </div>
         </Row>
       </Card>
@@ -74,7 +78,9 @@ export default {
       createDirName: '',
       myheader: {
         'Authorization': sessionStorage.getItem('jwt')
-      }
+      },
+      defaultHeight: 600,
+      changeHeight: 0
     }
   },
   computed: {
@@ -153,6 +159,8 @@ export default {
             this.currentPath = path.replace('//','/')
             sessionStorage.setItem('file_current_path',this.currentPath)
             this.fullCurrentPath = res.data['path']
+            this.changeHeight = (this.currentFiles.length+this.currentDirs.length)*32
+            console.log(this.changeHeight)
           } else {
             util.notice(this, res.data['msg'], 'error')
           }
@@ -167,6 +175,9 @@ export default {
       this.currentPath = p
     }
     this.getFileInfo(this.currentPath)
+    // 页面渲染完成后的回调
+    // this.$nextTick(()=>{ 
+    // })
   }
 };
 </script>
