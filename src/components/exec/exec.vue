@@ -101,7 +101,8 @@
 
 <script>
   //
-  import axios from 'axios'
+  // import axios from 'axios'
+  import exec from '@/api/exec'
   import util from '@/libs/util'
 
   export default {
@@ -264,7 +265,8 @@
          
       },
       saveSession () {
-        axios.post(`${this.baseurl}/session/?filter=${this.openinfo['name']}`, this.formItem)
+        // axios.post(`${this.baseurl}/session/?filter=${this.openinfo['name']}`, this.formItem)
+        exec.postSession(`${this.openinfo['name']}`, this.formItem)
           .then(res => {
             util.notice(this, 'session保存成功', 'info')
           })
@@ -290,7 +292,8 @@
           this.showContent = []
         }
         this.tmplInfo = []
-        axios.get(`${this.baseurl}/executionInfo/get?filter=${params['tmpl']}`)
+        // axios.get(`${this.baseurl}/executionInfo/get?filter=${params['tmpl']}`)
+        exec.getExecutionInfo(`${params['tmpl']}`)
           .then(res => {
             this.tmplInfo = util.dict2arry(res.data['data'][0],'key', 'value',this.tmplInfoSort)
           })
@@ -302,7 +305,8 @@
         if (parseInt(params.row['number'])){
           this.openinfo = params.row
           this.openinfo_s = params.row['name_s']
-          axios.get(`${this.baseurl}/session/extend?filter=${params.row['name']}`)
+          // axios.get(`${this.baseurl}/session/extend?filter=${params.row['name']}`)
+          exec.getSession(`${params.row['name']}`)
             .then(res => {
               this.openswitch = !this.openswitch
               let session_info = res.data['session']
@@ -371,7 +375,8 @@
           this.openswitch = false
           this.$Message.info('开始提交，请勿多次运行')
           this.sessionInfo = this.formItem
-          axios.post(`${this.baseurl}/execution/?filter=${this.openinfo['name']}`, this.sessionInfo)
+          // axios.post(`${this.baseurl}/execution/?filter=${this.openinfo['name']}`, this.sessionInfo)
+          exec.postExecution(`${this.openinfo['name']}`, this.sessionInfo)
             .then(res => {
               util.notice(this, `${this.openinfo['name_s']} 开始执行`, 'info')
               util.openPageEx(this, 'orderDetail', {workid: res.data['data']})
@@ -401,7 +406,8 @@
         }
         this.currentPage = parseInt(vl)
         sessionStorage.setItem('exec_currentpage', vl);
-        axios.get(`${this.baseurl}/executionInfo/get?filter=${this.filter}&page=${vl}&pagesize=${this.pagesize}&orderby=name`)
+        // axios.get(`${this.baseurl}/executionInfo/get?filter=${this.filter}&page=${vl}&pagesize=${this.pagesize}&orderby=name`)
+        exec.getExecutionInfo(this.filter,vl,this.pagesize,'name')
           .then(res => {
             this.tableData = res.data['data']
             this.tableData.forEach((item) => {
@@ -419,7 +425,8 @@
       },
       realDelTarget () {
         let t = this.delname
-        axios.get(`${this.baseurl}/executionInfo/del?target=${t}`)
+        // axios.get(`${this.baseurl}/executionInfo/del?target=${t}`)
+        exec.delExecutionInfo(t)
           .then(res => {
             if (res.data['status'] === 1) {
               this.getCurrentPage();

@@ -128,8 +128,10 @@
 </template>
 
 <script>
+  import order from '@/api/order'
+  import exec from '@/api/exec'
   import util from '@/libs/util'
-  import axios from 'axios'
+  // import axios from 'axios'
   //
   export default {
     name: 'orderList',
@@ -347,7 +349,8 @@
     },
     methods: {
       abort (params) {
-        axios.get(`${this.baseurl}/order/abort?target_id=${params['target_id']}`)
+        // axios.get(`${this.baseurl}/order/abort?target_id=${params['target_id']}`)
+        order.abort(params['target_id'])
           .then(res => {
             if (parseFloat(res.data.abort_time)) {
               util.notice(this, '请勿重复中止： ' + params['target'], 'warning')
@@ -376,7 +379,8 @@
         this.checkSession = this.checkReadonly = this.checkChangable = []
         this.modalRerun = true
         this.selectParams = params
-        axios.get(`${this.baseurl}/execution/rerun_info?work_id=${this.workid}&target=${this.selectParams['target']}&target_id=${target_id}`)
+        // axios.get(`${this.baseurl}/execution/rerun_info?work_id=${this.workid}&target=${this.selectParams['target']}&target_id=${target_id}`)
+        exec.getRerunInfo(this.workid,this.selectParams['target'],target_id)
           .then(res => {
             this.checkSession = util.dict2arry(res.data['data']['session'], 'key', 'value')
             this.checkReadonly = util.dict2arry(res.data['data']['readonly'], 'key', 'value')
@@ -396,7 +400,8 @@
         }
         this.selectParams['exe_status'] = 'rerun'
         this.modalRerun = false
-        axios.get(`${this.baseurl}/execution/rerun?work_id=${this.workid}&target=${this.selectParams['target']}&target_id=${this.selectParams['target_id']}&begin_host=${begin_host}&begin_line=${begin_line}`)
+        // axios.get(`${this.baseurl}/execution/rerun?work_id=${this.workid}&target=${this.selectParams['target']}&target_id=${this.selectParams['target_id']}&begin_host=${begin_host}&begin_line=${begin_line}`)
+        exec.rerun(this.workid,this.selectParams['target'],this.selectParams['target_id'],begin_host,begin_line)
           .then(res => {
             console.log(res.data)
           })
@@ -409,7 +414,8 @@
         if (this.modalList) {
           this.currentTarget = params['target']
           this.currentTargetId = params['target_id']
-          axios.get(`${this.baseurl}/order/exelist?id=${params['target_id']}`)
+          // axios.get(`${this.baseurl}/order/exelist?id=${params['target_id']}`)
+          order.exelist(params['target_id'])
             .then(res => {
               this.exelist=res.data['exelist']
               this.dataDetail = []
@@ -451,7 +457,8 @@
         this.refreshShowDetail(logID)
       },
       refreshShowDetail (logID) {
-        axios.get(`${this.baseurl}/order/exedetail?id=${logID}`)
+        // axios.get(`${this.baseurl}/order/exedetail?id=${logID}`)
+        order.exedetail(logID)
           .then(res => {
             this.dataDetailInfo = util.dict2arry(res.data['exedetail'], 'key', 'value')
           })
@@ -477,7 +484,8 @@
       },
       summary () {
         this.modalSummary = true
-        axios.get(`${this.baseurl}/order/summary?workid=${this.workid}`)
+        // axios.get(`${this.baseurl}/order/summary?workid=${this.workid}`)
+        order.summary(this.workid)
           .then(res => {
               this.summaryInfo = res.data['data']
           })
@@ -504,7 +512,8 @@
         } else {
           this.workid = sessionStorage.getItem('order_list_workid');
         }
-        axios.get(`${this.baseurl}/order/detail?workid=${this.workid}&exclude=${exclude}`)
+        // axios.get(`${this.baseurl}/order/detail?workid=${this.workid}&exclude=${exclude}`)
+        order.detail(this.workid,exclude)
           .then(res => {
             if (res.data['status']>=1) {
               this.sum = res.data['sum']
@@ -523,6 +532,11 @@
             util.notice(this, error, 'error')
           })
       }
+    },
+    destroyed() {
+      // 销毁组件时调用
+      // 在此用于实现通知后端同步redis的信息到mongodb
+      console.log(this.workid)
     },
     mounted () {
       this.getCurrentPage();

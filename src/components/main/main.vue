@@ -158,7 +158,7 @@
       }
     },
     created () {
-      // 由于每个页面都引入main.vue 可以再实现全局设置headers
+      // 由于每个页面都引入main.vue 可以实现全局设置headers
       axios.defaults.headers.common['Authorization'] = this.$store.getters.sessionGet('jwt')
     }
   }

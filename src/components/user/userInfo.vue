@@ -12,7 +12,7 @@
           <Table border :columns="usercolumns" :data="userdata" stripe height="700"></Table>
         </div>
         <br>
-        <Page :total="pagenumber" @on-change="splicpage" :page-size="pagezie" ref="total" :current="currentPage" show-elevator show-total></Page>
+        <Page :total="pagenumber" @on-change="splicpage" :page-size="pagesize" ref="total" :current="currentPage" show-elevator show-total></Page>
       </Card>
     </Col>
 
@@ -60,7 +60,8 @@
 
 
 <script>
-  import axios from 'axios'
+  // import axios from 'axios'
+  import user from '@/api/user'
   import util from '@/libs/util'
 
   export default {
@@ -77,7 +78,7 @@
         currentUser: sessionStorage.getItem('user'),
         // 用户表
         currentPage: 1,
-        pagezie: 10,
+        pagesize: 10,
         pagenumber: 1,
         usercolumns: [
           {
@@ -193,10 +194,11 @@
     },
     methods: {
       realAddUser () {
-        axios.post(this.baseurl + '/userinfo/', {
-            'username': this.editForm.username,
-            'password': this.editForm.pass
-          })
+        // axios.post(this.baseurl + '/userinfo/', {
+        //     'username': this.editForm.username,
+        //     'password': this.editForm.pass
+        //   })
+        user.postUserinfo({'username': this.editForm.username, 'password': this.editForm.pass})
           .then(res => {
             this.editModal = false
             this.saveLoading = false
@@ -214,7 +216,8 @@
           })
       },
       refreshuser (vl = 1) {
-        axios.get(`${this.baseurl}/userinfo/?page=${vl}&pagesize=${this.pagezie}`)
+        // axios.get(`${this.baseurl}/userinfo/?page=${vl}&pagesize=${this.pagesize}`)
+        user.getUserinfo(vl,this.pagesize)
           .then(res => {
             this.userdata = res.data['data']
             this.pagenumber = parseInt(res.data['page'])
@@ -258,10 +261,11 @@
         
       },
       saveEdit () {
-        axios.put(this.baseurl + '/userinfo/changepwd', {
-            'username': this.editForm.username,
-            'new': this.editForm.pass
-          })
+        // axios.put(this.baseurl + '/userinfo/changepwd', {
+        //     'username': this.editForm.username,
+        //     'new': this.editForm.pass
+        //   })
+        user.putUserinfo({'username': this.editForm.username,'new': this.editForm.pass})
           .then(res => {
             util.notice(this, res.data['data'], 'success')
             this.editModal = false
@@ -279,7 +283,8 @@
       delUser () {
         if (this.username === this.confirmuser) {
           this.$Message.success('开始删除')
-          axios.delete(this.baseurl + '/userinfo/' + this.username)
+          // axios.delete(this.baseurl + '/userinfo/' + this.username)
+          user.deleteUserinfo(this.username)
             .then(res => {
               util.notice(this, res.data['data'], 'success')
               this.deluserModal = false

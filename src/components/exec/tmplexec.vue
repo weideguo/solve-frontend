@@ -52,7 +52,9 @@
 
 <script>
   //
-  import axios from 'axios'
+  // import axios from 'axios'
+  import exec from '@/api/exec'
+  import vconfig from '@/api/config'
   import util from '@/libs/util'
   import config from '@/config/config'
   import safeForm from '@/components/common/safeForm.vue'
@@ -241,7 +243,8 @@
     },
     methods: {
       getJobTypes () {
-        axios.get(`${this.baseurl}/config/?key=job_types`)
+        // axios.get(`${this.baseurl}/config/?key=job_types`)
+        vconfig.getKey('job_types')
           .then(res => {
             let job_types_list = util.dictDeepCopy(res.data['data'])
             this.job_type = ''
@@ -261,7 +264,8 @@
           });
       },
       getTargetTypes () {
-        axios.get(`${this.baseurl}/config/?key=target_types`)
+        // axios.get(`${this.baseurl}/config/?key=target_types`)
+        vconfig.getKey('target_types')
           .then(res => {
             let target_types_list = util.dictDeepCopy(res.data['data'])
             this.target_type = ''
@@ -321,7 +325,8 @@
       commitFormInfo (){
         this.switchFormInfo = false
         if ( this.job_type != this.job_type_old) {
-          axios.post(`${this.baseurl}/config/?key=job_types&type=set`, this.job_type.split(','))
+          // axios.post(`${this.baseurl}/config/?key=job_types&type=set`, this.job_type.split(','))
+          vconfig.postKey('job_types',this.job_type.split(','),'set')
             .then(res => {
               if (res.data['status'] >= 1) {
                 util.notice(this, 'job_types 更改成功', 'success')
@@ -334,7 +339,8 @@
             })  
         }
         if ( this.target_type != this.target_type_old) {
-          axios.post(`${this.baseurl}/config/?key=target_types&type=set`, this.target_type.split(','))
+          // axios.post(`${this.baseurl}/config/?key=target_types&type=set`, this.target_type.split(','))
+          vconfig.postKey('target_types',this.target_type.split(','),'set')
             .then(res => {
               if (res.data['status'] >= 1) {
                 util.notice(this, 'target_types 更改成功', 'success')
@@ -361,7 +367,8 @@
         }
         this.currentPage = parseInt(vl)
         sessionStorage.setItem('tmplexec_currentpage', vl)
-        axios.get(`${this.baseurl}/executionInfo/get?filter=${this.filter}&page=${vl}&pagesize=${this.pagesize}&orderby=name`)
+        // axios.get(`${this.baseurl}/executionInfo/get?filter=${this.filter}&page=${vl}&pagesize=${this.pagesize}&orderby=name`)
+        exec.getExecutionInfo(this.filter,vl,this.pagesize,'name')
           .then(res => {
             this.tableData = res.data.data;
             this.tableData.forEach((item) => {
@@ -379,7 +386,8 @@
       },
       realDelTarget () {
         let t = this.delname
-        axios.get(`${this.baseurl}/executionInfo/del?target=${t}`)
+        // axios.get(`${this.baseurl}/executionInfo/del?target=${t}`)
+        exec.delExecutionInfo(t)
           .then(res => {
             if (res.data['status'] === 1) {
               this.getCurrentPage();
@@ -393,7 +401,8 @@
           });
       },
       addTarget (info) {
-        axios.post(`${this.baseurl}/executionInfo/`, info)
+        // axios.post(`${this.baseurl}/executionInfo/`, info)
+        exec.postExecutionInfo(info)
           .then(res => {
             this.addName = info['name'].split('tmpl:')[1]
             if (res.data['status'] >= 1) {

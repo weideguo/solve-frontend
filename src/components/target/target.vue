@@ -45,7 +45,9 @@
 "
 <script>
   //
-  import axios from 'axios'
+  // import axios from 'axios'
+  import target from '@/api/target'
+  import config from '@/api/config'
   import util from '@/libs/util'
   import safeForm from '@/components/common/safeForm.vue'
 
@@ -161,7 +163,8 @@
           searchWord = this.$route.name + '*'
         }
         searchWord = encodeURIComponent(searchWord)
-        axios.get(`${this.baseurl}/target/get?filter=${searchWord}&page=${vl}&pagesize=${this.pageSize}`)
+        // axios.get(`${this.baseurl}/target/get?filter=${searchWord}&page=${vl}&pagesize=${this.pageSize}`)
+        target.getTarget(searchWord,vl,this.pageSize)
           .then(res => {
             this.tableData = res.data['data']
             this.tableData.forEach((item) => {
@@ -226,7 +229,8 @@
       },
       formInfoCommit (data) {
         this.switchFormInfo = false
-        axios.post(`${this.baseurl}/config/?key=tmpl_${this.$route.name}`, data)
+        // axios.post(`${this.baseurl}/config/?key=tmpl_${this.$route.name}`, data)
+        config.postKey(`tmpl_${this.$route.name}`,data)
           .then(res => {
             if (res.data['status'] >= 1) {
               util.notice(this, '更改成功', 'success')
@@ -257,7 +261,8 @@
       },
       realDelTarget () {
         let t = this.delname
-        axios.get(`${this.baseurl}/target/del?target=${t}`)
+        // axios.get(`${this.baseurl}/target/del?target=${t}`)
+        target.delTarget(t)
           .then(res => {
             if (res.data['status'] === 1) {
               this.getCurrentPage();
@@ -271,7 +276,8 @@
           });
       },
       addTarget (info) {
-        axios.post(`${this.baseurl}/target/`, info)
+        // axios.post(`${this.baseurl}/target/`, info)
+        target.addTarget(info)
           .then(res => {
             if (res.data['status'] >= 1) {
               util.notice(this, `${info['name']} ${res.data['msg']}`, 'success')
@@ -284,7 +290,8 @@
           });
       },
       reflashTmpl () {
-        axios.get(`${this.baseurl}/config/?key=tmpl_${this.$route.name}`)
+        // axios.get(`${this.baseurl}/config/?key=tmpl_${this.$route.name}`)
+        config.getKey(`tmpl_${this.$route.name}`)
           .then(res => {
             this.formItemInfo = util.dictDeepCopy(res.data['data'])
             this.formItemOrigin = util.dict2arry(res.data['data'], 'key', 'comment', this.itemSort)
@@ -298,7 +305,8 @@
           .catch(error => {
             util.notice(this, error, 'error')
           })
-        axios.get(`${this.baseurl}/target/info?filter=const*`)
+        // axios.get(`${this.baseurl}/target/info?filter=const*`)
+        target.getNameList('const*')
           .then(res => {
             this.constKeyList = res.data['data']
           })

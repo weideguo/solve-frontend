@@ -30,8 +30,9 @@
 </template>
 //
 <script>
-  import axios from 'axios'
+  // import axios from 'axios'
   import util from '@/libs/util'
+  import login from '@/api/login'
 
   export default {
     data () {
@@ -58,10 +59,12 @@
         }
       },
       handleUnlock () {
-        axios.post(this.baseurl + '/login/', {
-          'username': sessionStorage.getItem('user'),
-          'password': this.password
-          }).then(res => {
+        // axios.post(this.baseurl + '/login/', {
+        //   'username': sessionStorage.getItem('user'),
+        //   'password': this.password
+        //   })
+        login.login({'username': sessionStorage.getItem('user'),'password': this.password})
+          .then(res => {
             if (res.data['token']) {
               this.$store.commit('storeSet', ['jwt', `JWT ${res.data['token']}`])
               this.$store.commit('sessionSet', ['locking', 0])

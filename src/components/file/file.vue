@@ -61,6 +61,7 @@
 
 <script>
 import axios from 'axios'
+import file from '@/api/file'
 import util from '@/libs/util'
 import fileList from './components/fileList.vue'
 export default {
@@ -110,7 +111,8 @@ export default {
         let path = this.currentPath + '/' + this.createDirName
         path = path.replace('//','/')
         this.$Message.success('开始提交')
-        axios.get(`${this.baseurl}/file/create?path=${path}`)
+        // axios.get(`${this.baseurl}/file/create?path=${path}`)
+        file.createPath(path)
           .then(res => {
             // console.log(res.data)
             if (res.data['status'] > 0) {
@@ -151,7 +153,8 @@ export default {
       this.getFileInfo(this.currentPath)
     },
     getFileInfo (path){
-      axios.get(`${this.baseurl}/file/list?path=${path}`)
+      // axios.get(`${this.baseurl}/file/list?path=${path}`)
+      file.getFileList(path)
         .then(res => {
           if (res.data['status'] > 0) {
             this.currentFiles = res.data['files']

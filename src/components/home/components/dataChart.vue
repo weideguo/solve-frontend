@@ -3,21 +3,24 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import util from '@/libs/util'
+import home from '@/api/home'
+
 const echarts = require('echarts');
 export default {
   name: 'dataChart',
   data () {
       return {
-        baseurl: this.$store.getters.sessionGet('baseurl'),
+        // baseurl: this.$store.getters.sessionGet('baseurl'),
       }
   },
   mounted () {
     // Vue 异步执行 DOM 更新
     this.$nextTick(() => {
       var dataSourcePie = echarts.init(document.getElementById('data_source_con'));
-      axios.get(`${this.baseurl}/home/stats`)
+      // axios.get(`${this.baseurl}/home/stats`)
+      home.getHomeStats()
         .then(res => {
           let xdata = res.data.time
           let ydata = res.data.all

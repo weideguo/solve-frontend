@@ -53,14 +53,17 @@
 </template>
 
 <script>
+  // import axios from 'axios'
+  import exec from '@/api/exec'
+  import target from '@/api/target'
   import util from '@/libs/util'
-  import axios from 'axios'
+  
   //
   export default {
     data () {
       return {
         target_type: '',
-        baseurl: this.$store.getters.sessionGet('baseurl'),
+        // baseurl: this.$store.getters.sessionGet('baseurl'),
         openswitchAdd: false,
         fromData: {},
         formItem: [],
@@ -91,7 +94,8 @@
           if (this.info['tmpl'] === '') {
             this.target_type = ''
           } else {
-            axios.get(`${this.baseurl}/executionInfo/get?filter=${this.info['tmpl']}`)
+            // axios.get(`${this.baseurl}/executionInfo/get?filter=${this.info['tmpl']}`)
+            exec.getExecutionInfo(`${this.info['tmpl']}`)
               .then(res => {
                 try {
                   this.target_type = res.data['data'][0]['target_type']
@@ -130,7 +134,8 @@
       },
       addinfo (info) {
         try {
-          axios.post(`${this.baseurl}/executionInfo/add`, info)
+          // axios.post(`${this.baseurl}/executionInfo/add`, info)
+          exec.postExecutionInfo(info)
             .then(res => {
               if (res.data['status'] >= 1) {
                 util.notice(this, `${info['name']} ${res.data['msg']}`, 'success');
@@ -187,7 +192,8 @@
           this.openswitchAdd = !this.openswitchAdd
           let formdata = util.arry2dict(this.formItem, 'key', 'value')
           let selectedItem = (formdata['target']).split(',');
-          axios.get(`${this.baseurl}/target/info?filter=${this.target_type}*`)
+          // axios.get(`${this.baseurl}/target/info?filter=${this.target_type}*`)
+          target.getNameList(`${this.target_type}*`)
             .then(res => {
               this.treeData = []
               this.treeData.push(util.formateTreeData(res.data['data'], selectedItem));
@@ -208,7 +214,8 @@
         });
       },
       reflashTmpl () {
-        axios.get(`${this.baseurl}/executionInfo/info?filter=tmpl*`)
+        // axios.get(`${this.baseurl}/executionInfo/info?filter=tmpl*`)
+        exec.getNameList('tmpl*')
           .then(res => {
             this.tmplList = res.data['data']
           }).catch(error => {

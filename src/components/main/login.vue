@@ -78,7 +78,8 @@
 </template>
 
 <script>
-  import axios from 'axios'
+  // import axios from 'axios'
+  import login from '@/api/login'
   import util from '@/libs/util'
   import config from '@/config/config'
   //
@@ -139,10 +140,11 @@
           if (valid) {
             let project = JSON.parse(this.formInline.baseurl)[0]
             let baseurl = JSON.parse(this.formInline.baseurl)[1]
-            axios.post(baseurl + '/login/', {
-                'username': this.formInline.user,
-                'password': this.formInline.password
-              })
+            // axios.post(baseurl + '/login/', {
+            //     'username': this.formInline.user,
+            //     'password': this.formInline.password
+            //   })
+            login.login(baseurl, {'username': this.formInline.user, 'password': this.formInline.password})
               .then(res => {
                 if (res.data['token']) {
                   this.$store.commit('sessionSet', ['jwt', `JWT ${res.data['token']}`])
@@ -173,7 +175,8 @@
         this.baseurl = JSON.parse(this.formInline.baseurl)[1]
         localStorage.setItem('project',this.project)
         localStorage.setItem('baseurl',this.baseurl)
-        axios.get(`${this.baseurl}/cas/login?service=${this.service}`)
+        // axios.get(`${this.baseurl}/cas/login?service=${this.service}`)
+        login.loginCAS(this.baseurl,this.service)
           .then(res => {
             if (res.data['status'] === 1) {
               window.location = res.data['cas_login_url']
@@ -182,7 +185,8 @@
             }
           })
           .catch(error => {
-            console.log(error)
+            // console.log(error)
+            util.notice(this, error, 'error')
           })
       },
       parseUrlParams() {
@@ -195,7 +199,8 @@
         return result
       },
       vertify () {
-        axios.get(`${this.baseurl}/cas/serviceValidate?ticket=${this.ticket}&service=${this.service}`)
+        // axios.get(`${this.baseurl}/cas/serviceValidate?ticket=${this.ticket}&service=${this.service}`)
+        login.casServiceValidate(this.baseurl,this.ticket,this.service)
           .then(res => {
             // this.jwt = 'JWT '+res.data['token']
             if (res.data['token']) {
@@ -213,8 +218,8 @@
             }
           })
           .catch(error => {
-            // util.notice(this, error, 'error');
-            console.log(error)
+            util.notice(this, error, 'error');
+            // console.log(error)
           });
       },
       authCAS () {
@@ -225,18 +230,20 @@
         })
       },
       logout () {
-        axios.defaults.headers.common['Authorization'] = this.$store.getters.sessionGet('jwt')
-        axios.get(`${this.baseurl}/logout/?service=${this.service}`)
+        // axios.defaults.headers.common['Authorization'] = this.$store.getters.sessionGet('jwt')
+        // axios.get(`${this.baseurl}/logout/?service=${this.service}`)
+        login.logout(this.baseurl, this.service)
           .then(res => {
             // util.notice(this, res.data, 'info');
-            console.log(res.data)
+            // console.log(res.data)
             if (res.data['status'] === 1) {
               window.location = res.data['cas_logout_url'] 
             }
+            sessionStorage.clear()
           })
           .catch(error => {
-            // util.notice(this, error, 'error');
-            console.log(error)
+            util.notice(this, error, 'error');
+            // console.log(error)
           });
       },
     },
@@ -259,8 +266,9 @@
           if (this.$store.getters.sessionGet('cas')) {
             // 因为异步 所有后面也可以被执行？
             this.logout()
+          } else{
+            sessionStorage.clear()
           }
-          sessionStorage.clear()
         }
         localStorage.setItem('login_url',this.service)
         localStorage.removeItem('project')

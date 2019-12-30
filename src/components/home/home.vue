@@ -55,12 +55,14 @@
 </template>
 
 <script>
-  import axios from 'axios'
+  // import axios from 'axios'
+  import home from '@/api/home'
   import util from '@/libs/util'
   import config from '@/config/config'
   import toDoList from './components/toDoList.vue'
   import inforCard from './components/inforCard.vue'
   import dataChart from './components/dataChart.vue'
+  
 
   export default {
     components: {
@@ -70,7 +72,7 @@
     },
     data () {
       return {
-        baseurl: this.$store.getters.sessionGet('baseurl'),
+        // baseurl: this.$store.getters.sessionGet('baseurl'),
         count: {
           user: 0,
           order: 0,
@@ -84,15 +86,22 @@
     },
     methods: {
       getHomeinfo () {
-        // axios.get(`${this.baseurl}/home/info`)
+        // axios.get(`${this.baseurl}/home/infoxx`)
         // let url = this.$store.getters.sessionGet('baseurl')
-        axios.get(`${this.baseurl}/home/info`)
-        .then(res => {
-          this.count = res.data
-        })
-        .catch(error => {
-          util.notice(error, 'error')
-        })
+        // axios.get(`${this.baseurl}/home/infoxx`)
+        // .then(res => {
+        //   this.count = res.data
+        // })
+        // .catch(error => {
+        //   util.notice(this, error, 'error')
+        // })
+        home.getHomeInfo()
+          .then(res => {
+            this.count = res.data
+          })
+          .catch(error => {
+            util.notice(this, error, 'error')
+          })
       }
     },
     mounted () {

@@ -15,14 +15,15 @@
 </template>
 <script>
   //
-  import axios from 'axios'
+  // import axios from 'axios'
+  import order from '@/api/order'
   import util from '@/libs/util'
 
   export default {
     name: 'order',
     data () {
       return {
-        baseurl: this.$store.getters.sessionGet('baseurl'),
+        // baseurl: this.$store.getters.sessionGet('baseurl'),
         columns: [
           {
             title: '工单编号:',
@@ -119,7 +120,8 @@
         util.openPageEx(this, 'orderDetail', {workid: paramsDict['work_id']});
       },
       delete (params) {
-        axios.get(`${this.baseurl}/order/del?workid=${params.row['work_id']}`)
+        // axios.get(`${this.baseurl}/order/del?workid=${params.row['work_id']}`)
+        order.delOrder(`${params.row['work_id']}`)
           .then(res => {
             if (res.data['status'] === 1) {
               this.getCurrentPage();
@@ -146,7 +148,8 @@
         this.currentPage = parseInt(vl)
         sessionStorage.setItem('order_currentpage', vl);
         // axios.get(`${this.baseurl}/order/?page=${vl}&pagesize=${this.pagesize}`)
-        axios.get(`${this.baseurl}/order/?page=${vl}&pagesize=${this.pagesize}`)
+        // axios.get(`${this.baseurl}/order/?page=${vl}&pagesize=${this.pagesize}`)
+        order.getOrder(vl,this.pagesize)
           .then(res => {
             this.tableData = res.data['data']
             this.tableData.forEach((item) => {

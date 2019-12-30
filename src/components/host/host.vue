@@ -39,7 +39,10 @@
 "
 <script>
   //
-  import axios from 'axios'
+  // import axios from 'axios'
+  import target from '@/api/target'
+  import host from '@/api/host'
+  import config from '@/api/config'
   import util from '@/libs/util'
   import safeForm from '@/components/common/safeForm.vue'
 
@@ -280,7 +283,8 @@
       onlineFilter () {
         this.isOnline = ! this.isOnline
         if (this.isOnline) {
-          axios.get(`${this.baseurl}/host/onlinedetail`)
+          // axios.get(`${this.baseurl}/host/onlinedetail`)
+          host.getOnlinedetail()
             .then(res => {
               res.data['data'].forEach((item) => {
                  item['info'] = util.dictDeepCopy(item)
@@ -303,9 +307,11 @@
           searchWord = this.$route.name + '*'
         }
         searchWord = encodeURIComponent(searchWord)
-        axios.get(`${this.baseurl}/target/get?filter=${searchWord}&page=${vl}&pagesize=${this.pageSize}`)
+        // axios.get(`${this.baseurl}/target/get?filter=${searchWord}&page=${vl}&pagesize=${this.pageSize}`)
+        target.getTarget(searchWord,vl,this.pageSize)
           .then(res => {
-            axios.get(`${this.baseurl}/host/online`)
+            // axios.get(`${this.baseurl}/host/online`)
+            host.getOnline()
               .then(res2 => {
                 let onlinehost = [];
                 res.data['data'].forEach((item) => {
@@ -376,7 +382,8 @@
       },
       realDelTarget () {
         let t = this.delname
-        axios.get(`${this.baseurl}/target/del?target=${t}`)
+        // axios.get(`${this.baseurl}/target/del?target=${t}`)
+        target.delTarget(t)
           .then(res => {
             // console.log(res.data.status);
             if (res.data['status'] === 1) {
@@ -391,7 +398,8 @@
           });
       },
       addTarget (info) {
-        axios.post(`${this.baseurl}/target/add`, info)
+        // axios.post(`${this.baseurl}/target/add`, info)
+        target.addTarget(info)
           .then(res => {
             if (res.data['status'] >= 1) {
               util.notice(this, `${info['name']} ${res.data['msg']}`, 'success')
@@ -406,7 +414,8 @@
       closeConn (params) {
         if (params.row['ip']) {
           params.row['is_conn'] = 2
-          axios.get(`${this.baseurl}/host/kill?ip=${params.row['ip']}`)
+          // axios.get(`${this.baseurl}/host/kill?ip=${params.row['ip']}`)
+          host.kill(params.row['ip'])
             .then(res => {
               if (res.data['status'] === 1) {
                 params.row['is_conn'] = 0
@@ -426,7 +435,8 @@
       createConn (params) {
         if (params.row['ip']) {
           params.row['is_conn'] = 3
-          axios.get(`${this.baseurl}/host/conn?ip=${params.row['ip']}`)
+          // axios.get(`${this.baseurl}/host/conn?ip=${params.row['ip']}`)
+          host.conn(params.row['ip'])
             .then(res => {
               if (res.data['status'] === 1) {
                 params.row['is_conn'] = 1
@@ -445,7 +455,8 @@
       },
       reflashTmpl() {
         // axios.get(`${this.baseurl}/target/get?filter=tmpl_${this.$route.name}`)
-        axios.get(`${this.baseurl}/config?key=tmpl_${this.$route.name}`)
+        // axios.get(`${this.baseurl}/config?key=tmpl_${this.$route.name}`)
+        config.getKey(`tmpl_${this.$route.name}`)
           .then(res => {
             delete res.data['data']['name']
             this.formItemOrigin = util.dict2arry(res.data['data'], 'key', 'comment', this.itemSort)
