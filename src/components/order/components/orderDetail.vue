@@ -114,8 +114,8 @@
 
           <Divider v-if="checkChangable.length > 0">changable</Divider>
           <FormItem v-for="(item, i) in checkChangable" :key="item.key" v-bind:label="item.key">
-            <Input v-if="item.key === 'begin_host'" v-model="item.value" placeholder="请输入在哪个主机开始执行（根据情况可以不输入）"></Input>
-            <InputNumber v-else-if="item.key === 'begin_line'" v-model="item.value" :max="parseInt(selectParams.playbook_rownum)" :min="1"></InputNumber>
+            <!--Input v-if="item.key === 'begin_host'" v-model="item.value" placeholder="请输入在哪个主机开始执行（根据情况可以不输入）"></Input-->
+            <InputNumber v-if="item.key === 'begin_line'" v-model="item.value" :max="parseInt(selectParams.playbook_rownum)" :min="1"></InputNumber>
           </FormItem>
         </Form>
       </div>
@@ -130,6 +130,7 @@
 <script>
   import order from '@/api/order'
   import exec from '@/api/exec'
+  import dura from '@/api/dura'
   import util from '@/libs/util'
   // import axios from 'axios'
   //
@@ -392,16 +393,16 @@
       },
       realRerun () {
         let x = util.arry2dict(this.checkChangable, 'key', 'value')
-        let begin_host = ''
+        // let begin_host = ''
         let begin_line = 0
         if (x['begin_host'] && x['begin_line']) {
-          begin_host = x['begin_host']
+          // begin_host = x['begin_host']
           begin_line = x['begin_line']
         }
         this.selectParams['exe_status'] = 'rerun'
         this.modalRerun = false
         // axios.get(`${this.baseurl}/execution/rerun?work_id=${this.workid}&target=${this.selectParams['target']}&target_id=${this.selectParams['target_id']}&begin_host=${begin_host}&begin_line=${begin_line}`)
-        exec.rerun(this.workid,this.selectParams['target'],this.selectParams['target_id'],begin_host,begin_line)
+        exec.rerun(this.workid,this.selectParams['target'],this.selectParams['target_id'],begin_line)
           .then(res => {
             console.log(res.data)
           })
@@ -536,7 +537,8 @@
     destroyed() {
       // 销毁组件时调用
       // 在此用于实现通知后端同步redis的信息到mongodb
-      console.log(this.workid)
+      // console.log(this.workid)
+      dura.dura(this.workid)
     },
     mounted () {
       this.getCurrentPage();

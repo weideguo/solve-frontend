@@ -52,9 +52,9 @@ export default {
       method: 'get',
     })
   },
-  rerun: function (workid,target,targetid,begin_host,begin_line) {
+  rerun: function (workid,target,targetid,begin_line) {
     return request({
-      url: `/execution/rerun?work_id=${workid}&target=${target}&target_id=${targetid}&begin_host=${begin_host}&begin_line=${begin_line}`,
+      url: `/execution/rerun?work_id=${workid}&target=${target}&target_id=${targetid}&begin_line=${begin_line}`,
       method: 'get',
     })
   },

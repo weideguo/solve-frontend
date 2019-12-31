@@ -451,7 +451,7 @@
     computed: {
       uploadUrl () {
         let d = new Date()
-        return this.baseurl + '/file/?path=' + d.getFullYear()+''+d.getMonth()+''+d.getDate()+'/'+d.valueOf()
+        return this.baseurl + '/file/?path=' + d.getFullYear()+''+(d.getMonth()+1)+''+d.getDate()+'/'+d.valueOf()
       },
     },
     watch: {
