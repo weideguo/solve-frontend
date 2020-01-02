@@ -130,7 +130,7 @@
 <script>
   import order from '@/api/order'
   import exec from '@/api/exec'
-  import dura from '@/api/dura'
+  // import dura from '@/api/dura'
   import util from '@/libs/util'
   // import axios from 'axios'
   //
@@ -536,9 +536,8 @@
     },
     destroyed() {
       // 销毁组件时调用
-      // 在此用于实现通知后端同步redis的信息到mongodb
-      // console.log(this.workid)
-      dura.dura(this.workid)
+      // 持久化对前端透明 前端不进行任何操作
+      // dura.dura(this.workid)
     },
     mounted () {
       this.getCurrentPage();
