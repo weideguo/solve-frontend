@@ -154,9 +154,11 @@
                   this.$store.commit('sessionSet', ['hasLogin', 1])
                   this.$store.commit('sessionSet', ['user', this.formInline.user])
                   this.$store.commit('sessionSet', ['login_timestamp', (new Date().getTime()) / 1000])
-                  this.$router.push({
-                    name: 'home_index'
-                  })
+                  // this.$router.push({
+                  //   name: 'home_index'
+                  // })
+                  // 使用push可能导致session未设置前已经加载下一个页面 故而不用
+                  window.location = '/'
                 } else {
                   util.notice(this, res.data['msg'], 'warning')
                 }

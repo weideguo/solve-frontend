@@ -63,7 +63,8 @@
         //   'username': sessionStorage.getItem('user'),
         //   'password': this.password
         //   })
-        login.login({'username': sessionStorage.getItem('user'),'password': this.password})
+        let baseurl=''
+        login.login(baseurl, {'username': sessionStorage.getItem('user'),'password': this.password})
           .then(res => {
             if (res.data['token']) {
               this.$store.commit('storeSet', ['jwt', `JWT ${res.data['token']}`])
