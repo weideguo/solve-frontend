@@ -395,7 +395,7 @@
         let x = util.arry2dict(this.checkChangable, 'key', 'value')
         // let begin_host = ''
         let begin_line = 0
-        if (x['begin_host'] && x['begin_line']) {
+        if (x['begin_line']) {
           // begin_host = x['begin_host']
           begin_line = x['begin_line']
         }

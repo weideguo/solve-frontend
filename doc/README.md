@@ -127,7 +127,6 @@ echo "hello world"
 ### global参数 ###
 playbook
 ```shell
-{% raw %}
 #全局变量可以跨主机引用
 #声明 global.XX="YYYY"  
 #或   global.XX=`who`    可将在当前主机(不是solve所在的主机)执行命令的结果作为全局变量
@@ -138,7 +137,6 @@ global.v1=`ifconfig | grep -oP "(?<=addr:).*?(?=  Bcast)"`
 
 [{{db2.host.ip}}]
 echo "{{global.v1}}" > /tmp/`date +%Y%m%d`.test
-{% endraw %}
 ```
 global参数主要用于上下文参数的传递
 
