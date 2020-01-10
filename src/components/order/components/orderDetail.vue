@@ -199,7 +199,8 @@
           {
             title: '执行对象',
             key: 'target',
-            sortable: true
+            sortable: true,
+            minWidth: 150
           },
           {
             title: '当前状态',

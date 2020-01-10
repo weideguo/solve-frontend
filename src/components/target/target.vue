@@ -98,7 +98,8 @@
           {
             title: '信息',
             tooltip: true,
-            key: 'info'
+            key: 'info',
+            minWidth: 600
           },
           {
             title: '操作',

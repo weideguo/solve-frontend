@@ -120,14 +120,15 @@
           {
             title: 'SSH端口',
             key: 'ssh_port',
-            width: 300,
+            width: 200,
             sortable: true
           },
           {
             title: '用户',
             key: 'user',
             align: 'center',
-            sortable: true
+            sortable: true,
+            minWidth: 100
           },
           {
             title: '操作',

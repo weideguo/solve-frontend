@@ -158,6 +158,7 @@
             key: 'playbook',
             tooltip: true,
             sortable: true,
+            minWidth: 300
             // sortType: 'desc',
           },
           {

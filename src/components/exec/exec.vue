@@ -166,7 +166,8 @@
             title: 'comment',
             key: 'comment',
             tooltip: true,
-            sortable: true
+            sortable: true,
+            minWidth: 300
           },
           {
             title: '执行',

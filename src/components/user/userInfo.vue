@@ -84,7 +84,8 @@
           {
             title: '用户名',
             key: 'username',
-            sortable: true
+            sortable: true,
+            minWidth: 400
           },
           {
             title: '操作',

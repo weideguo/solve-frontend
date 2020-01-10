@@ -56,11 +56,12 @@
             title: 'playbook',
             key: 'playbook',
             tooltip: true,
-            sortable: true
+            sortable: true,
+            minWidth: 300
           },
           {
             title: '工单说明',
-            width: 300,
+            width: 200,
             tooltip: true,
             key: 'comment',
             sortable: true
