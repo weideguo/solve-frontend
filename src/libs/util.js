@@ -233,6 +233,7 @@ util.copy = function (vm, data) {
 }
 
 util.download = function(vm, url, filename) {
+  axios.defaults.headers.common['Authorization'] = sessionStorage.getItem('jwt')
   axios.get(url, {responseType: 'blob'})
     .then(res => {
       util.notice(vm, filename+' 下载中...', 'fast')
@@ -278,6 +279,16 @@ util.validatorGenerator = function(constrict) {
     }
   }
 
+}
+
+util.parseUrlParams = function (location) {
+  if (location.search.length <= 0) return {};
+  let info = location.search.slice(1)
+  let result = {}
+  info.split('&').forEach((item,i) => {
+    result[decodeURIComponent(item.split('=')[0])] = decodeURIComponent(item.split('=')[1])
+  })
+  return result
 }
 
 export default util

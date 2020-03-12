@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import file from '@/api/file'
 import util from '@/libs/util'
 import fileList from './components/fileList.vue'

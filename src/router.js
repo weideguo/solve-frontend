@@ -48,6 +48,18 @@ export const version = {
   }
 }
 
+export const playbook = {
+  path: '/playbook',
+  name: 'playbook',
+  title: 'playbook',
+  meta: {
+    title: 'playbook'
+  },
+  component: resolve => {
+    require(['./components/auxi/playbook.vue'], resolve)
+  }
+}
+
 export const loginRouter = {
   path: '/login',
   name: 'login',
@@ -335,6 +347,7 @@ export const MainRoute = [
   orderDetail,
   execDetail,
   version,
+  playbook,
   page401,
   page500,
   page404          // 由于路径匹配为/* 这个必须放在最后 否则都定向到这个路由

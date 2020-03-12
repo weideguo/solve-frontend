@@ -60,7 +60,7 @@
 </template>
 
 <script>
-  import axios from 'axios'
+  // import axios from 'axios'
   import util from '@/libs/util'
   import config from '@/config/config'
   //
@@ -107,10 +107,11 @@
           if (valid) {
             let project = JSON.parse(this.formInline.baseurl)[0]
             let baseurl = JSON.parse(this.formInline.baseurl)[1]
-            axios.post(baseurl + '/api-token-auth/', {
-                'username': this.formInline.user,
-                'password': this.formInline.password
-              })
+            // axios.post(baseurl + '/api-token-auth/', {
+            //     'username': this.formInline.user,
+            //     'password': this.formInline.password
+            //   })
+            login.login(baseurl, {'username': this.formInline.user, 'password': this.formInline.password})
               .then(res => {
                 if (res.data['token']) {
                   this.$store.commit('sessionSet', ['jwt', `JWT ${res.data['token']}`])

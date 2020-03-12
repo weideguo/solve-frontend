@@ -12,5 +12,11 @@ export default {
       url: `/file/list?path=${path}`,
       method: 'get'
     })
+  },
+  getFileContent: function (file) {
+    return request({
+      url: `/file/content?file=${file}`,
+      method: 'get'
+    })
   }
 }

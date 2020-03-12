@@ -130,7 +130,8 @@
     },
     computed: {
       ticket () {
-        let result=this.parseUrlParams()
+        // let result=this.parseUrlParams()
+        let result=util.parseUrlParams(window.location)
         return result["ticket"]
       },
     },
@@ -190,15 +191,6 @@
             // console.log(error)
             util.notice(this, error, 'error')
           })
-      },
-      parseUrlParams() {
-        if (window.location.search.length <= 0) return {};
-        let info = window.location.search.slice(1)
-        let result = {}
-        info.split('&').forEach((item,i) => {
-          result[decodeURIComponent(item.split('=')[0])] = decodeURIComponent(item.split('=')[1])
-        })
-        return result
       },
       vertify () {
         // axios.get(`${this.baseurl}/cas/serviceValidate?ticket=${this.ticket}&service=${this.service}`)

@@ -20,8 +20,11 @@
           </Poptip>
           <br>
           <br>
-          <Tooltip content="返回" placement="bottom">
+          <!--<Tooltip content="返回" placement="bottom">
             <Button type="primary" shape="circle" icon="md-arrow-round-back" ghost @click.native="$router.go(-1)"></Button>
+          </Tooltip>-->
+          <Tooltip content="查看playbook" placement="bottom">
+            <Button type="primary" shape="circle" icon="md-book" ghost @click.native="playbookDetial()"></Button>
           </Tooltip>
           <Tooltip content="刷新" placement="bottom" style="margin-left: 20px">
             <Button type="primary" shape="circle" icon="md-refresh" ghost @click.native="refreshCurrentPage()"></Button>
@@ -350,6 +353,11 @@
       }
     },
     methods: {
+      playbookDetial () {
+        // 使用新的非tab页面显示playbook
+        let path = "/?playbook="+this.playbook+"&workid="+this.workid+"#/playbook"
+        window.open(path, "_blank", "scrollbars=yes,resizable=1,modal=false,alwaysRaised=yes")
+      },
       abort (params) {
         // axios.get(`${this.baseurl}/order/abort?target_id=${params['target_id']}`)
         order.abort(params['target_id'])

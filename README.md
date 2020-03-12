@@ -19,6 +19,7 @@ running
 ### version support ###
 * node v7.9.0
 * node v10.13.0
+* node v12.16.1
 * 其他的版本可能也支持，但缺少测试
 
 ### prerun ###
