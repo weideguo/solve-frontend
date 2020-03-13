@@ -1,16 +1,20 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
-import iView from 'iview'
+// import iView from 'iview'
+import iView from 'view-design'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import axios from 'axios'
-import 'iview/dist/styles/iview.css'
+// import 'iview/dist/styles/iview.css'
+import 'view-design/dist/styles/iview.css';
 import particles from 'particles.js/particles'
+
 import { MainRoute } from './router'
 import util from './libs/util'
 import App from './App.vue'
 import store from './store'
+
 
 Vue.config.productionTip = false
 Vue.use(particles)

@@ -39,6 +39,9 @@
         </FormItem>
         <FormItem label="job_type">
           <Input v-model="job_type" placeholder="请输入可选的任务类型，以“,”分隔"/>
+          <Select v-model="model18" filterable multiple allow-create @on-create="handleCreate2">
+                <Option v-for="item in cityList4" :value="item" :key="item">{{ item }}</Option>
+          </Select>
         </FormItem>
        </Form> 
        <div slot="footer">
@@ -239,15 +242,22 @@
         pageNumber: 1,
         currentPage: 1,
         pageSizeOpts: [10,20,40,80,100,200],
-        filter: ''
+        filter: '',
+        model18: ['New York', 'London'],
+        cityList4: ['New York', 'London']
       }
     },
     methods: {
+      handleCreate2 (val) {
+        this.cityList4.push(val);
+      },
       getJobTypes () {
         // axios.get(`${this.baseurl}/config/?key=job_types`)
         vconfig.getKey('job_types')
           .then(res => {
             let job_types_list = util.dictDeepCopy(res.data['data'])
+            this.model18=res.data['data']
+            this.cityList4=res.data['data']
             this.job_type = ''
             job_types_list.forEach((item, i) => {
               this.job_type = this.job_type+','+item
