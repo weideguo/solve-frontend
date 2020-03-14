@@ -42,7 +42,7 @@
 
   </div>
 </template>
-"
+
 <script>
   //
   // import axios from 'axios'
@@ -57,11 +57,6 @@
     },
     data () {
       const nameCheck = (rule, value, callback) => {
-        // if (value.search('^' + this.$route.name) > -1) {
-        //   callback()
-        // } else {
-        //   callback(new Error('name必须以' + this.$route.name + '开头'))
-        // }
         let f = util.validatorGenerator('^'+this.$route.name+'((.*\\S$)|$)')
         f(rule, value, callback)
       }
@@ -237,7 +232,7 @@
               util.notice(this, '更改成功', 'success')
               this.reflashTmpl()
             } else {
-              util.notice(this, `${info['name']} ${res.data['msg']}`, 'warning')
+              util.notice(this, `${res.data['msg']}`, 'warning')
             }
           }).catch(error => {
             util.notice(this, error, 'error')
@@ -284,7 +279,11 @@
               util.notice(this, `${info['name']} ${res.data['msg']}`, 'success')
               this.getCurrentPage();
             } else {
-              util.notice(this, `${info['name']} ${res.data['msg']}`, 'warning')
+              if (!info['name']) {
+                util.notice(this, `${res.data['msg']}`, 'warning')
+              } else {
+                util.notice(this, `${info['name']} ${res.data['msg']}`, 'warning')
+              }
             }
           }).catch(error => {
             util.notice(this, error, 'error')

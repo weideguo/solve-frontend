@@ -251,18 +251,9 @@ util.download = function(vm, url, filename) {
     })
 }
 
-// util.noLeftAndRightSpaceCheck = function(rule, value, callback) {
-//   if (util.existSpace(value)) {
-//     callback(new Error('左右不能存在空格'))
-//   } else if ( ((typeof value) === 'object') && ( value.length === 0 )) {
-//     callback(new Error('不能为空'))
-//   } else {
-//     callback()
-//   }
-// }
-
 util.validatorGenerator = function(constrict) {
   return function(rule, value, callback) {
+    // console.log(value, rule, constrict)
     if ((typeof constrict) === 'string') {
       let reg = new RegExp(constrict)
       if (value.search(reg) < 0) {
@@ -270,10 +261,12 @@ util.validatorGenerator = function(constrict) {
       } else {
         callback()
       }
+    } else if ( value === undefined ) {
+      callback(new Error('不能为空'))
+    } else if ( value.length === 0 ) {
+      callback(new Error('不能为空'))
     } else if (util.existSpace(value)) {
       callback(new Error('左右不能存在空格'))
-    } else if ( ((typeof value) === 'object') && ( value.length === 0 )) {
-      callback(new Error('不能为空'))
     } else {
       callback()
     }

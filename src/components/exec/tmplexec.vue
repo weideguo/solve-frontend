@@ -29,23 +29,26 @@
 
     </Modal>
 
-    <Modal v-model="switchFormInfo" width="50%">
+    <Modal v-model="switchFormInfo" width="50%" @on-cancel="cancelFormInfo">
       <p slot="header">
         <span>修改以下可选项信息</span>
       </p>
        <Form :label-width="80">
         <FormItem label="target_type">
-          <Input v-model="target_type" placeholder="请输入可选的可执行对象类型，以“,”分隔" />
+          <!--<Input v-model="target_type" placeholder="请输入可选的可执行对象类型，以“,”分隔" />-->
+          <Select v-model="target_type" filterable multiple allow-create @on-create="putTargetType">
+            <Option v-for="item in target_type_tmp" :value="item" :key="item">{{ item }}</Option>
+          </Select>
         </FormItem>
         <FormItem label="job_type">
-          <Input v-model="job_type" placeholder="请输入可选的任务类型，以“,”分隔"/>
-          <Select v-model="model18" filterable multiple allow-create @on-create="handleCreate2">
-                <Option v-for="item in cityList4" :value="item" :key="item">{{ item }}</Option>
+          <!--<Input v-model="job_type" placeholder="请输入可选的任务类型，以“,”分隔"/>-->
+          <Select v-model="job_type" filterable multiple allow-create @on-create="putJobType">
+            <Option v-for="item in job_type_tmp" :value="item" :key="item">{{ item }}</Option>
           </Select>
         </FormItem>
        </Form> 
        <div slot="footer">
-        <Button type="primary" @click="switchFormInfo=false">取消</Button>
+        <Button type="primary" @click="cancelFormInfo">取消</Button>
         <Button @click="commitFormInfo">提交</Button>
       </div>
     </Modal>
@@ -71,8 +74,8 @@
         baseurl: this.$store.getters.sessionGet('baseurl'),
         modelTitle: '',
         switchFormInfo: false,
-        job_type: '',
-        target_type: '',
+        job_type: [],
+        target_type: [],
         openswitch: false,
         formItem: [],
         formItemOrigin: [
@@ -243,27 +246,31 @@
         currentPage: 1,
         pageSizeOpts: [10,20,40,80,100,200],
         filter: '',
-        model18: ['New York', 'London'],
-        cityList4: ['New York', 'London']
+        job_type_tmp: [],
+        target_type_tmp: []
       }
     },
     methods: {
-      handleCreate2 (val) {
-        this.cityList4.push(val);
+      cancelFormInfo () {
+        this.switchFormInfo = false
+        this.job_type = util.dictDeepCopy(this.job_type_old)
+        this.job_type_tmp = util.dictDeepCopy(this.job_type_old)
+        this.target_type = util.dictDeepCopy(this.target_type_old)
+        this.target_type_tmp = util.dictDeepCopy(this.target_type_old)
+      },
+      putJobType (val) {
+        this.job_type_tmp.push(val)
+      },
+      putTargetType (val) {
+        this.target_type_tmp.push(val)
       },
       getJobTypes () {
         // axios.get(`${this.baseurl}/config/?key=job_types`)
         vconfig.getKey('job_types')
           .then(res => {
-            let job_types_list = util.dictDeepCopy(res.data['data'])
-            this.model18=res.data['data']
-            this.cityList4=res.data['data']
-            this.job_type = ''
-            job_types_list.forEach((item, i) => {
-              this.job_type = this.job_type+','+item
-            })
-            this.job_type=this.job_type.slice(1)
-            this.job_type_old=this.job_type
+            this.job_type_old=util.dictDeepCopy(res.data['data'])
+            this.job_type_tmp=util.dictDeepCopy(res.data['data'])
+            this.job_type=util.dictDeepCopy(res.data['data'])
             this.formItemOrigin.forEach((item, i) => {
               if(item.key === 'job_type') {
                 item.select = res.data['data']
@@ -278,13 +285,9 @@
         // axios.get(`${this.baseurl}/config/?key=target_types`)
         vconfig.getKey('target_types')
           .then(res => {
-            let target_types_list = util.dictDeepCopy(res.data['data'])
-            this.target_type = ''
-            target_types_list.forEach((item, i) => {
-              this.target_type = this.target_type+','+item
-            })
-            this.target_type=this.target_type.slice(1)
-            this.target_type_old=this.target_type
+            this.target_type_old = util.dictDeepCopy(res.data['data'])
+            this.target_type_tmp = util.dictDeepCopy(res.data['data'])
+            this.target_type = util.dictDeepCopy(res.data['data'])
             this.formItemOrigin.forEach((item, i) => {
               if(item.key === 'target_type') {
                 item['select'] = res.data['data']
@@ -294,6 +297,39 @@
           .catch(error => {
             util.notice(this, error, 'error')
           });
+      },
+      commitFormInfo (){
+        this.switchFormInfo = false
+        if ( this.job_type != this.job_type_old) {
+          // axios.post(`${this.baseurl}/config/?key=job_types&type=set`, this.job_type.split(','))
+          // vconfig.postKey('job_types',this.job_type.split(','),'set')
+          vconfig.postKey('job_types',this.job_type,'set')
+            .then(res => {
+              if (res.data['status'] >= 1) {
+                util.notice(this, 'job_types 更改成功', 'success')
+                this.getJobTypes()
+              } else {
+                util.notice(this, `job_types ${res.data['msg']}`, 'warning')
+              }
+            }).catch(error => {
+              util.notice(this, error, 'error')
+            })  
+        }
+        if ( this.target_type != this.target_type_old) {
+          // axios.post(`${this.baseurl}/config/?key=target_types&type=set`, this.target_type.split(','))
+          // vconfig.postKey('target_types',this.target_type.split(','),'set')
+          vconfig.postKey('target_types',this.target_type,'set')
+            .then(res => {
+              if (res.data['status'] >= 1) {
+                util.notice(this, 'target_types 更改成功', 'success')
+                this.getTargetTypes()
+              } else {
+                util.notice(this, `target_types ${res.data['msg']}`, 'warning')
+              }
+            }).catch(error => {
+              util.notice(this, error, 'error')
+            })
+        }
       },
       targetinfoDetail (params) {
         let info = util.dictDeepCopy(params)
@@ -332,37 +368,6 @@
           delete tmplInfo[item]
         })
         util.openPageEx(this, 'execDetail', {row: tmplInfo, tag: 'add'})
-      },
-      commitFormInfo (){
-        this.switchFormInfo = false
-        if ( this.job_type != this.job_type_old) {
-          // axios.post(`${this.baseurl}/config/?key=job_types&type=set`, this.job_type.split(','))
-          vconfig.postKey('job_types',this.job_type.split(','),'set')
-            .then(res => {
-              if (res.data['status'] >= 1) {
-                util.notice(this, 'job_types 更改成功', 'success')
-                this.getJobTypes()
-              } else {
-                util.notice(this, `job_types ${res.data['msg']}`, 'warning')
-              }
-            }).catch(error => {
-              util.notice(this, error, 'error')
-            })  
-        }
-        if ( this.target_type != this.target_type_old) {
-          // axios.post(`${this.baseurl}/config/?key=target_types&type=set`, this.target_type.split(','))
-          vconfig.postKey('target_types',this.target_type.split(','),'set')
-            .then(res => {
-              if (res.data['status'] >= 1) {
-                util.notice(this, 'target_types 更改成功', 'success')
-                this.getTargetTypes()
-              } else {
-                util.notice(this, `target_types ${res.data['msg']}`, 'warning')
-              }
-            }).catch(error => {
-              util.notice(this, error, 'error')
-            })
-        }
       },
       getCurrentPageNew (pagesize) {
         this.pagesize=pagesize

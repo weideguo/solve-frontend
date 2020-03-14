@@ -43,7 +43,6 @@
 </template>
 
 <script>
-// import axios from 'axios'
 import util from '@/libs/util'
 export default {
   name: 'safeForm',

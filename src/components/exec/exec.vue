@@ -24,36 +24,7 @@
           <b>{{openinfo.name_s}}-session参数设置</b>
           <br><br>
         </div>
-
-        <Form ref="varsForm" :label-width="100" :model="formItem" :rules="formValidate">
-          <p v-if="JSON.stringify(formItem) === '{}'" style="text-align: center">没有需要设置的session参数</p>
-          <div v-else>
-            
-            <FormItem v-for="k in formKey" :prop="k" :key="k" :label="k">
-              <Select v-if="formType[k] === 'select'" v-model="formItem[k]" :placeholder="formComment[k]" clearable>
-                <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
-              </Select>
-              <Select v-else-if="formType[k] === 'multiselect'" v-model="formItem[k]" :placeholder="formComment[k]" multiple>
-                <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
-              </Select>
-              <div v-else-if="formType[k] === 'upload'" >
-                <Input v-model="formItem[k]" type="text" :placeholder="formComment[k]" clearable style="width: 80%"></Input>
-                <Upload style="float: right;" :show-upload-list="false" :action="uploadUrl" :headers='myheader' :on-success="uploadSuccess(formItem,k)" ref="upload">
-                  <Button icon="ios-cloud-upload-outline">选择文件</Button>
-                </Upload>
-                <div style="clear:both"></div>
-              </div>
-              <Input v-else v-model="formItem[k]" type="text" :placeholder="formComment[k]" clearable></Input>
-            </FormItem>
-
-            <div style="float:right;" >
-              <Tooltip content="只是保存session，可选" placement="bottom">
-                <Button @click="saveSession" type="primary" ghost>保存</Button>
-              </Tooltip>
-            </div>
-            <div  style="clear:both"></div>
-          </div>   
-        </Form>
+        <constrict-form ref="varsForm" :formdata="session_info" nullInfo="没有需要设置的session参数" buttonTooltip="只是保存session，可选" @buttonOperation="saveSession"></constrict-form>
       </div>
       
       <div v-else-if="current === 1">
@@ -104,13 +75,14 @@
   // import axios from 'axios'
   import exec from '@/api/exec'
   import util from '@/libs/util'
+  import constrictForm from '@/components/common/constrictForm.vue'
 
   export default {
+    components: {
+      constrictForm
+    },
     data () {
       return {
-        myheader: {
-          'Authorization': sessionStorage.getItem('jwt')
-        },
         baseurl: this.$store.getters.sessionGet('baseurl'),
         current: 0,
         openshow: false,
@@ -238,7 +210,9 @@
         pageNumber: 1,
         currentPage: 1,
         pageSizeOpts: [10,20,40,80,100,200],
-        filter: ''
+        filter: '',
+        session_info: [],
+        sessionInfo: []
       }
     },
     methods: {
@@ -254,26 +228,29 @@
           this.current += 1
           this.summary()
         } else {
-          this.$refs['varsForm'].validate((valid) => {
-            if (valid) {
-              this.current += 1
-              this.summary()
-            } else {
-              this.$Message.error('表单检查失败')
-            }
-          })   
+          // this.sessionInfo = this.$refs['varsForm'].getFormItem()
+          this.sessionInfo = this.$refs['varsForm'].formItem
+          if (this.$refs['varsForm'].checkValidate()) {
+            this.current += 1
+            this.summary()
+          } else {
+            this.$Message.error('表单检查失败')
+          }
         }
          
       },
-      saveSession () {
+      saveSession (data) {
+        // console.log(data)
         // axios.post(`${this.baseurl}/session/?filter=${this.openinfo['name']}`, this.formItem)
-        exec.postSession(`${this.openinfo['name']}`, this.formItem)
+        /**/
+        exec.postSession(`${this.openinfo['name']}`, data)
           .then(res => {
             util.notice(this, 'session保存成功', 'info')
           })
           .catch(error => {
             util.notice(this, error, 'error')
           })
+        
       },
       summary () {
         let rowinfo = util.dictDeepCopy(this.openinfo)
@@ -310,52 +287,8 @@
           exec.getSession(`${params.row['name']}`)
             .then(res => {
               this.openswitch = !this.openswitch
-              let session_info = res.data['session']
-              session_info.forEach((item,i) => {
-                if (item['type'] === 'multiselect') {
-                  item['value'] = item['value'].split(" ")
-                }
-                if ( ((typeof item['constrict']) === 'object') && item['constrict'][0] ) {
-                  // [] 数字的值转成字符串
-                  let x=[]
-                  item['constrict'].forEach((item,i) => {
-                    x.push(String(item))
-                  })
-                  item['constrict'] = x
-                }
-              })
-              // console.log(session_info)
-              this.formItem = util.arry2dict(session_info)
-              // console.log(this.formItem)
-              this.formComment = util.arry2dict(session_info,'key','comment')
-              this.formType = util.arry2dict(session_info,'key','type')
-              this.formConstrict = util.arry2dict(session_info,'key','constrict')
-
-              // console.log(this.formConstrict)
-              this.formKey = util.dictKeys(this.formItem)
-              session_info.forEach((item,i) => {
-                if (item['type'] === 'multiselect') {
-                  this.formValidate[item['key']] = [
-                    {
-                      validator: util.validatorGenerator(item['constrict']),
-                      trigger: 'blur'
-                    }
-                  ]
-                } else {
-                  this.formValidate[item['key']] = [
-                    {
-                      required: true,
-                      message: '不能为空',
-                      trigger: 'blur'
-                    },
-                    {
-                      validator: util.validatorGenerator(item['constrict']),
-                      trigger: 'blur'
-                    }
-                  ]
-                }
-              })
-              // console.log(this.formValidate)
+              this.session_info = res.data['session']
+              this.formItem = util.arry2dict(this.session_info)
               this.errFlag = false
             })
             .catch(error => {
@@ -375,7 +308,6 @@
         } else {
           this.openswitch = false
           this.$Message.info('开始提交，请勿多次运行')
-          this.sessionInfo = this.formItem
           // axios.post(`${this.baseurl}/execution/?filter=${this.openinfo['name']}`, this.sessionInfo)
           exec.postExecution(`${this.openinfo['name']}`, this.sessionInfo)
             .then(res => {
@@ -384,7 +316,7 @@
             })
             .catch(error => {
               util.notice(this, error, 'error')
-            });
+            })
         }
       },
       targetinfoDetail (params) {
@@ -440,20 +372,8 @@
             util.notice(this, error, 'error')
           });
       },
-      uploadSuccess (formItem,k) {
-        return function (f) {
-          console.log(formItem)
-          console.log(k)
-          formItem[k]=f.file
-          util.notice(this, f.msg, 'info')
-        }
-      },
     },
     computed: {
-      uploadUrl () {
-        let d = new Date()
-        return this.baseurl + '/file/?path=' + d.getFullYear()+''+(d.getMonth()+1)+''+d.getDate()+'/'+d.valueOf()
-      },
     },
     watch: {
       '$route': function () {
