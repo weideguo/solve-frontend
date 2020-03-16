@@ -5,8 +5,11 @@
         <div slot="title">
           <p>{{title}}</p>
           <br><br>
-          <Tooltip content="返回" placement="bottom">
+          <!--<Tooltip content="返回" placement="bottom">
             <Button type="primary" shape="circle" icon="md-arrow-round-back" ghost @click.native="$router.go(-1)"></Button>
+          </Tooltip>-->
+          <Tooltip content="查看playbook" placement="bottom">
+            <Button type="primary" shape="circle" icon="md-book" ghost @click.native="playbookDetial()"></Button>
           </Tooltip>
           <Tooltip content="保存" placement="bottom" style="margin-left: 20px">
             <Button type="primary" shape="circle" icon="md-cloud-upload" ghost @click.native="commit()"></Button>
@@ -71,6 +74,7 @@
         treeData: [],
         tmplList: [],
         title: '',
+        playbook: '',
         name_o: ''
       }
     },
@@ -98,7 +102,9 @@
             exec.getExecutionInfo(`${this.info['tmpl']}`)
               .then(res => {
                 try {
-                  this.target_type = res.data['data'][0]['target_type']
+                  let r = res.data['data'][0]
+                  this.target_type = r['target_type']
+                  this.playbook = r['playbook']
                 } catch (err) {
                   util.notice(this, '获取任务模板信息失败，请检查使用的任务模板！', 'warning')
                 }
@@ -112,8 +118,17 @@
       }
     },
     methods: {
+      playbookDetial () {
+        // 使用新的非tab页面显示playbook
+        // console.log(this.info)
+        // console.log(this.playbook)
+        let name = this.info['name'].split('exec:')[1]
+        let path = "/?playbook="+this.playbook+"&title="+name+"#/playbook"
+        // console.log(path)
+        window.open(path, "_blank", "scrollbars=yes,resizable=1,modal=false,alwaysRaised=yes")
+      },
       commit () {
-        this.info = util.arry2dict(this.formItem, 'key', 'value')
+        // this.info = util.arry2dict(this.formItem, 'key', 'value')
         if (util.existSpace(this.info['name'])) {
           this.$Message.error('name左右两端不能存在空格！')
         } else if (this.info['name'] === '') {

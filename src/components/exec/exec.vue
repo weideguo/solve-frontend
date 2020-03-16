@@ -64,6 +64,9 @@
         <TabPane label="模板详情" name="tmpl">
           <Table border stripe :columns="columnsInfo" :data="tmplInfo" :show-header="false" no-data-text="获取信息失败"></Table>
         </TabPane>
+        <TabPane label="playbook" name="playbook">
+          <Input v-model="playbookContent" type="textarea" :autosize="{minRows: 10,maxRows: 20}" placeholder="playbook is null" readonly />
+        </TabPane>
       </Tabs>
       <div slot="footer"></div>
     </Modal>
@@ -75,6 +78,7 @@
   // import axios from 'axios'
   import exec from '@/api/exec'
   import util from '@/libs/util'
+  import file from '@/api/file'
   import constrictForm from '@/components/common/constrictForm.vue'
 
   export default {
@@ -97,6 +101,7 @@
         formValidate: {},
         openinfo: {},
         tmplInfo: [],
+        playbookContent: '',
         dataDetailInfo: [],
         tmplInfoSort: ['name','target_type','playbook','job_type','comment'],
         dataDetailInfoSort: ['name','name_s','tmpl','number','target','comment'],
@@ -277,7 +282,22 @@
         // axios.get(`${this.baseurl}/executionInfo/get?filter=${params['tmpl']}`)
         exec.getExecutionInfo(`${params['tmpl']}`)
           .then(res => {
-            this.tmplInfo = util.dict2arry(res.data['data'][0],'key', 'value',this.tmplInfoSort)
+            let r = res.data['data'][0]
+            this.playbook = r['playbook']
+            this.tmplInfo = util.dict2arry(r,'key', 'value',this.tmplInfoSort)
+            console.log(this.playbook)
+            
+            file.getFileContent(this.playbook)
+              .then(res => {
+                if (res.data['status'] > 0) {
+                  this.playbookContent = res.data['content']
+                } else {
+                  util.notice(this, res.data['msg'], 'error')
+                }
+              }).catch(error => {
+                util.notice(this, error, 'error')
+              })
+            /**/
           })
           .catch(error => {
             this.$Message.error('获取模板信息失败，请检查模板是否存在！')

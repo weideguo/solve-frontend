@@ -47,16 +47,13 @@
     created () {
       //loadLanguages(['shell'])
       let result = util.parseUrlParams(window.location)
-      this.title = result['workid']
+      this.title = result['title']
       this.playbook = result['playbook']
       file.getFileContent(this.playbook)
         .then(res => {
           if (res.data['status'] > 0) {
             // console.log(res.data)
             this.content = res.data['content']
-            // this.content = "aaa=qweq #\necho ${aaa}\necho xxx\necho yyy\necho jjjj\necho kkk\n"
-            // this.content = `#include <stdio.h>\nint main(){\n    printf("%s","xxxx");\n}`
-            this.bbb = `var data = 1;\nvar data = vvv;`
 
             // 不使用import实现在加载数据后再高亮渲染
             // const Prism = require('prismjs')
