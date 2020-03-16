@@ -24,7 +24,7 @@
           <b>{{openinfo.name_s}}-session参数设置</b>
           <br><br>
         </div>
-        <constrict-form ref="varsForm" :formdata="session_info" nullInfo="没有需要设置的session参数" buttonTooltip="只是保存session，可选" @buttonOperation="saveSession"></constrict-form>
+        <constrict-form ref="varsForm" :formdata="sessionFull" nullInfo="没有需要设置的session参数" buttonTooltip="只是保存session，可选" @buttonOperation="saveSession"></constrict-form>
       </div>
       
       <div v-else-if="current === 1">
@@ -211,7 +211,7 @@
         currentPage: 1,
         pageSizeOpts: [10,20,40,80,100,200],
         filter: '',
-        session_info: [],
+        sessionFull: [],
         sessionInfo: []
       }
     },
@@ -222,22 +222,26 @@
         }
       },
       next () {
-        if (this.errFlag) {
-          this.$Message.error('获取playbook的信息失败，不能执行任务')
-        } else if (JSON.stringify(this.formItem) === '{}') {
-          this.current += 1
-          this.summary()
-        } else {
-          // this.sessionInfo = this.$refs['varsForm'].getFormItem()
-          this.sessionInfo = this.$refs['varsForm'].formItem
-          if (this.$refs['varsForm'].checkValidate()) {
+        if (this.current === 0) {
+          if (this.errFlag) {
+            this.$Message.error('获取playbook的信息失败，不能执行任务')
+          } else if (JSON.stringify(this.formItem) === '{}') {
             this.current += 1
             this.summary()
           } else {
-            this.$Message.error('表单检查失败')
+            // this.sessionInfo = this.$refs['varsForm'].getFormItem()
+            this.sessionInfo = this.$refs['varsForm'].formItem
+            this.sessionFull.forEach((item) => {
+              item['value'] = this.sessionInfo[item['key']]
+            })
+            if (this.$refs['varsForm'].checkValidate()) {
+              this.current += 1
+              this.summary()
+            } else {
+              this.$Message.error('表单检查失败')
+            }
           }
         }
-         
       },
       saveSession (data) {
         // console.log(data)
@@ -287,8 +291,8 @@
           exec.getSession(`${params.row['name']}`)
             .then(res => {
               this.openswitch = !this.openswitch
-              this.session_info = res.data['session']
-              this.formItem = util.arry2dict(this.session_info)
+              this.sessionFull = res.data['session']
+              this.formItem = util.arry2dict(this.sessionFull)
               this.errFlag = false
             })
             .catch(error => {

@@ -164,11 +164,12 @@
           {
             key: 'index',
             align: 'center',
-            width: 100
+            width: 50
           },
           {
             align: 'center',
-            key: 'log_id'
+            key: 'log_id',
+            width: 300
           }
         ],
         detailTitle: '',
