@@ -10,9 +10,12 @@
         <Select v-else-if="formType[k] === 'multiselect'" v-model="formItem[k]" :placeholder="formComment[k]" multiple>
           <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
         </Select>
+        <Select v-else-if="formType[k] === 'dynamicselect'" v-model="formItem[k]" :placeholder="formComment[k]" multiple filterable allow-create @on-create="pushItem(k)">
+          <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
+        </Select>
         <div v-else-if="formType[k] === 'upload'" >
           <Input v-model="formItem[k]" type="text" :placeholder="formComment[k]" clearable style="width: 80%"></Input>
-          <Upload style="float: right;" :show-upload-list="false" :action="uploadUrl" :headers='myheader' :on-success="uploadSuccess(formItem,k)" ref="upload">
+          <Upload style="float: right;" :show-upload-list="false" :action="uploadUrl" :headers='myheader' :on-success="uploadSuccess(k)" ref="upload">
             <Button icon="ios-cloud-upload-outline">选择文件</Button>
           </Upload>
           <div style="clear:both"></div>
@@ -75,10 +78,15 @@ export default {
     }
   },
   methods: {
-    uploadSuccess (formItem,k) {
+    pushItem(k) {
+      return function(val) {
+        this.formConstrict[k].push(val)
+      }
+    },
+    uploadSuccess (k) {
       return function (f) {
-        console.log(formItem, k)
-        formItem[k]=f.file
+        console.log(this.formItem, k)
+        this.formItem[k]=f.file
         util.notice(this, f.msg, 'info')
       }
     },
@@ -90,8 +98,8 @@ export default {
       let formdataCopy = util.dictDeepCopy(this.formdata)
       // 
       formdataCopy.forEach((item,i) => {
-        if (item['type'] === 'multiselect') {
-          item['value'] = item['value'].split(" ")
+        if ( (item['type'] === 'multiselect' || item['type'] === 'dynamicselect') && ( (typeof item['value']) != 'object') ){
+          item['value'] = item['value'].split(' ')  
         }
         if ( ((typeof item['constrict']) === 'object') && item['constrict'][0] ) {
           // [] 数字的值转成字符串
@@ -108,7 +116,7 @@ export default {
           }
         ]
       })
-      this.formItem = util.arry2dict(formdataCopy)
+      this.formItem = util.arry2dict(formdataCopy,'key','value')
       this.formComment = util.arry2dict(formdataCopy,'key','comment')
       this.formType = util.arry2dict(formdataCopy,'key','type')
       this.formConstrict = util.arry2dict(formdataCopy,'key','constrict')
@@ -131,7 +139,7 @@ export default {
         this.updateFormdata()
       },
       deep: true
-    },
+    }
   },
   computed: {
     uploadUrl () {
