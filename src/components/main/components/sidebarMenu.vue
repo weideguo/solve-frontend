@@ -11,7 +11,7 @@
     -moz-border-radius: 50%;
     -webkit-border-radius: 50%;
     border-radius: 50%;
-    background:url('/static/icon.png') no-repeat center;
+    background:url('/static/favicon.ico') no-repeat center;
     background-size:103% 103%
   }
 </style>
