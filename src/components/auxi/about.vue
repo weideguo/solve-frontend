@@ -29,9 +29,9 @@
     name: 'version',
     data () {
       return {
-        title: 'solve 0.1.0',
+        title: 'solve 0.4.x',
         word: [
-          'Simple cOmmand deLiver serVEr - SOLVE',
+          'SOLVE - Simple cOmmand deLiver serVEr',
           '开始于20181109',
           '基于SSH实现命令的分发',
           '灵活配置, 使用jinja模板变量，可以由配置信息进行替换',
@@ -41,6 +41,8 @@
           '后端django-restful',
           '前端vue iviewui',
           '使用redis作为数据存储，账号使用sqlite存储',
+          '可选使用mongodb作为持久化存储',
+          '可选使用CAS进行账号认证',
           '持续更新中......',
 
         ]
