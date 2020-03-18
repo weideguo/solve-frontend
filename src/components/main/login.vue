@@ -1,16 +1,20 @@
 <style>
-  #id {
+  #band {
     position: relative;
-    width: 100%;
+    width: 96%;
+    margin: 0 auto;
+    right: 0;
+    left: 0;
   }
 
   #login-form {
     position: absolute;
-    left: 33%;
-    top: 15%;
+    top: 25%;
     width: 35%;
-    height: 40%
-
+    height: 40%;
+    margin: 0 auto;
+    right: 0;
+    left: 0;
   }
 </style>
 
@@ -18,10 +22,11 @@
   <div id="band">
     <div id="login-form">
       <Card>
+        <!--
         <div style='margin-left: 30%'>
-        <img src="static/icon.png" style="max-width:50%">
+        <img src="static/favicon.ico" style="max-width:50%">
         <br>
-      </div>
+        </div>-->
         <Tabs ref="formX" >
           <!--TabPane label="简单命令分发系统" name="simple"-->
           <TabPane label="简单命令分发系统" name="simple">
@@ -50,7 +55,7 @@
           </TabPane>
           <!--TabPane v-if="false" label="简单命令分发系统-cas" name="cas"-->
           <TabPane v-if="true" label="简单命令分发系统-cas" name="cas">
-            <br/><br/>
+            <br/><br/><br/>
             <Form ref="formLoginCAS" :model="formInline" :rules="ruleCAS" inline>
               <FormItem prop="baseurl" style="width: 100%">
                 <Select v-model="formInline.baseurl" placeholder="project & baseurl" clearable :transfer="true">
