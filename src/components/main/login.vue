@@ -24,7 +24,7 @@
       <Card>
         <!--
         <div style='margin-left: 30%'>
-        <img src="static/favicon.ico" style="max-width:50%">
+        <img src="/static/favicon.ico" style="max-width:50%">
         <br>
         </div>-->
         <Tabs ref="formX" >

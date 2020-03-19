@@ -7,7 +7,7 @@
     <transition name="show-unlock" >
       <div class="unlock-body-con" @keydown.enter="handleUnlock">
         <div class="unlock-avator-con" @click="handleClickAvator" :style="{marginLeft: avatorLeft}">
-          <img class="unlock-avator-img" src="static/icon.png">
+          <img class="unlock-avator-img" src="/static/favicon.ico">
           <div class="unlock-avator-cover">
             <span><Icon type="md-unlock" :size="30"></Icon></span>
             <p>{{currentUser}}</p>
