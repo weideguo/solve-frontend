@@ -20,7 +20,7 @@
           </Upload>
           <div style="clear:both"></div>
         </div>
-        <Input v-else v-model="formItem[k]" type="text" :placeholder="formComment[k]" clearable></Input>
+        <Input v-else v-model="formItem[k]" type="textarea" :autosize="true" :placeholder="formComment[k]" clearable></Input>
       </FormItem>
 
       <div style="float:right;" >
