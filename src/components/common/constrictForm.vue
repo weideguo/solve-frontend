@@ -15,7 +15,7 @@
         </Select>
         <div v-else-if="formType[k] === 'upload'" >
           <Input v-model="formItem[k]" type="text" :placeholder="formComment[k]" clearable style="width: 80%"></Input>
-          <Upload style="float: right;" :show-upload-list="false" :action="uploadUrl" :headers='myheader' :on-success="uploadSuccess(k)" ref="upload">
+          <Upload style="float: right;" :show-upload-list="false" :action="uploadUrl" :headers='myheader' :on-success="uploadSuccess(formItem,k)" ref="upload">
             <Button icon="ios-cloud-upload-outline">选择文件</Button>
           </Upload>
           <div style="clear:both"></div>
@@ -83,10 +83,9 @@ export default {
         this.formConstrict[k].push(val)
       }
     },
-    uploadSuccess (k) {
+    uploadSuccess (formItem,k) {
       return function (f) {
-        console.log(this.formItem, k)
-        this.formItem[k]=f.file
+        formItem[k]=f.file
         util.notice(this, f.msg, 'info')
       }
     },

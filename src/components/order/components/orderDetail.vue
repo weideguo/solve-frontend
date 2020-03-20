@@ -64,7 +64,7 @@
     </BackTop>
 
     <!--日志id列表-->
-    <Drawer v-model="modalList" :mask-closable="false" :mask="false" scrollable draggable width="400px">
+    <Drawer v-model="modalList" :mask-closable="false" :mask="false" scrollable draggable width="410px">
       <p style="font-weight:800;font-size:18px">{{currentTarget}}</p>
       <br/>
       <Table stripe :columns="columnsDetail" :data="dataDetail" @on-row-click="showDetail" :show-header="false"></Table>
@@ -164,7 +164,7 @@
           {
             key: 'index',
             align: 'center',
-            width: 50
+            width: 60
           },
           {
             align: 'center',
