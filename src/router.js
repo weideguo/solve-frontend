@@ -207,9 +207,9 @@ export const appRouter = [
       {
         path: 'exec',
         name: 'exec',
-        title: '可执行任务',
+        title: '执行任务',
         meta: {
-          title: '可执行任务'
+          title: '执行任务'
         },
         icon: 'md-flower',
         component: resolve => {
@@ -226,6 +226,18 @@ export const appRouter = [
         icon: 'md-albums',
         component: resolve => {
           require(['./components/exec/tmplexec.vue'], resolve)
+        }
+      },
+      {
+        path: 'fast',
+        name: 'fast',
+        title: '快速任务',
+        meta: {
+          title: '快速任务'
+        },
+        icon: 'md-plane',
+        component: resolve => {
+          require(['./components/exec/fast.vue'], resolve)
         }
       }
     ]

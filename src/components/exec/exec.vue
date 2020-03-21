@@ -333,7 +333,7 @@
           this.openswitch = false
           this.$Message.info('开始提交，请勿多次运行')
           // axios.post(`${this.baseurl}/execution/?filter=${this.openinfo['name']}`, this.sessionInfo)
-          exec.postExecution(`${this.openinfo['name']}`, this.sessionInfo)
+          exec.postExecution(this.openinfo['name'], this.sessionInfo)
             .then(res => {
               util.notice(this, `${this.openinfo['name_s']} 开始执行`, 'info')
               util.openPageEx(this, 'orderDetail', {workid: res.data['data']})

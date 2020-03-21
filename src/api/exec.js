@@ -46,6 +46,13 @@ export default {
       data: params
     })
   },
+  postFastExecution: function (params) {
+    return request({
+      url: `/fast/`,
+      method: 'post',
+      data: params
+    })
+  },
   getRerunInfo: function (workid,target,targetid) {
     return request({
       url: `/execution/rerun_info?work_id=${workid}&target=${target}&target_id=${targetid}`,
