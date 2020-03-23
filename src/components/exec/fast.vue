@@ -21,7 +21,7 @@
         </FormItem>
         <FormItem>
             <Button type="primary" @click="commit">执行</Button>
-            <Button style="margin-left: 8px" @click="reset">清空</Button>
+            <Button style="margin-left: 8px" @click="reset">重置</Button>
         </FormItem>
     </Form>
   </Card>
@@ -115,11 +115,29 @@
       },
       playbookCheckGenerator () {
         return function(rule, value, callback) {
-          // console.log(rule,value)
-          callback()
-          // callback(new Error('不能为空'))
+          let v=value.split('\n')
+          for(var i=0;i<v.length;i++){
+            let reg = new RegExp('^( )*?#.*( )*$')
+
+            // 跳过空行以及所有以"#"开头的注释行
+            if ( v[i].search(reg) >= 0 ) {
+              continue
+            } 
+            
+            // 非空以及非注释的第一行应该如下
+            // [10.0.0.1]
+            let reg2 = new RegExp('^( )*(\\u005B).*?(\\u005D)( )*$')
+            if ( v[i].search(reg2) >= 0 ) {
+              callback()
+            } else {
+              callback(new Error('非空以及非注释的第一行应该为跳转语句 [XXX]'))
+            }
+            // 只对非空以及非注释的第一行判断
+            break
+          }
+          callback(new Error('不能都为注释或者空行'))
         }
-      }
+      },
     },
     watch: {
       // '$route': function () {
