@@ -108,13 +108,13 @@
           {
             title: 'name',
             key: 'name',
-            width: 300,
+            minWidth: 400,
             sortable: true
           },
           {
             title: 'IP',
             key: 'ip',
-            width: 300,
+            width: 400,
             sortable: true
           },
           {
@@ -128,7 +128,7 @@
             key: 'user',
             align: 'center',
             sortable: true,
-            minWidth: 100
+            width: 100
           },
           {
             title: '操作',
