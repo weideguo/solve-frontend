@@ -32,7 +32,8 @@ const router = new VueRouter(RouterConfig)
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start()                                                          // 页面最上层的进度条
   util.title(to.meta.title)
-  if (to.name === 'about') {
+  // to.name in {'about':'','test':''}
+  if (to.name === 'about' || to.name === 'test') {                                  // 不需要登陆即可访问的页面
     next()
   } else if (sessionStorage.getItem('locking') === '1' && to.name !== 'locking') {  // 从锁定到其他 锁定到锁定不能适用 why？
     iView.LoadingBar.finish()

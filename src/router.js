@@ -36,7 +36,7 @@ export const page500 = {
   }
 }
 
-export const version = {
+export const about = {
   path: '/about',
   name: 'about',
   title: 'about',
@@ -45,6 +45,18 @@ export const version = {
   },
   component: resolve => {
     require(['./components/auxi/about.vue'], resolve)
+  }
+}
+
+export const test = {
+  path: '/test',
+  name: 'test',
+  title: 'test',
+  meta: {
+    title: 'test'
+  },
+  component: resolve => {
+    require(['./components/auxi/test.vue'], resolve)
   }
 }
 
@@ -358,8 +370,9 @@ export const MainRoute = [
   ...appRouter,    // 将一个数组转为用逗号分隔的参数序列
   orderDetail,
   execDetail,
-  version,
   playbook,
+  about,
+  test,
   page401,
   page500,
   page404          // 由于路径匹配为/* 这个必须放在最后 否则都定向到这个路由

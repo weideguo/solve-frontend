@@ -36,7 +36,6 @@
     // },
     data () {
       return {
-        bbb: '',
         title: '',
         playbook: '',
         content: '',
