@@ -82,7 +82,7 @@
     methods: {
       pushItem (k) {
         this.spliterList.push(k)
-        console.log(k)
+        // console.log(k)
       },
       reset () {
         this.formItem = util.dictDeepCopy(this.originFormItem)
@@ -98,7 +98,7 @@
         })
       },
       realCommit() {
-        console.log(this.formItem)
+        // console.log(this.formItem)
         exec.postFastExecution(this.formItem)
           .then(res => {
             if (res.data['status'] > 0) {
@@ -117,13 +117,17 @@
         return function(rule, value, callback) {
           let v=value.split('\n')
           for(var i=0;i<v.length;i++){
+            // 跳过以"#"开头的注释行
             let reg = new RegExp('^( )*?#.*( )*$')
-
-            // 跳过空行以及所有以"#"开头的注释行
             if ( v[i].search(reg) >= 0 ) {
               continue
             } 
-            
+            // 跳过所有以空行
+            let reg0 = new RegExp('^( )*$')
+            if ( v[i].search(reg0) >= 0 ) {
+              continue
+            } 
+            // console.log("X"+v[i]+"X")
             // 非空以及非注释的第一行应该如下
             // [10.0.0.1]
             let reg2 = new RegExp('^( )*(\\u005B).*?(\\u005D)( )*$')
