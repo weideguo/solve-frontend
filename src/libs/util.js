@@ -96,34 +96,45 @@ util.dictKeys = function (dict) {
   return keys
 },
 
-util.checkLogin = function (vm) {
-  try {
-    let userinfo = JSON.parse(Base64.decode(sessionStorage.getItem('jwt').split('.')[1]+"==").split(" ")[0])
-    console.log(userinfo)
-    if (userinfo['exp']*1000 < (new Date()).getTime()) {
-      console.log(userinfo['exp'])
-      vm.$Message.error('登陆已经过期，请重新登陆')
+util.checkLogin = function (vm,error) {
+  if (error.response != undefined) {
+    // 网络请求时则存在状态码
+    if ( error.response.status === 401 ) {
+      // 401 权限错误
+      vm.$Message.error('权限错误，请重新登陆')
       util.openPage(vm,'login')
     }
-  } catch (err) {
-    vm.$Message.error('解析jwt失败，请重新登陆')
-    util.openPage(vm,'login')
+  } else {
+    try {
+      let userinfo = JSON.parse(Base64.decode(sessionStorage.getItem('jwt').split('.')[1]+"==").split(" ")[0])
+      console.log(userinfo)
+      if (userinfo['exp']*1000 < (new Date()).getTime()) {
+        console.log(userinfo['exp'])
+        vm.$Message.error('登陆已经过期，请重新登陆')
+        util.openPage(vm,'login')
+      } else {
+        vm.$Notice.error({title: '错误', desc: error})
+      }
+    } catch (err) {
+      vm.$Message.error('解析jwt失败，请重新登陆')
+      util.openPage(vm,'login')
+    }
   }
 }
 
-util.notice = function (vm, desc, level) {
+util.notice = function (vm, error, level) {
   if (level === 'info') {
-    vm.$Notice.info({title: '通知', desc: desc})
+    vm.$Notice.info({title: '通知', desc: error})
   } else if (level === 'success') {
-    vm.$Notice.success({title: '执行成功', desc: desc})
+    vm.$Notice.success({title: '执行成功', desc: error})
   } else if (level === 'warning') {
-    vm.$Notice.warning({title: '警告', desc: desc})
+    vm.$Notice.warning({title: '警告', desc: error})
   } else if (level === 'error') {
-    vm.$Notice.error({title: '错误', desc: desc})
+    // vm.$Notice.error({title: '错误', desc: error})
     // 在此判断登录是否过期 因为每后端请求都会有错误捕获 然后跳转到login？
-    util.checkLogin(vm)
+    util.checkLogin(vm,error)
   } else if (level === 'fast') {
-    vm.$Notice.info({title: '通知', desc: desc, duration: 1})
+    vm.$Notice.info({title: '通知', desc: error, duration: 1})
   }
 }
 
