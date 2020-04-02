@@ -72,7 +72,6 @@
     },
     data () {
       return {
-        // baseurl: this.$store.getters.sessionGet('baseurl'),
         count: {
           user: 0,
           order: 0,
@@ -86,15 +85,6 @@
     },
     methods: {
       getHomeinfo () {
-        // axios.get(`${this.baseurl}/home/infoxx`)
-        // let url = this.$store.getters.sessionGet('baseurl')
-        // axios.get(`${this.baseurl}/home/infoxx`)
-        // .then(res => {
-        //   this.count = res.data
-        // })
-        // .catch(error => {
-        //   util.notice(this, error, 'error')
-        // })
         home.getHomeInfo()
           .then(res => {
             this.count = res.data

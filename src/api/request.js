@@ -18,9 +18,10 @@ request.interceptors.request.use(
 
 request.interceptors.response.use(
 
-    // response => {
-    //     return response.data
-    // },
+    response => {
+        return response
+        // console.log(response.status)
+    },
     // error => {
     //     return Promise.reject(error)
     // }
