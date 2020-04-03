@@ -28,8 +28,8 @@
           
             <Col span="24" style="position:absolute;">
               <Upload multiple type="drag" :action="uploadUrl" :headers='myheader' :on-success="refresh" ref="upload"> 
-                <div :style="{height: defaultHeight > changeHeight ? defaultHeight+'px' : changeHeight+'px'}">
-                  <div style="margin-left: 30%" :style="{padding: defaultHeight > changeHeight ? defaultHeight/2+'px' : changeHeight/2+'px'}">
+                <div :style="{height: (defaultHeight > changeHeight ? defaultHeight : changeHeight)+'px'}">
+                  <div style="margin-left: 30%" :style="{paddingTop: (defaultHeight > changeHeight ? defaultHeight/2 : changeHeight/2)+'px'}">
                     <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
                     <p>点击或拖拽到此上传</p>
                   </div>
@@ -163,7 +163,7 @@ export default {
             sessionStorage.setItem('file_current_path',this.currentPath)
             this.fullCurrentPath = res.data['path']
             this.changeHeight = (this.currentFiles.length+this.currentDirs.length)*32
-            console.log(this.changeHeight)
+            // console.log(this.changeHeight)
           } else {
             util.notice(this, res.data['msg'], 'error')
           }
