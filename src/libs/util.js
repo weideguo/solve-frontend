@@ -97,14 +97,25 @@ util.dictKeys = function (dict) {
 },
 
 util.checkLogin = function (vm,error) {
+  // console.log(error.response)
   if (error.response != undefined) {
     // 网络请求时则存在状态码
     if ( error.response.status === 401 ) {
       // 401 权限错误
       vm.$Message.error('权限错误，请重新登陆')
       util.openPage(vm,'login')
+    } else if ( error.response.status === 429 ) {
+      console.log(error.response)
+      let msg=error.response.data['detail']
+      if ( msg != undefined ) {
+        vm.$Notice.error({title: '错误', desc: msg})
+      } else {
+        vm.$Notice.error({title: '错误', desc: error})
+      }
     }
   } else {
+    vm.$Notice.error({title: '错误', desc: error})
+    /*
     try {
       let userinfo = JSON.parse(Base64.decode(sessionStorage.getItem('jwt').split('.')[1]+"==").split(" ")[0])
       console.log(userinfo)
@@ -119,6 +130,7 @@ util.checkLogin = function (vm,error) {
       vm.$Message.error('解析jwt失败，请重新登陆')
       util.openPage(vm,'login')
     }
+    */
   }
 }
 
