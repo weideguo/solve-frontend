@@ -112,8 +112,11 @@ util.checkLogin = function (vm,error) {
       } else {
         vm.$Notice.error({title: '错误', desc: error})
       }
-    } else {
-      // console.log(error.response)
+    } else { 
+      let e=error.response.data
+      if ( e != '' ) {
+        error=e
+      } 
       vm.$Notice.error({title: '错误', desc: error})
     }
   } else {
