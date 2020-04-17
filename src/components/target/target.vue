@@ -257,8 +257,9 @@
       },
       realDelTarget () {
         let t = this.delname
+
         // axios.get(`${this.baseurl}/target/del?target=${t}`)
-        target.delTarget(t)
+        target.delTarget(t.replace('#','%23'))
           .then(res => {
             if (res.data['status'] === 1) {
               this.getCurrentPage();
