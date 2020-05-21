@@ -98,7 +98,20 @@ export default {
       // 
       formdataCopy.forEach((item,i) => {
         if ( (item['type'] === 'multiselect' || item['type'] === 'dynamicselect') && ( (typeof item['value']) != 'object') ){
-          item['value'] = item['value'].split(' ')  
+          // 列表在后端存储时以两个空格分隔
+          // item['value'] = item['value'].split('  ')  
+          // 后端存储时以字符串转换，因而从后端获取时应该先进行转换
+          try{
+            // "\"aaa\" \"bbb\""  ===> "[\"aaa\",\"bbb\"]" ===> ["aaa","bbb"]
+            item['value'] = JSON.parse("["+item['value'].replace(new RegExp("\" \"","gm"),"\",\"")+"]")
+          } catch(err) {
+            // console.log("parse error"+item['value'])
+            console.log("parse error")
+            console.log(item)
+            item['value'] = []
+          }
+          item['constrict']=util.listCombine(item['constrict'],item['value'])
+          // console.log(item['constrict'])
         }
         if ( ((typeof item['constrict']) === 'object') && item['constrict'][0] ) {
           // [] 数字的值转成字符串

@@ -18,7 +18,7 @@ util.title = function (title) {
 util.existSpace = function (s) {
   let r = s.slice(-1)
   let l = s.slice(0,1)
-  if (r===" " || l===" "){
+  if (r===" " || l===" ") {
     return true
   } else {
     return false
@@ -36,7 +36,9 @@ util.listDelete = function (list, delitem) {
 
 util.listCombine = function (list1, list2) {
   list2.forEach((item, i) => {
-    list1.push(item)
+    if ( list1.indexOf(item) < 0 ) {
+      list1.push(item)
+    }
   })
   return list1
 }
