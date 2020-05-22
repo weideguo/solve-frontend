@@ -33,6 +33,13 @@ export default {
       data: params
     })
   },
+  postTempSession: function (params) {
+    return request({
+      url: `/session/temp`,
+      method: 'post',
+      data: params
+    })
+  },
   getSession: function (filter) {
     return request({
       url: `/session/extend?filter=${filter}`,
@@ -59,9 +66,9 @@ export default {
       method: 'get',
     })
   },
-  rerun: function (workid,target,targetid,begin_line) {
+  rerun: function (workid,target,targetid,begin_line,new_job_id='') {
     return request({
-      url: `/execution/rerun?work_id=${workid}&target=${target}&target_id=${targetid}&begin_line=${begin_line}`,
+      url: `/execution/rerun?work_id=${workid}&target=${target}&target_id=${targetid}&begin_line=${begin_line}&new_job_id=${new_job_id}`,
       method: 'get',
     })
   },

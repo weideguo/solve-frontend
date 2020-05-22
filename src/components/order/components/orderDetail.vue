@@ -105,19 +105,21 @@
       <p slot="header">{{runTitle}}</p>
       <div>
         <Form :label-width="100">
-          <Divider>session</Divider>
-          <FormItem v-for="(item, i) in checkSession" :key="item.key" v-bind:label="item.key">
-            <Input v-model="item.value" readonly></Input>
-          </FormItem>
-
           <Divider>readonly</Divider>
           <FormItem v-for="(item, i) in checkReadonly" :key="item.key" v-bind:label="item.key">
             <Input v-model="item.value" readonly></Input>
           </FormItem>
 
+          <Divider>session</Divider>
+          <FormItem v-for="(item, i) in checkSession" :key="item.key" v-bind:label="item.key">
+            <Input v-model="item.value"></Input>
+          </FormItem>
+          <Tooltip content="如果更改，需要预先提交" placement="left" style="float:right;margin-right:0px">
+            <Button size="large" @click.native="setRerunSession" >设置</Button>
+          </Tooltip>
+          
           <Divider v-if="checkChangable.length > 0">changable</Divider>
           <FormItem v-for="(item, i) in checkChangable" :key="item.key" v-bind:label="item.key">
-            <!--Input v-if="item.key === 'begin_host'" v-model="item.value" placeholder="请输入在哪个主机开始执行（根据情况可以不输入）"></Input-->
             <InputNumber v-if="item.key === 'begin_line'" v-model="item.value" :max="parseInt(selectParams.playbook_rownum)" :min="1"></InputNumber>
           </FormItem>
         </Form>
@@ -350,7 +352,8 @@
         checkChangable: [],
         runTitle: '',
         currentTarget: '',
-        finishOnly: false
+        finishOnly: false,
+        newJobId:''
       }
     },
     methods: {
@@ -380,11 +383,15 @@
       },
       continueRun (params, index) {
         this.runTitle = '继续运行信息'
+        this.begin_line = -1
         this.getRerunInfo(params, params['target_id'])
+        this.newJobId=''
       },
       rerun(params, index){
         this.runTitle = '重新运行信息'
-        this.getRerunInfo(params, '')
+        this.begin_line = 0
+        this.getRerunInfo(params, params['target_id'])
+        this.newJobId=''
       },
       getRerunInfo (params, target_id) {
         this.checkSession = this.checkReadonly = this.checkChangable = []
@@ -393,6 +400,9 @@
         // axios.get(`${this.baseurl}/execution/rerun_info?work_id=${this.workid}&target=${this.selectParams['target']}&target_id=${target_id}`)
         exec.getRerunInfo(this.workid,this.selectParams['target'],target_id)
           .then(res => {
+            if (this.begin_line === 0) {
+              res.data['data']['changable']['begin_line'] = 0
+            }
             this.checkSession = util.dict2arry(res.data['data']['session'], 'key', 'value')
             this.checkReadonly = util.dict2arry(res.data['data']['readonly'], 'key', 'value')
             this.checkChangable = util.dict2arry(res.data['data']['changable'], 'key', 'value')
@@ -401,18 +411,30 @@
             util.notice(this, error, 'error')
           })
       },
+      setRerunSession(){
+        let newSession = util.arry2dict(this.checkSession, 'key', 'value')
+        // console.log(newSession)
+        exec.postTempSession(newSession)
+          .then(res => {
+            util.notice(this, 'session保存成功', 'info')
+            console.log(res.data)
+            this.newJobId=res.data['job_id']
+          })
+          .catch(error => {
+            util.notice(this, error, 'error')
+          })
+      },
       realRerun () {
-        let x = util.arry2dict(this.checkChangable, 'key', 'value')
-        // let begin_host = ''
         let begin_line = 0
+        let x = util.arry2dict(this.checkChangable, 'key', 'value')
         if (x['begin_line']) {
-          // begin_host = x['begin_host']
           begin_line = x['begin_line']
         }
         this.selectParams['exe_status'] = 'rerun'
         this.modalRerun = false
+        // console.log(this.newJobId)
         // axios.get(`${this.baseurl}/execution/rerun?work_id=${this.workid}&target=${this.selectParams['target']}&target_id=${this.selectParams['target_id']}&begin_host=${begin_host}&begin_line=${begin_line}`)
-        exec.rerun(this.workid,this.selectParams['target'],this.selectParams['target_id'],begin_line)
+        exec.rerun(this.workid,this.selectParams['target'],this.selectParams['target_id'],begin_line,this.newJobId)
           .then(res => {
             console.log(res.data)
           })
