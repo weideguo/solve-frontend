@@ -117,7 +117,7 @@
           <Tooltip content="如果更改，需要预先提交" placement="left" style="float:right;margin-right:0px">
             <Button size="large" @click.native="setRerunSession" >设置</Button>
           </Tooltip>
-          
+
           <Divider v-if="checkChangable.length > 0">changable</Divider>
           <FormItem v-for="(item, i) in checkChangable" :key="item.key" v-bind:label="item.key">
             <InputNumber v-if="item.key === 'begin_line'" v-model="item.value" :max="parseInt(selectParams.playbook_rownum)" :min="1"></InputNumber>
@@ -416,9 +416,13 @@
         // console.log(newSession)
         exec.postTempSession(newSession)
           .then(res => {
-            util.notice(this, 'session保存成功', 'info')
-            console.log(res.data)
-            this.newJobId=res.data['job_id']
+            if (res.data['status']>=1) {
+              util.notice(this, 'session保存成功', 'info')
+              console.log(res.data)
+              this.newJobId=res.data['job_id']
+            } else {
+              util.notice(this, res.data['msg'], 'error')
+            }
           })
           .catch(error => {
             util.notice(this, error, 'error')
