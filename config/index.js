@@ -12,6 +12,16 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {},
 
+    // 后端的代理，即访问路径匹配时由node访问后端，而不需要通过浏览器访问
+    // 匹配则改写url
+    // proxyTable: {
+    //         '/api': {
+    //           target: 'http://127.0.0.1:8000',
+    //           pathRewrite: {'^/api' : '/api'},
+    //           changeOrigin: true
+    //         }
+    //      },
+
     // Various Dev Server settings
     host: '0.0.0.0', // can be overwritten by process.env.HOST
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined

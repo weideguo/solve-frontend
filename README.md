@@ -18,6 +18,9 @@ running
 ```shell
 # 修改监听的ip以及端口
 vim config/index.js
+# 直接通过设置环境变量修改监听的ip以及端口
+export HOST="0.0.0.0"
+export PORT="8080"
 
 # 修改后端的url以及其他配置参数
 vim src/config/config.js
