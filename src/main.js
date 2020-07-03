@@ -24,7 +24,7 @@ Vue.use(VueRouter)
 Vue.prototype.$http = axios
 /* eslint-disable no-new */
 const RouterConfig = {
-  // 去除前段路由中的#
+  // 去除前端路由中的#
   mode: 'history',
   routes: MainRoute
 }
