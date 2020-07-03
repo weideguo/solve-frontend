@@ -85,10 +85,11 @@
         // console.log(k)
       },
       reset () {
+        sessionStorage.removeItem("fast_info")
         this.formItem = util.dictDeepCopy(this.originFormItem)
       },
       commit(){
-        
+        sessionStorage.setItem("fast_info", JSON.stringify(this.formItem))
         this.$refs['fastForm'].validate((valid) => {
             if (valid) {
               this.$Modal.confirm({'title': '确认执行？','onOk': this.realCommit, 'cancelText': '取消'})
@@ -150,6 +151,10 @@
     },
     mounted () {
       this.originFormItem = util.dictDeepCopy(this.formItem)
+      let fast_info = sessionStorage.getItem("fast_info") 
+      if (fast_info != null) {
+        this.formItem = JSON.parse(fast_info)
+      }
     },
     created () {
     }
