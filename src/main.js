@@ -9,6 +9,14 @@ import axios from 'axios'
 // import 'iview/dist/styles/iview.css'
 import 'view-design/dist/styles/iview.css';
 import particles from 'particles.js/particles'
+// multi language
+import VueI18n from 'vue-i18n';
+import en from 'view-design/dist/locale/en-US';
+import zh from 'view-design/dist/locale/zh-CN';
+
+// 自定义lang
+import myEN from './libs/lang/en-US';
+import myZH  from './libs/lang/zh-CN';
 
 import { MainRoute } from './router'
 import util from './libs/util'
@@ -19,6 +27,7 @@ import store from './store'
 Vue.config.productionTip = false
 Vue.use(particles)
 Vue.use(Vuex)
+Vue.use(VueI18n)
 Vue.use(iView)
 Vue.use(VueRouter)
 Vue.prototype.$http = axios
@@ -28,6 +37,21 @@ const RouterConfig = {
   mode: 'history',
   routes: MainRoute
 }
+
+Vue.locale = () => {};
+const messages = {
+    'en-US': Object.assign(myEN, en),
+    'zh-CN': Object.assign(myZH, zh)
+};
+// 在其他页面通过设置localStorage并重新加载，实现语言设置
+let locale = localStorage.getItem('language')
+if (locale === null) {
+  locale='zh-CN'
+}
+const i18n = new VueI18n({
+    locale: locale,  // set locale
+    messages  // set locale messages
+});
 
 const router = new VueRouter(RouterConfig)
 
@@ -64,5 +88,6 @@ new Vue({
   template: '<App/>',
   components: {App},
   store: store,
-  router: router
+  router: router,
+  i18n 
 })
