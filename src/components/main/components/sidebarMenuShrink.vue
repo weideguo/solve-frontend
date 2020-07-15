@@ -35,7 +35,7 @@
         <DropdownMenu style="width: 200px;" slot="list">
           <DropdownItem v-for="child in item.children" :name="child.name" :key="child.title">
             <Icon :type="child.icon" size="20"></Icon>
-            <span style="padding-left:10px;">{{ child.title }}</span>
+            <span style="padding-left:10px;">{{ $t(child.title) }}</span>
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
@@ -47,7 +47,7 @@
         <DropdownMenu style="width: 200px;" slot="list">
           <DropdownItem :name="item.children[0].name" :key="item.children[0].title">
             <Icon :type="item.icon" size="20"></Icon>
-            <span style="padding-left:10px;">{{ item.children[0].title }}</span>
+            <span style="padding-left:10px;">{{ $t(item.children[0].title) }}</span>
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
@@ -62,7 +62,7 @@
       <DropdownMenu style="width: 200px;" slot="list">
         <DropdownItem name="logout" key="logout">
           <Icon type="md-log-out" size="20"></Icon>
-          <span style="padding-left:10px;">退出</span>
+          <span style="padding-left:10px;">{{ $t('exit') }}</span>
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>
@@ -74,6 +74,7 @@
   //
   import util from '@/libs/util'
   // import axios from 'axios'
+  import VueI18n from 'vue-i18n'
 
   export default {
     name: 'sidebarMenuShrink',

@@ -19,10 +19,9 @@ import myEN from './libs/lang/en-US';
 import myZH  from './libs/lang/zh-CN';
 
 import { MainRoute } from './router'
-import util from './libs/util'
 import App from './App.vue'
 import store from './store'
-
+import config from './config/config'
 
 Vue.config.productionTip = false
 Vue.use(particles)
@@ -57,7 +56,13 @@ const router = new VueRouter(RouterConfig)
 
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start()                                                          // 页面最上层的进度条
-  util.title(to.meta.title)
+  let title = to.meta.title
+  if (title) {
+    title = config.platformname + ' - ' + title
+  } else {
+    title = config.platformname
+  }
+  window.document.title = title
   // to.name in {'about':'','test':''}
   if (to.name === 'about' || to.name === 'test') {                                  // 不需要登陆即可访问的页面
     next()

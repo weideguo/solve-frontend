@@ -1,11 +1,13 @@
 import Main from './components/main/main.vue'
+// vue-i18n与路由同级 不能直接 import VueRouter from 'vue-router'
+// 以下的title不是原始值，只作为变量在实际渲染时再翻译
 
 export const page404 = {
   path: '/*',
   name: 'error_404',
   title: '404',
   meta: {
-    title: '404-页面不存在'
+    title: '404-pageNotFound'
   },
   component: resolve => {
     require(['./components/auxi/error/404.vue'], resolve)
@@ -17,7 +19,7 @@ export const page401 = {
   name: 'error_401',
   title: '401',
   meta: {
-    title: '401-权限不足'
+    title: '401-Unauthorized '
   },
   component: resolve => {
     require(['./components/auxi/error/401.vue'], resolve)
@@ -29,7 +31,7 @@ export const page500 = {
   name: 'error_500x',
   title: '500',
   meta: {
-    title: '500-服务端错误'
+    title: '500-serverError'
   },
   component: resolve => {
     require(['./components/auxi/error/500.vue'], resolve)
@@ -53,7 +55,7 @@ export const test = {
   name: 'test',
   title: 'test',
   meta: {
-    title: 'test'
+    title: 'test.aaa'
   },
   component: resolve => {
     require(['./components/auxi/test.vue'], resolve)
@@ -75,9 +77,9 @@ export const playbook = {
 export const loginRouter = {
   path: '/login',
   name: 'login',
-  title: '登录',
+  title: 'login',
   meta: {
-    title: 'login - 登录'
+    title: 'login'
   },
   component: resolve => {
     require(['./components/main/login.vue'], resolve)
@@ -87,7 +89,7 @@ export const loginRouter = {
 export const locking = {
   path: '/locking',
   name: 'locking',
-  title: '锁屏',
+  title: 'locking',
   component: resolve => {
     require(['./components/auxi/lock.vue'], resolve)
   }
@@ -98,17 +100,17 @@ export const appRouter = [
     path: '/order',
     icon: 'md-cart',
     name: 'order',
-    title: '工单',
+    title: 'order',
     redirect: '/order/order',
     component: Main,
     children: [
       {
         path: 'order',
         name: 'orderInfo',
-        title: '我的工单',
+        title: 'myOrder',
         icon: 'md-cart',
         meta: {
-          title: '我的工单'
+          title: 'myOrder'
         },
         component: resolve => {
           require(['./components/order/order.vue'], resolve)
@@ -120,16 +122,16 @@ export const appRouter = [
     path: '/host',
     icon: 'md-laptop',
     name: 'ohost',
-    title: '主机管理',
+    title: 'hostManage',
     redirect: '/',
     component: Main,
     children: [
       {
         path: 'realhost',
         name: 'realhost',
-        title: '主机管理',
+        title: 'hostManage',
         meta: {
-          title: '主机管理'
+          title: 'hostManage'
         },
         icon: 'md-laptop',
         component: resolve => {
@@ -142,7 +144,7 @@ export const appRouter = [
     path: '/target',
     icon: 'md-globe',
     name: 'target',
-    title: '执行对象',
+    title: 'executeTarget',
     redirect: '/',
     component: Main,
     children: [
@@ -212,16 +214,16 @@ export const appRouter = [
     path: '/execution',
     icon: 'md-cog',
     name: 'execution',
-    title: '任务执行',
+    title: 'jobExecute',
     redirect: '/',
     component: Main,
     children: [
       {
         path: 'exec',
         name: 'exec',
-        title: '执行任务',
+        title: 'execute',
         meta: {
-          title: '执行任务'
+          title: 'execute'
         },
         icon: 'md-flower',
         component: resolve => {
@@ -231,9 +233,9 @@ export const appRouter = [
       {
         path: 'tmpl',
         name: 'tmpl',
-        title: '任务模板',
+        title: 'jobTmplate',
         meta: {
-          title: '任务模板'
+          title: 'jobTmplate'
         },
         icon: 'md-albums',
         component: resolve => {
@@ -243,9 +245,9 @@ export const appRouter = [
       {
         path: 'fast',
         name: 'fast',
-        title: '快速任务',
+        title: 'fastJob',
         meta: {
-          title: '快速任务'
+          title: 'fastJob'
         },
         icon: 'md-plane',
         component: resolve => {
@@ -258,16 +260,16 @@ export const appRouter = [
     path: '/file',
     icon: 'md-briefcase',
     name: 'ofile',
-    title: '任务执行',
+    title: 'fileManage',
     redirect: '/',
     component: Main,
     children: [
       {
         path: 'file',
         name: 'file',
-        title: '文件管理',
+        title: 'fileManage',
         meta: {
-          title: '文件管理'
+          title: 'fileManage'
         },
         icon: 'md-briefcase',
         component: resolve => {
@@ -280,16 +282,16 @@ export const appRouter = [
     path: '/user',
     icon: 'md-people',
     name: 'user',
-    title: '管理',
+    title: 'manage',
     redirect: '/user/userlist',
     component: Main,
     children: [
       {
         path: 'userlist',
         name: 'userlist',
-        title: '用户管理',
+        title: 'userManage',
         meta: {
-          title: '用户管理'
+          title: 'userManage'
         },
         icon: 'md-people',
         component: resolve => {
@@ -303,15 +305,15 @@ export const appRouter = [
 export const home = {
   path: '/',
   name: 'home',
-  title: '首页',
+  title: 'mainPage',
   redirect: '/home',
   component: Main,
   children: [
     {
       path: 'home',
-      title: '首页',
+      title: 'mainPage',
       meta: {
-        title: '首页'
+        title: 'mainPage'
       },
       name: 'home_index',
       component: resolve => {
@@ -324,16 +326,16 @@ export const home = {
 export const orderDetail = {
   path: '/order',
   name: 'order',
-  title: '工单',
+  title: 'order',
   redirect: '/order/orderDetail',
   component: Main,
   children: [
     {
       path: 'orderDetail',
       name: 'orderDetail',
-      title: '工单详情',
+      title: 'orderDetail',
       meta: {
-        title: '工单详情'
+        title: 'orderDetail'
       },
       component: resolve => {
         require(['./components/order/components/orderDetail.vue'], resolve)
@@ -345,16 +347,16 @@ export const orderDetail = {
 export const execDetail = {
   path: '/execution',
   name: 'execution',
-  title: '任务执行',
+  title: 'jobExecute',
   // redirect: '/',
   component: Main,
   children: [
     {
       path: 'execDetail',
       name: 'execDetail',
-      title: '任务详情',
+      title: 'execDetail',
       meta: {
-        title: '任务详情'
+        title: 'execDetail'
       },
       component: resolve => {
         require(['./components/exec/components/execDetail.vue'], resolve)

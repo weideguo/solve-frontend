@@ -359,7 +359,8 @@
     methods: {
       playbookDetial () {
         // 使用新的非tab页面显示playbook
-        let path = "/?playbook="+this.playbook+"&title="+this.workid+"#/playbook"
+        // let path = "/?playbook="+this.playbook+"&title="+this.workid+"#/playbook"
+        let path = "/playbook?playbook="+this.playbook+"&title="+this.workid
         window.open(path, "_blank", "scrollbars=yes,resizable=1,modal=false,alwaysRaised=yes")
       },
       abort (params) {

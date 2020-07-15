@@ -29,7 +29,7 @@
         </div>-->
         <Tabs ref="formX" >
           <!--TabPane label="简单命令分发系统" name="simple"-->
-          <TabPane label="简单命令分发系统" name="simple">
+          <TabPane :label="title" name="simple">
           
             <Form ref="formLogin" :model="formInline" :rules="ruleInline" inline>
               <FormItem prop="user" style="width: 100%">
@@ -48,13 +48,13 @@
               </FormItem>
               
               <FormItem style="width: 100%">
-                <Button type="primary" @click="authdata()" style="width: 100%" size="large">登录</Button>
+                <Button type="primary" @click="authdata()" style="width: 100%" size="large">{{ $t('login') }}</Button>
               </FormItem>
             </Form> 
           
           </TabPane>
           <!--TabPane v-if="false" label="简单命令分发系统-cas" name="cas"-->
-          <TabPane v-if="true" label="简单命令分发系统-cas" name="cas">
+          <TabPane v-if="true" :label="titleCAS" name="cas">
             <br/><br/><br/>
             <Form ref="formLoginCAS" :model="formInline" :rules="ruleCAS" inline>
               <FormItem prop="baseurl" style="width: 100%">
@@ -66,7 +66,7 @@
               </FormItem>
 
               <FormItem style="width: 100%">
-                <Button type="primary" @click="authCAS()" style="width: 100%" size="large">登录</Button>
+                <Button type="primary" @click="authCAS()" style="width: 100%" size="large">{{ $t('login') }}</Button>
               </FormItem>
             </Form>
           </TabPane>
@@ -74,7 +74,7 @@
 
 
         <p style="margin-left: 25%;">
-          2019 © Powerd By <a href="/#/about">wdg</a> 使用chrome获得最佳体验
+          2019 © Powerd By <a href="/about">wdg</a> {{ $t('loginTips') }}
         </p>
 
       </Card>
@@ -87,11 +87,14 @@
   import login from '@/api/login'
   import util from '@/libs/util'
   import config from '@/config/config'
+  import VueI18n from 'vue-i18n'
   //
   export default {
     name: 'login',
     data () {
       return {
+        title: this.$t('title'),
+        titleCAS: this.$t('title')+'-cas',
         baseurlConfig: [[]],
         formInline: {
           user: '',
@@ -101,25 +104,25 @@
         ruleInline: {
           user: [{
             required: true,
-            message: '请填写用户名',
+            message: this.$t('form.userEmpty'),
             trigger: 'blur'
           }],
           password: [{
             required: true,
-            message: '请填写密码',
+            message: this.$t('form.passwordEmpty'),
             trigger: 'blur'
           },
           {
             type: 'string',
             min: 6,
-            message: '密码长度不能小于6位',
+            message: this.$t('form.passwordTooShort'),
             trigger: 'blur'
           }
           ],
           baseurl: [{
             type: 'string',
             required: true,
-            message: '请选择项目',
+            message: this.$t('form.projectEmpty'),
             trigger: 'blur'
           }],
         },
@@ -127,7 +130,7 @@
           baseurl: [{
             type: 'string',
             required: true,
-            message: '请选择项目',
+            message: this.$t('form.projectEmpty'),
             trigger: 'blur'
           }],
         }
@@ -173,7 +176,7 @@
                 util.notice(this, error, 'error')
               })                
           } else {
-            this.$Message.error('表单检查失败')
+            this.$Message.error(this.$t('form.checkErr'))
           }
         })
       },

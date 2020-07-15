@@ -52,6 +52,10 @@ npm run build
 npm test
 ```
 
+### multi language  ###
+通过设置localStorage的language并重新加载实现语言的转换  
+实现的语言在以下目录 libs/lang/
+
 
 Others
 --------------

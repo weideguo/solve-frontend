@@ -4,7 +4,7 @@
       <div>
         <p>
           <span style="font-weight:900;font-size:24px;">
-            {{title}} - {{playbook}}
+            {{title}} - {{playbook}} - {{ $t("i.select.placeholder") }}
           </span>
         </p>
         
@@ -16,25 +16,27 @@
 <script>
   import axios from 'axios'
   import util from '@/libs/util'
+  import VueI18n from 'vue-i18n'
 
   export default {
     name: 'test',
     data () {
       return {
         title: 'aaa',
-        playbook: 'bbb',
+        playbook: this.$t("i.select.placeholder"),
       }
     },
     mounted () {
+      console.log(this.$t("message.title"))
     },
     created () {
-      axios.get("http://192.168.253.128:9000/file/list?path=/tmpx")
-        .then(res => {
-          this.title=res.data['path']
-          console.log(res.data)
-        }).catch(error => {
-          util.notice(this, error, 'error')
-        })
+      // axios.get("http://192.168.253.128:9000/file/list?path=/tmpx")
+      //   .then(res => {
+      //     this.title=res.data['path']
+      //     console.log(res.data)
+      //   }).catch(error => {
+      //     util.notice(this, error, 'error')
+      //   })
     }
   }
 </script>

@@ -1,19 +1,8 @@
-import config from '@/config/config'
 import axios from 'axios'
 import { Base64 } from 'js-base64'
+// import VueI18n from 'vue-i18n'
 
 let util = {}
-
-util.platformname = config.platformname
-
-util.title = function (title) {
-  if (title) {
-    title = util.platformname + ' - ' + title
-  } else {
-    title = util.platformname
-  }
-  window.document.title = title
-}
 
 util.existSpace = function (s) {
   let r = s.slice(-1)
@@ -104,25 +93,25 @@ util.checkLogin = function (vm,error) {
     // 网络请求时则存在状态码
     if ( error.response.status === 401 ) {
       // 401 权限错误
-      vm.$Message.error('权限错误，请重新登陆')
+      vm.$Message.error('Unauthorized')
       util.openPage(vm,'login')
     } else if ( error.response.status === 429 ) {
       // console.log(error.response)
       let msg=error.response.data['detail']
       if ( msg != undefined ) {
-        vm.$Notice.error({title: '错误', desc: msg})
+        vm.$Notice.error({title: 'ERROR', desc: msg})
       } else {
-        vm.$Notice.error({title: '错误', desc: error})
+        vm.$Notice.error({title: 'ERROR', desc: error})
       }
     } else { 
       let e=error.response.data
       if ( e != '' ) {
         error=e
       } 
-      vm.$Notice.error({title: '错误', desc: error})
+      vm.$Notice.error({title: 'ERROR', desc: error})
     }
   } else {
-    vm.$Notice.error({title: '错误', desc: error})
+    vm.$Notice.error({title: 'ERROR', desc: error})
     /*
     try {
       let userinfo = JSON.parse(Base64.decode(sessionStorage.getItem('jwt').split('.')[1]+"==").split(" ")[0])
@@ -132,7 +121,7 @@ util.checkLogin = function (vm,error) {
         vm.$Message.error('登陆已经过期，请重新登陆')
         util.openPage(vm,'login')
       } else {
-        vm.$Notice.error({title: '错误', desc: error})
+        vm.$Notice.error({title: 'ERROR', desc: error})
       }
     } catch (err) {
       vm.$Message.error('解析jwt失败，请重新登陆')
@@ -144,17 +133,17 @@ util.checkLogin = function (vm,error) {
 
 util.notice = function (vm, error, level) {
   if (level === 'info') {
-    vm.$Notice.info({title: '通知', desc: error})
+    vm.$Notice.info({title: 'INFO', desc: error})
   } else if (level === 'success') {
-    vm.$Notice.success({title: '执行成功', desc: error})
+    vm.$Notice.success({title: 'SUCCESS', desc: error})
   } else if (level === 'warning') {
-    vm.$Notice.warning({title: '警告', desc: error})
+    vm.$Notice.warning({title: 'WARN', desc: error})
   } else if (level === 'error') {
-    // vm.$Notice.error({title: '错误', desc: error})
+    // vm.$Notice.error({title: 'ERROR', desc: error})
     // 在此判断登录是否过期 因为每后端请求都会有错误捕获 然后跳转到login？
     util.checkLogin(vm,error)
   } else if (level === 'fast') {
-    vm.$Notice.info({title: '通知', desc: error, duration: 1})
+    vm.$Notice.info({title: 'INFO', desc: error, duration: 1})
   }
 }
 
@@ -259,7 +248,7 @@ util.copy = function (vm, data) {
   document.body.appendChild(myInput);
   myInput.select();                               
   document.execCommand("copy")
-  vm.$Message.info({'content':'路径信息已经复制'})
+  vm.$Message.info({'content':'path past success'})
   document.body.removeChild(myInput);
 }
 
@@ -267,7 +256,7 @@ util.download = function(vm, url, filename) {
   axios.defaults.headers.common['Authorization'] = sessionStorage.getItem('jwt')
   axios.get(url, {responseType: 'blob'})
     .then(res => {
-      util.notice(vm, filename+' 下载中...', 'fast')
+      util.notice(vm, filename+' downloading...', 'fast')
       let blob = new Blob([res.data])
       let downloadElement = document.createElement('a');
       let href = window.URL.createObjectURL(blob);       
@@ -288,16 +277,16 @@ util.validatorGenerator = function(constrict) {
     if ((typeof constrict) === 'string') {
       let reg = new RegExp(constrict)
       if (value.search(reg) < 0) {
-        callback(new Error('需要符合正则表达式 '+constrict))
+        callback(new Error('RegExp: '+constrict))
       } else {
         callback()
       }
     } else if ( value === undefined ) {
-      callback(new Error('不能为空'))
+      callback(new Error('should not empty'))
     } else if ( value.length === 0 ) {
-      callback(new Error('不能为空'))
+      callback(new Error('should not empty'))
     } else if (util.existSpace(value)) {
-      callback(new Error('左右不能存在空格'))
+      callback(new Error('should no space in left and right'))
     } else {
       callback()
     }

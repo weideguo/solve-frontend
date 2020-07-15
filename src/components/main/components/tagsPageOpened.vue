@@ -10,9 +10,9 @@
     <div style="float:left">
       <transition-group name="taglist-moving-animation">
         <Tag type="dot" v-for="item in pageTagsList" :key="item.name" :name="item.name" @on-close="closePage"
-             @click.native="linkTo(item.name, item.title)" :closable="item.name==='home_index'?false:true"
+             @click.native="linkTo(item.name)" :closable="item.name==='home_index'?false:true"
              :color="item.children?(item.children[0].name===currentPageName?'primary':'default'):(item.name===currentPageName?'primary':'default')">
-          {{ item.title }}
+          {{ $t(item.title) }}
         </Tag>
       </transition-group>
     </div>
@@ -20,12 +20,12 @@
     <div style="float:right;margin-top:6px;">
       <Dropdown transfer @on-click="handleTagsOption">
         <Button size="small" type="primary">
-          标签开关
+          {{ $t('tag') }}
           <Icon type="md-arrow-dropdown"></Icon>
         </Button>
         <DropdownMenu slot="list">
-          <DropdownItem name="clearAll">关闭所有</DropdownItem>
-          <DropdownItem name="clearOthers">关闭其他</DropdownItem>
+          <DropdownItem name="clearAll">{{ $t('closeAll') }}</DropdownItem>
+          <DropdownItem name="clearOthers">{{ $t('closeOther') }}</DropdownItem>
         </DropdownMenu>
       </Dropdown>
     </div>
@@ -34,6 +34,8 @@
 </template>
 
 <script>
+  import VueI18n from 'vue-i18n'
+
   export default {
     name: 'tagsPageOpened',
     data () {

@@ -31,7 +31,7 @@
           <!--显示页面路路径信息-->
           <div style="float: left;margin-top: 20px;margin-left: 30px">
             <Breadcrumb>
-              <BreadcrumbItem v-for="item in currentPath" :key="item.name" :to="item.path">{{item.title}}
+              <BreadcrumbItem v-for="item in currentPath" :key="item.name" :to="item.path">{{ $t(item.title) }}
               </BreadcrumbItem>
             </Breadcrumb>
           </div>
@@ -42,13 +42,13 @@
               <span style="font-weight:800;font-size:18px">{{project}}</span>
             </div-->
             <div @click="handleFullScreen" style="float:left;margin-left:20px">
-              <Tooltip :content="this.isFullScreen ? '退出全屏' : '全屏'" placement="bottom">
+              <Tooltip :content="this.isFullScreen ? $t('exitFullScreen') : $t('fullScreen')" placement="bottom">
                 <Icon :type="this.isFullScreen ? 'md-contract' : 'md-expand'" :size="23"></Icon>
               </Tooltip>
             </div>
   
             <div @click="lockScreen" style="float:left;margin-left:20px">
-              <Tooltip content="锁屏" placement="bottom">
+              <Tooltip :content="$t('lockScreen')" placement="bottom">
                 <Icon type="md-lock" :size="20"></Icon>
               </Tooltip>
             </div>
@@ -60,7 +60,7 @@
                   <Icon type="md-arrow-dropdown" />
                 </a>
                 <DropdownMenu slot="list">
-                  <DropdownItem name="loginout">退出登录</DropdownItem>
+                  <DropdownItem name="loginout">{{ $t('exit') }}</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </div>

@@ -30,7 +30,7 @@
       <template v-if="item.children.length === 1"> 
         <MenuItem :name="item.children[0].name">
           <Icon :type="item.children[0].icon" :size="iconSize"></Icon>
-          <span class="layout-text">{{ item.children[0].title }}</span>
+          <span class="layout-text">{{ $t(item.children[0].title) }}</span>
         </MenuItem>
       </template> 
       <!--处理子节点不为1的-->
@@ -38,14 +38,14 @@
         <Submenu :name="item.name" :key="item.path">
           <template slot="title">
             <Icon :type="item.icon" :size="iconSize"></Icon>
-            <span class="layout-text">{{ item.title }}</span>
+            <span class="layout-text">{{ $t(item.title) }}</span>
           </template>
           <!-- -->
           <template v-for="child in item.children">
             <template>
               <MenuItem :name="child.name" :key="child.name">
                 <Icon :type="child.icon" :size="iconSize" :key="child.name"></Icon>
-                <span class="layout-text" :key="child.name + 1">{{ child.title }}</span>
+                <span class="layout-text" :key="child.name + 1">{{ $t(child.title) }}</span>
               </MenuItem>
             </template>
           </template>
@@ -55,7 +55,7 @@
 
     <Menu-item name="login">
       <Icon type="md-log-out" :size="iconSize"></Icon>
-      <span class="layout-text">退出</span>
+      <span class="layout-text">{{ $t('exit') }}</span>
     </Menu-item>
   </Menu>
 </template>
@@ -63,6 +63,7 @@
   //
   import util from '@/libs/util'
   // import axios from 'axios'
+  import VueI18n from 'vue-i18n'
 
   export default {
     name: 'sidebarMenu',
