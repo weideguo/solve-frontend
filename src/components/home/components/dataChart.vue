@@ -37,7 +37,7 @@ export default {
           })
           let option = {
           title: {
-              text: '工单执行统计'
+              text: this.$t('orderStats')
           },
           tooltip: {
               trigger: 'axis'

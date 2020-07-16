@@ -17,7 +17,7 @@
         <div class="unlock-input-con">
           <div class="unlock-input-overflow-con">
             <div class="unlock-overflow-body" :style="{right: inputLeft}">
-              <input class="unlock-input" ref="inputEle" v-model="password" type="password" placeholder="输入密码以解锁"/>
+              <input class="unlock-input" ref="inputEle" v-model="password" type="password" :placeholder="$t('inputPasswordUnlock')"/>
               <button class="unlock-btn"  @click="handleUnlock" >
                 <Icon color="white" type="md-key" :size="14"></Icon>
               </button>
@@ -33,6 +33,7 @@
   // import axios from 'axios'
   import util from '@/libs/util'
   import login from '@/api/login'
+  import VueI18n from 'vue-i18n'
 
   export default {
     data () {
@@ -74,7 +75,7 @@
                 name: sessionStorage.getItem('last_page_name')
               })
             } else {
-              util.notice(this, '密码错误', 'warning')
+              util.notice(this, this.$t('passwordError'), 'warning')
             }
           }).catch(error => {
             util.notice(this, error, 'error')

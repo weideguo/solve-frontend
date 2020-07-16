@@ -26,22 +26,22 @@
         // baseurl: this.$store.getters.sessionGet('baseurl'),
         columns: [
           {
-            title: '工单编号:',
+            title: this.$t('jobID'),
             key: 'work_id',
             width: 300
           },
           {
-            title: '提交时间:',
+            title: this.$t('commitDate'),
             key: 'date',
             width: 150,
             sortType: 'desc',
             sortable: true
           },
           {
-            title: '提交人',
+            title: this.$t('committer'),
             key: 'user',
             align: 'center',
-            width: 100,
+            width: 120,
             tooltip: true,
             sortable: true
           },
@@ -60,14 +60,14 @@
             minWidth: 300
           },
           {
-            title: '工单说明',
+            title: this.$t('jobDesc'),
             width: 200,
             tooltip: true,
             key: 'comment',
             sortable: true
           },
           {
-            title: '操作',
+            title: this.$t('operation'),
             key: 'action',
             align: 'center',
             width: 200,
@@ -83,12 +83,12 @@
                       this.orderDetail(params.row);
                     }
                   }
-                }, '详细')
+                }, this.$t('detail'))
               ])
             }
           },
           {
-            title: '删除',
+            title: this.$t('delete'),
             key: 'action',
             align: 'center',
             width: 100,
@@ -104,7 +104,7 @@
                       this.delete(params);
                     }
                   }
-                }, '删除')
+                }, this.$t('delete'))
               ])
             }
           }
@@ -126,9 +126,9 @@
           .then(res => {
             if (res.data['status'] === 1) {
               this.getCurrentPage();
-              util.notice(this, `${params.row['work_id']} 删除成功`, 'success')
+              util.notice(this, `${params.row['work_id']} `+this.$t('deleteSuccess'), 'success')
             } else {
-              util.notice(this, '删除失败', 'error')
+              util.notice(this, this.$t('deleteFailed'), 'error')
             }
           })
           .catch(error => {

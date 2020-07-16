@@ -42,6 +42,13 @@ const messages = {
     'en-US': Object.assign(myEN, en),
     'zh-CN': Object.assign(myZH, zh)
 };
+// 其他页面通过此获取语言列表
+let languageList= [
+          {'name':'zh-CN','value':'中文'},
+          {'name':'en-US','value':'english'}
+        ]
+sessionStorage.setItem('languageList', JSON.stringify(languageList))
+
 // 在其他页面通过设置localStorage并重新加载，实现语言设置
 let locale = localStorage.getItem('language')
 if (locale === null) {

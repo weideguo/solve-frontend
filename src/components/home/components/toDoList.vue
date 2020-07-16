@@ -3,7 +3,7 @@
 
     <p slot="title">
       <Icon type="md-checkbox-outline"></Icon>
-      待办事项
+      {{ $t('todoTitle') }}
     </p>
     <a type="text" slot="extra" @click.prevent="showAddNewTodo=!showAddNewTodo">
       <Icon type="md-add"></Icon>
@@ -22,9 +22,9 @@
         </Row>
       </Col>
     </div>
-    <Modal v-model="showAddNewTodo" title="添加新的待办事项" @on-ok="addTodo">
+    <Modal v-model="showAddNewTodo" :title="$t('addTodoTitle')" @on-ok="addTodo">
       <Row type="flex" justify="center">
-        <Input v-model="newToDoItemValue" icon="md-checkbox-outline" placeholder="请输入..." style="width: 100%" clearable/>
+        <Input v-model="newToDoItemValue" icon="md-checkbox-outline" :placeholder="$t('inputTips')" style="width: 100%" clearable/>
       </Row>
     </Modal>
   </Card>
@@ -73,7 +73,7 @@ export default {
         })
         this.getTodo()
       } else {
-        this.$Message.error('请输入待办事项内容')
+        this.$Message.error(this.$t('inputNotNull'))
       }
     },
     delTodo (val) {

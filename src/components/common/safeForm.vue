@@ -12,23 +12,23 @@
       <FormItem v-for="(item, index) in formDynamic" :key="index">  
           <Row>
             <Col span="5">
-            <Input type="text" v-model="item.key" placeholder="请输入字段名"></Input>
+            <Input type="text" v-model="item.key" :placeholder="$t('inputFieldTips')"></Input>
             </Col>
             <Col span="13" offset="1">
-            <Input type="text" v-model="item.value" placeholder="请输入值"></Input>
+            <Input type="text" v-model="item.value" :placeholder="$t('inputValueTips')"></Input>
             </Col>
             <Col span="4" offset="1">
             <!---->
-            <Button type="dashed" @click="handleRemove(index)">删除</Button>
+            <Button type="dashed" @click="handleRemove(index)">{{ $t('delete') }}</Button>
             </Col>
           </Row>
         </FormItem>
       <Row>
         <Col span="12">
-        <Button type="dashed" long @click="handleAdd" >添加字段</Button>
+        <Button type="dashed" long @click="handleAdd" >{{ $t('addField') }}</Button>
         </Col>
         <Col span="12">
-        <Button type="dashed" long @click="handleReset('safeform')" >重置</Button>
+        <Button type="dashed" long @click="handleReset('safeform')" >{{ $t('reset') }}</Button>
         </Col>
       </Row>
       </div>
@@ -44,6 +44,8 @@
 
 <script>
 import util from '@/libs/util'
+import VueI18n from 'vue-i18n'
+
 export default {
   name: 'safeForm',
   props: {
@@ -80,11 +82,11 @@ export default {
     },
     secondButtonName: {
       type: String,
-      default: '取消'
+      default: 'cancel'
     },
     primaryButtonName: {
       type: String,
-      default: '确定'
+      default: 'confirm'
     },
     secondCheck: {
       type: Boolean,
@@ -105,15 +107,15 @@ export default {
       if (this.formdata.length != 0){
         this.$refs[name].validate((valid) => {
           if (valid) {
-            this.$Message.success('正在提交')
+            this.$Message.success(this.$t('commitBegin'))
             this.$emit('primaryClick', this.allValue)
             this.handleReset(name)
           } else {
-            this.$Message.error('表单检查失败')
+            this.$Message.error(this.$t('form.checkErr'))
           }
         })
       } else {
-        this.$Message.success('正在提交')
+        this.$Message.success(this.$t('commitBegin'))
         this.$emit('primaryClick', this.allValue)
         this.handleReset(name)
       }
@@ -126,7 +128,7 @@ export default {
             this.$emit('secondClick', this.allValue)
             this.handleReset(name)
           } else {
-            this.$Message.error('表单检查失败')
+            this.$Message.error(this.$t('form.checkErr'))
           }
         })
       } else {

@@ -1,10 +1,12 @@
 <style>
   #band {
-    position: relative;
-    width: 96%;
+    position: fixed;
+    width: 100%;
+    height: 100%;
     margin: 0 auto;
     right: 0;
     left: 0;
+    background: #000000;
   }
 
   #login-form {
@@ -20,6 +22,18 @@
 
 <template>
   <div id="band">
+    <div style="position: fixed; right:5%; top:5%;width: 100px; height: 100px;">
+        <Dropdown transfer @on-click="languageSet">
+        <a href="javascript:void(0)">
+            LANGUAGE
+            <Icon type="ios-arrow-down"></Icon>
+        </a>
+        <DropdownMenu slot="list" >
+            <DropdownItem v-for="item in languageList" :name="item.name" :key="item.name">{{ item.value }}</DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
+
+    </div>
     <div id="login-form">
       <Card>
         <!--
@@ -95,6 +109,7 @@
       return {
         title: this.$t('title'),
         titleCAS: this.$t('title')+'-cas',
+        languageList: [],
         baseurlConfig: [[]],
         formInline: {
           user: '',
@@ -144,6 +159,11 @@
       },
     },
     methods: {
+      languageSet(lang) {
+        console.log(lang)
+        localStorage.setItem('language',lang)
+        window.location = '/'
+      },
       authdata () {
         this.$refs['formLogin'].validate((valid) => {
           if (valid) {
@@ -287,6 +307,7 @@
     },
     created () {
       this.baseurlConfig = config.baseurl
+      this.languageList = JSON.parse(sessionStorage.getItem('languageList'))
     }
   }
 </script>

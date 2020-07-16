@@ -396,20 +396,21 @@
             util.notice(this, error, 'error')
           })
       },
-      delTarget (t) {
-        this.delname = t
+      delTarget (d) {
+        this.delname = d
+        console.log(`确认删除 ${this.delname} ？`)
         this.$Modal.confirm({'title': `确认删除 ${this.delname} ？`,'onOk': this.realDelTarget, 'cancelText': '取消', 'width': '700px'})
       },
       realDelTarget () {
-        let t = this.delname
+        let d = this.delname
         // axios.get(`${this.baseurl}/executionInfo/del?target=${t}`)
-        exec.delExecutionInfo(t)
+        exec.delExecutionInfo(d)
           .then(res => {
             if (res.data['status'] === 1) {
               this.getCurrentPage();
-              util.notice(this, `${t} 删除成功`, 'success')
+              util.notice(this, `${d} 删除成功`, 'success')
             } else if (res.data['status'] === 0) {
-              util.notice(this, `${t} 删除失败`, 'error')
+              util.notice(this, `${d} 删除失败`, 'error')
             }
           })
           .catch(error => {

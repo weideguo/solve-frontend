@@ -3,8 +3,8 @@
     <div>
       <div slot="title" style="padding-bottom: 30px;">
         <div style="float:left">
-          <Button  type="info" @click="createDirFlag = true">新建文件夹</Button>
-          <Button  type="success" @click="gobackdir">返回上一级</Button>
+          <Button  type="info" @click="createDirFlag = true">{{ $t('createDir') }}</Button>
+          <Button  type="success" @click="gobackdir">{{ $t('preDir') }}</Button>
         </div>
         <div style="float:left;padding:5px">
           <p v-if="currentPath === ''" > | /</p>
@@ -31,7 +31,7 @@
                 <div :style="{height: (defaultHeight > changeHeight ? defaultHeight : changeHeight)+'px'}">
                   <div style="margin-left: 30%" :style="{paddingTop: (defaultHeight > changeHeight ? defaultHeight/2 : changeHeight/2)+'px'}">
                     <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
-                    <p>点击或拖拽到此上传</p>
+                    <p>{{ $t('uploadTips') }}</p>
                   </div>
                 </div>
               </Upload>        
@@ -46,10 +46,10 @@
 
       <Modal v-model="createDirFlag" width="50%" :closable="false">
         <div>
-           <Input v-model="createDirName" placeholder="请输入新建文件夹名" clearable/>
+           <Input v-model="createDirName" :placeholder="$t('inputFilenameTips')" clearable/>
         </div>
         <div slot="footer">
-          <Button type="primary"  @click="realCreateDir">新建</Button>
+          <Button type="primary"  @click="realCreateDir">{{ $t('create') }}</Button>
         </div>
       </Modal>
 
@@ -103,14 +103,14 @@ export default {
     realCreateDir () {
       // this.createDirName = this.createDirName.trim()
       if (this.createDirName === '') {
-        this.$Message.error('文件夹名不能为空')
+        this.$Message.error(this.$t('shouldNotEmpty'))
       } else if (util.existSpace(this.createDirName)) {
-        this.$Message.error('文件夹名左右两端不能存在空格')
+        this.$Message.error(this.$t('shouldNoSpaceLR'))
       } else {
         this.createDirFlag = false
         let path = this.currentPath + '/' + this.createDirName
         path = path.replace('//','/')
-        this.$Message.success('开始提交')
+        this.$Message.success(this.$t('commitBegin'))
         // axios.get(`${this.baseurl}/file/create?path=${path}`)
         file.createPath(path)
           .then(res => {
@@ -148,7 +148,7 @@ export default {
         )
         this.currentPath = this.currentPath.substring(1)
       } else {
-        util.notice(this, '已经是最上级目录了！', 'info')
+        util.notice(this, this.$t('noPreDirTips'), 'info')
       }
       this.getFileInfo(this.currentPath)
     },

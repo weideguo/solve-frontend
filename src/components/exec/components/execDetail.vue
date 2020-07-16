@@ -5,13 +5,10 @@
         <div slot="title">
           <p>{{title}}</p>
           <br><br>
-          <!--<Tooltip content="返回" placement="bottom">
-            <Button type="primary" shape="circle" icon="md-arrow-round-back" ghost @click.native="$router.go(-1)"></Button>
-          </Tooltip>-->
-          <Tooltip content="查看playbook" placement="bottom">
+          <Tooltip :content="$t('showPlaybook')" placement="bottom">
             <Button type="primary" shape="circle" icon="md-book" ghost @click.native="playbookDetial()"></Button>
           </Tooltip>
-          <Tooltip content="保存" placement="bottom" style="margin-left: 20px">
+          <Tooltip :content="$t('save')" placement="bottom" style="margin-left: 20px">
             <Button type="primary" shape="circle" icon="md-cloud-upload" ghost @click.native="commit()"></Button>
           </Tooltip>
         </div>
@@ -33,12 +30,12 @@
           
         </Form>
 
-        <Button type="primary" style="margin-left: 50%" @click.native="commit()">保存</Button>
+        <Button type="primary" style="margin-left: 50%" @click.native="commit()">{{ $t('save') }}</Button>
 
       </Card>
     </Row>
 
-    <Modal v-model="openswitchAdd" @on-ok="commitinfoAdd" :ok-text="'确定'" width="800"  title="执行对象">
+    <Modal v-model="openswitchAdd" @on-ok="commitinfoAdd" :ok-text="$t('confirm')" width="800"  :title="$t('executeTarget')">
       <Row>
         <Card>
           <div>
@@ -60,7 +57,8 @@
   import exec from '@/api/exec'
   import target from '@/api/target'
   import util from '@/libs/util'
-  
+  import VueI18n from 'vue-i18n'
+
   //
   export default {
     data () {
@@ -106,7 +104,7 @@
                   this.target_type = r['target_type']
                   this.playbook = r['playbook']
                 } catch (err) {
-                  util.notice(this, '获取任务模板信息失败，请检查使用的任务模板！', 'warning')
+                  util.notice(this, this.$t('getTemplateFailedTips'), 'warning')
                 }
               })
               .catch(error => {
@@ -130,18 +128,18 @@
       commit () {
         // this.info = util.arry2dict(this.formItem, 'key', 'value')
         if (util.existSpace(this.info['name'])) {
-          this.$Message.error('name左右两端不能存在空格！')
-        } else if (this.info['name'] === '') {
-          this.$Message.error('name不能为空值！')
+          this.$Message.error('name'+this.$t('shouldNoSpaceLR'))
+        } else if (this.info['name'] === 'exec:') {
+          this.$Message.error('name'+this.$t('shouldNotEmpty'))
         } else if (this.info['target'].indexOf(this.target_type) != 0 && this.info['target'] != '') {
-          this.$Message.error('执行对象必须与模板匹配！')
+          this.$Message.error(this.$t('templateNotMatchTips'))
         } else {
           if (this.info['target']) {
             this.info['number'] = this.info['target'].split(',').length
           } else {
             this.info['number'] = 0
           }
-          this.$Message.success('开始提交')
+          this.$Message.success(this.$t('commitBegin'))
           this.info['name_o'] = this.name_o
           console.log(this.info)
           this.addinfo(this.info)
@@ -191,9 +189,9 @@
         console.log(tag)
         if (tag === 'add') {
           this.name_o = ''
-          this.title = '任务添加'
+          this.title = this.$t('addJob')
         } else {
-          this.title = '任务修改'
+          this.title = this.$t('modifyJob')
           this.formItem.forEach((item,i) => {
             if (item['key'] === 'name') {
               this.name_o = 'exec:' + item['value']
@@ -217,7 +215,7 @@
               util.notice(this, error, 'error');
             })
         } else {
-          this.$Message.error('请先设置模板')
+          this.$Message.error(this.$t('setTemplateTips'))
         }
       },
       commitinfoAdd () {

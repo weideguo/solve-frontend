@@ -15,35 +15,32 @@
     <Row>
       <Card>
         <div slot="title">
-          <Poptip  :content="playbook" trigger="hover" placement="bottom">
-            <p>工单{{ this.workid }}详细信息</p>
+          <Poptip transfer :content="playbook" trigger="hover" placement="bottom-start">
+            <p>{{ this.workid }}</p>
           </Poptip>
           <br>
           <br>
-          <!--<Tooltip content="返回" placement="bottom">
-            <Button type="primary" shape="circle" icon="md-arrow-round-back" ghost @click.native="$router.go(-1)"></Button>
-          </Tooltip>-->
-          <Tooltip content="查看playbook" placement="bottom">
+          <Tooltip :content="$t('showPlaybook')" placement="bottom-start">
             <Button type="primary" shape="circle" icon="md-book" ghost @click.native="playbookDetial()"></Button>
           </Tooltip>
-          <Tooltip content="刷新" placement="bottom" style="margin-left: 20px">
+          <Tooltip :content="$t('refresh')" placement="bottom" style="margin-left: 20px">
             <Button type="primary" shape="circle" icon="md-refresh" ghost @click.native="refreshCurrentPage()"></Button>
           </Tooltip>
-          <Tooltip content="汇总" placement="bottom" style="margin-left: 20px">
+          <Tooltip :content="$t('summary')" placement="bottom" style="margin-left: 20px">
             <Button type="primary" shape="circle" icon="md-bookmarks" ghost @click.native="summary()"></Button>
           </Tooltip>
           <i-switch size="large" @on-change="finishFilter" style="margin-left: 50px">
-            <span slot="open">过滤</span>
-            <span slot="close">全部</span>
+            <span slot="open">{{ $t('all') }}</span>
+            <span slot="close">{{ $t('filter') }}</span>
           </i-switch>
 
           <Tooltip disabled style="float:right;margin-right: 50px">
             <b>
-            执行中： <font color="#EEB422"> {{sum['executing']}} </font>
-            执行失败： <font color="#FF0000"> {{sum['fail']}} </font>
-            执行成功： <font color="#228B22"> {{sum['done']}} </font>
-            当前数量： <font color="#0000FF">{{targetAmount}}</font>
-            总执行： <font color="#0000FF">{{sum['all']}}</font>
+            {{ $t('executing') }} <font color="#EEB422"> {{sum['executing']}} </font>
+            {{ $t('exeFailed') }} <font color="#FF0000"> {{sum['fail']}} </font>
+            {{ $t('exeSuccess') }} <font color="#228B22"> {{sum['done']}} </font>
+            {{ $t('currentNum') }} <font color="#0000FF">{{targetAmount}}</font>
+            {{ $t('allNum') }} <font color="#0000FF">{{sum['all']}}</font>
             </b>
           </Tooltip>
         </div>
@@ -57,7 +54,7 @@
 
     <BackTop :height="100" :bottom="200">
       <div class="top">
-        <Tooltip content="返回顶部" placement="bottom">
+        <Tooltip :content="$t('backTop')" placement="bottom">
           <Icon type="ios-arrow-up" />
         </Tooltip>  
       </div>
@@ -74,28 +71,28 @@
     <Modal v-model="modalDetail" scrollable width="55%" :z-index="20000">
       <p slot="header">{{detailTitle}}</p>
       <div>
-        <Table border stripe :columns="columnsDetailInfo" :data="dataDetailInfo" :show-header="false" no-data-text="命令不存在或者信息已经过期"></Table>
+        <Table border stripe :columns="columnsDetailInfo" :data="dataDetailInfo" :show-header="false" :no-data-text="$t('noCommandInfo')"></Table>
       </div>
       <div slot="footer">
-        <Tooltip content="上一条" placement="top">
+        <Tooltip :content="$t('prePage')" placement="top">
           <Button type="primary" shape="circle" icon="md-arrow-round-back" ghost @click.native="showDetailPre"></Button>
         </Tooltip>
-        <Tooltip content="下一条" placement="top">
+        <Tooltip :content="$t('nextPage') " placement="top">
           <Button type="primary" shape="circle" icon="md-arrow-forward" ghost @click.native="showDetailNext"></Button>
         </Tooltip>
-        <Tooltip content="刷新" placement="top" style="margin-right: 20px">
+        <Tooltip :content="$t('refresh')" placement="top" style="margin-right: 20px">
           <Button type="primary" shape="circle" icon="md-refresh" ghost @click.native="refreshDetailInfo"></Button>
         </Tooltip>
       </div>
     </Modal>
 
     <Modal v-model="modalSummary" scrollable width="55%" :z-index="20000">
-      <p slot="header">最后一行命令输出汇总</p>
+      <p slot="header">{{ $t('summaryTitle') }}</p>
       <div>
         <Table border stripe :columns="columnsSummaryInfo" :data="summaryInfo" ></Table>
       </div>
       <div slot="footer">
-        <Tooltip content="刷新" placement="top" style="margin-right: 20px">
+        <Tooltip :content="$t('refresh')" placement="top" style="margin-right: 20px">
           <Button type="primary" shape="circle" icon="md-refresh" ghost @click.native="refreshSummary"></Button>
         </Tooltip>
       </div>
@@ -114,8 +111,8 @@
           <FormItem v-for="(item, i) in checkSession" :key="item.key" v-bind:label="item.key">
             <Input v-model="item.value"></Input>
           </FormItem>
-          <Tooltip content="如果更改，需要预先提交" placement="left" style="float:right;margin-right:0px">
-            <Button size="large" @click.native="setRerunSession" >设置</Button>
+          <Tooltip :content="$t('sessionTips')" placement="left" style="float:right;margin-right:0px">
+            <Button size="large" @click.native="setRerunSession" >{{ $t('setting') }}</Button>
           </Tooltip>
 
           <Divider v-if="checkChangable.length > 0">changable</Divider>
@@ -125,7 +122,7 @@
         </Form>
       </div>
       <div slot="footer">
-          <Button type="primary" size="large" @click.native="realRerun">执行</Button>
+          <Button type="primary" size="large" @click.native="realRerun">{{ $t('run') }}</Button>
       </div>
     </Modal>
 
@@ -203,51 +200,51 @@
         ],
         tabcolumns: [
           {
-            title: '执行对象',
+            title: this.$t('executeTarget'),
             key: 'target',
             sortable: true,
             minWidth: 150
           },
           {
-            title: '当前状态',
+            title: this.$t('currentStatus'),
             key: 'exe_status',
             align: 'center',
             sortable: true,
             width: 150
           },
           {
-            title: '执行行数',
+            title: this.$t('exeRownum'),
             key: 'exe_rownum',
             align: 'center',
             sortable: true,
             width: 150
           },
           {
-            title: '总行数',
+            title: this.$t('rownum'),
             key: 'playbook_rownum',
             align: 'center',
             width: 150
           },
           {
-            title: '开始时间',
+            title: this.$t('beginDate'),
             key: 'begin_date',
             sortable: true,
             width: 200
           },
           {
-            title: '结束时间',
+            title: this.$t('endDate'),
             key: 'end_date',
             sortable: true,
             width: 200
           },
           {
-            title: '持续时间',
+            title: this.$t('endure'),
             key: 'endure',
             sortable: true,
             width: 200
           },
           {
-             title: '操作与状态',
+             title: this.$t('action'),
              key: 'action',
              align: 'center',
              width: 300,
@@ -265,7 +262,7 @@
                         this.abort(params.row)
                       }
                     }
-                  }, '中止')
+                  }, this.$t('abort'))
                 ])
               } else if (params.row.exe_status === 'done') {
                 b = h('div', [
@@ -279,7 +276,7 @@
                         this.quickShow(params.row)
                       }
                     }
-                  }, '执行成功')
+                  }, this.$t('exeSuccess'))
                 ])
               } else if (params.row.exe_status === 'rerun') {
                 b = h('div', [
@@ -290,10 +287,10 @@
                     },
                     on: {
                       click: () => {
-                        util.notice(this, '已经重新执行', 'info')
+                        util.notice(this, this.$t('reExecute'), 'info')
                       }
                     }
-                  }, '重新执行中')
+                  }, this.$t('reExecuting'))
                 ])
               } else {
                 b = h('div', [
@@ -310,7 +307,7 @@
                         this.quickShow(params.row)
                       }
                     }
-                  }, '执行失败'),
+                  }, this.$t('exeFailed')),
                   h('Button', {
                     props: {
                       size: 'small',
@@ -324,7 +321,7 @@
                         this.rerun(params.row)
                       }
                     }
-                  }, '重新运行'),
+                  }, this.$t('rerun')),
                   h('span', {}, ' '),
                   h('Button', {
                     props: {
@@ -336,7 +333,7 @@
                         this.continueRun(params.row)
                       }
                     }
-                  }, '继续运行')
+                  }, this.$t('continueRun'))
                 ])
               }
               return b
@@ -368,9 +365,9 @@
         order.abort(params['target_id'])
           .then(res => {
             if (parseFloat(res.data.abort_time)) {
-              util.notice(this, '请勿重复中止： ' + params['target'], 'warning')
+              util.notice(this, this.$t('shouldNotAbort')+' ' + params['target'], 'warning')
             } else {
-              util.notice(this, '中止： ' + params['target'], 'success')
+              util.notice(this, this.$t('abort')+' ' + params['target'], 'success')
             }
             if (this.finishOnly) {
               this.getCurrentPage(1)
@@ -383,13 +380,13 @@
           })
       },
       continueRun (params, index) {
-        this.runTitle = '继续运行信息'
+        this.runTitle = this.$t('continueExeInfo')
         this.begin_line = -1
         this.getRerunInfo(params, params['target_id'])
         this.newJobId=''
       },
       rerun(params, index){
-        this.runTitle = '重新运行信息'
+        this.runTitle = this.$t('rerunInfo')
         this.begin_line = 0
         this.getRerunInfo(params, params['target_id'])
         this.newJobId=''
@@ -418,7 +415,7 @@
         exec.postTempSession(newSession)
           .then(res => {
             if (res.data['status']>=1) {
-              util.notice(this, 'session保存成功', 'info')
+              util.notice(this, this.$t('sessionSaveSuccess'), 'info')
               console.log(res.data)
               this.newJobId=res.data['job_id']
             } else {
@@ -470,7 +467,7 @@
         if (this.detailIndex > 1) {
           this.detailIndex=this.detailIndex-1
         } else {
-          this.$Message.info('没有更前了')
+          this.$Message.info(this.$t('noForward'))
         }
         this.realShowDetail(this.exelist[this.detailIndex-1],this.detailIndex)
         console.log(this.exelist[this.detailIndex-1],this.detailIndex)
@@ -479,7 +476,7 @@
         if ( this.detailIndex < this.exelist.length ) {
           this.detailIndex=this.detailIndex+1
         } else {
-          this.$Message.info('没有更后了')
+          this.$Message.info(this.$t('noBackward'))
         }
         this.realShowDetail(this.exelist[this.detailIndex-1],this.detailIndex)
         console.log(this.exelist[this.detailIndex-1],this.detailIndex)
@@ -506,7 +503,7 @@
       },
       refreshDetailInfo () {
         this.refreshShowDetail(this.logID)
-        util.notice(this, '刷新成功', 'fast')
+        util.notice(this, this.$t('refreshSuccess'), 'fast')
       },
       refreshCurrentPage () {
         try {
@@ -515,7 +512,7 @@
           } else {
             this.getCurrentPage()
           }
-          util.notice(this, '刷新成功', 'fast');
+          util.notice(this, this.$t('refreshSuccess'), 'fast');
         } catch (err) {
           util.notice(this, err, 'error');
         }
@@ -533,7 +530,7 @@
       },
       refreshSummary () {
         this.summary()
-        util.notice(this, '刷新成功', 'fast')
+        util.notice(this, this.$t('refreshSuccess'), 'fast')
       },
       finishFilter () {
         this.finishOnly = ! this.finishOnly

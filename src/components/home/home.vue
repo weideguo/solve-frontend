@@ -4,16 +4,16 @@
       <Col span="16">
         <Row>
           <Col span="6">
-            <infor-card id-name="1" :end-val="count.order" iconType="md-cart" color="#f25e43" intro-text="提交的工单"></infor-card>
+            <infor-card id-name="1" :end-val="count.order" iconType="md-cart" color="#f25e43" :intro-text="$t('orderNum')"></infor-card>
           </Col>
           <Col span="6" style="padding-left:5px">
-            <infor-card id-name="4" :end-val="count.realhost" iconType="md-laptop" color="#2d8cf0" intro-text="主机数量"></infor-card>
+            <infor-card id-name="4" :end-val="count.realhost" iconType="md-laptop" color="#2d8cf0" :intro-text="$t('hostNum')"></infor-card>
           </Col>
           <Col span="6" style="padding-left:5px">
-            <infor-card id-name="2" :end-val="count.target" iconType="md-globe" color="#ffd572" intro-text="执行对象数量"></infor-card>
+            <infor-card id-name="2" :end-val="count.target" iconType="md-globe" color="#ffd572" :intro-text="$t('executeTargetNum')"></infor-card>
           </Col>
           <Col span="6" style="padding-left:5px">
-            <infor-card id-name="3" :end-val="count.exec" iconType="md-flower" color="#64d572" intro-text="可执行任务数量"></infor-card>
+            <infor-card id-name="3" :end-val="count.exec" iconType="md-flower" color="#64d572" :intro-text="$t('executeNum')"></infor-card>
           </Col>
         </Row>
 
@@ -34,7 +34,7 @@
           <Card style="height: 100px">
             <Row style="margin-top: 20px">
               <Col span="8">
-                <b>登陆时间:</b>
+                <b>{{ $t('loginDate') }}</b>
               </Col>
               <Col span="16" style="padding-left: 8px">
                 <b>{{time}}</b>

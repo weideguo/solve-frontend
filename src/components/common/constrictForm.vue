@@ -16,7 +16,7 @@
         <div v-else-if="formType[k] === 'upload'" >
           <Input v-model="formItem[k]" type="text" :placeholder="formComment[k]" clearable style="width: 80%"></Input>
           <Upload style="float: right;" :show-upload-list="false" :action="uploadUrl" :headers='myheader' :on-success="uploadSuccess(formItem,k)" ref="upload">
-            <Button icon="ios-cloud-upload-outline">选择文件</Button>
+            <Button icon="ios-cloud-upload-outline">{{ $t('selectFile') }}</Button>
           </Upload>
           <div style="clear:both"></div>
         </div>
@@ -36,6 +36,8 @@
 
 <script>
 import util from '@/libs/util'
+import VueI18n from 'vue-i18n'
+
 export default {
   name: 'constrictForm',
   props: {
@@ -52,7 +54,7 @@ export default {
     },
     buttonName: {
       type: String,
-      default: '保存'
+      default: 'save'
     },
     formRef: {
       type: String,

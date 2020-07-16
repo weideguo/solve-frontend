@@ -70,6 +70,19 @@
       </Tabs>
       <div slot="footer"></div>
     </Modal>
+
+    <Modal v-model="deleteConfirm" width="50%" :closable="false">
+      <p style="color:#f60;margin-left:5%">
+        <font size="5">
+        <Icon type="ios-help-circle"></Icon>
+        确认删除 {{delname}}
+        </font>
+      </p>
+      <div slot="footer">
+        <Button type="text" @click="deleteConfirm=false">{{ $t('cancel') }}</Button>
+        <Button type="error" @click="realDelTarget" >{{ $t('delete') }}</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -217,7 +230,9 @@
         pageSizeOpts: [10,20,40,80,100,200],
         filter: '',
         sessionFull: [],
-        sessionInfo: []
+        sessionInfo: [],
+        deleteConfirm: false,
+        delname: ''
       }
     },
     methods: {
@@ -376,20 +391,23 @@
             util.notice(this, error, 'error')
           })
       },
-      delTarget (t) {
-        this.delname = t
-        this.$Modal.confirm({'title': `确认删除 ${this.delname} ？`,'onOk': this.realDelTarget, 'cancelText': '取消', 'width': '700px'});
+      delTarget (d) {
+        this.delname = d
+        this.deleteConfirm = true
+        // 使用国际化后不能这样使用？
+        // this.$Modal.confirm({'title': `确认删除 ${this.delname} ？`,'onOk': this.realDelTarget, 'cancelText': '取消', 'width': '700px'});
       },
       realDelTarget () {
-        let t = this.delname
+        this.deleteConfirm = false
+        let d = this.delname
         // axios.get(`${this.baseurl}/executionInfo/del?target=${t}`)
-        exec.delExecutionInfo(t)
+        exec.delExecutionInfo(d)
           .then(res => {
             if (res.data['status'] === 1) {
               this.getCurrentPage();
-              util.notice(this, `${t} 删除成功`, 'success');
+              util.notice(this, `${d} 删除成功`, 'success');
             } else {
-              util.notice(this, `${t} 删除失败`, 'error');
+              util.notice(this, `${d} 删除失败`, 'error');
             }
           })
           .catch(error => {

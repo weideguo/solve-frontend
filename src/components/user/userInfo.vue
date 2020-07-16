@@ -4,7 +4,7 @@
       <Card>
         <div slot="title">
           <!--Icon type="md-people"></Icon>
-          <b>用户列表</b-->
+          <b>{{ $t('userList') }}</b-->
           <Button type="info" icon="md-add" shape="circle" size="small" @click="addUser"></Button>
         </div>
         
@@ -21,37 +21,37 @@
         <b>{{modelTitle}}</b>
       </p>
       <Form ref="editForm" :model="editForm" :label-width="100" label-position="right" :rules="editValidate">
-        <FormItem label="用户名" prop="username">
-          <Input v-model="editForm.username" placeholder="请输入用户名" :readonly="!notEdit" :clearable="notEdit"></Input>
+        <FormItem :label="$t('username')" prop="username">
+          <Input v-model="editForm.username" :placeholder="$t('inputUsernameTips')" :readonly="!notEdit" :clearable="notEdit"></Input>
         </FormItem>
-        <FormItem label="新密码" prop="pass">
-          <Input v-model="editForm.pass" placeholder="请输入新密码，至少6位字符" type="password" clearable></Input>
+        <FormItem :label="$t('newPassword')" prop="pass">
+          <Input v-model="editForm.pass" :placeholder="$t('inputPasswordTips')" type="password" clearable></Input>
         </FormItem>
-        <FormItem label="确认新密码" prop="rePass">
-          <Input v-model="editForm.rePass" placeholder="请再次输入新密码" type="password" clearable></Input>
+        <FormItem :label="$t('confirmNewPassword')" prop="rePass">
+          <Input v-model="editForm.rePass" :placeholder="$t('reInputPasswordTips')" type="password" clearable></Input>
         </FormItem>
       </Form>
       <div slot="footer">
-        <Button type="text" @click="cancelEdit">取消</Button>
-        <Button type="primary" @click="commit" :loading="saveLoading">保存</Button>
+        <Button type="text" @click="cancelEdit">{{ $t('cancel') }}</Button>
+        <Button type="primary" @click="commit" :loading="saveLoading">{{ $t('save') }}</Button>
       </div>
     </Modal>
 
     <Modal v-model="deluserModal" :mask-closable=false :width="500">
       <p slot="header">
-        <b>删除用户</b>
+        <b>{{ $t('deleteUser') }}</b>
       </p>
       <Form :label-width="100" label-position="right">
-        <FormItem label="用户名">
+        <FormItem :label="$t('username')">
           <Input v-model="username" readonly="readonly"></Input>
         </FormItem>
-        <FormItem label="请输入用户名">
-          <Input v-model="confirmuser" placeholder="请确认用户名"></Input>
+        <FormItem :label="$t('inputUsernameTips')">
+          <Input v-model="confirmuser" :placeholder="$t('confirmUsernameTips')"></Input>
         </FormItem>
       </Form>
       <div slot="footer">
-        <Button type="text" @click="cancelDelUser">取消</Button>
-        <Button type="error" @click="delUser">删除</Button>
+        <Button type="text" @click="cancelDelUser">{{ $t('cancel') }}</Button>
+        <Button type="error" @click="delUser">{{ $t('delete') }}</Button>
       </div>
     </Modal>
 
@@ -68,7 +68,7 @@
     data () {
       const valideRePassword = (rule, value, callback) => {
         if (this.editForm.pass !== this.editForm.rePass) {
-          callback(new Error('两次输入密码不一致'))
+          callback(new Error(this.$t('passwordNotSame')))
         } else {
           callback()
         }
@@ -82,13 +82,13 @@
         pagenumber: 1,
         usercolumns: [
           {
-            title: '用户名',
+            title: this.$t('username'),
             key: 'username',
             sortable: true,
             minWidth: 400
           },
           {
-            title: '操作',
+            title: this.$t('operation'),
             key: 'action',
             width: 400,
             align: 'center',
@@ -108,7 +108,7 @@
                         this.editPass(params.row)
                       }
                     }
-                  }, '更改密码')
+                  }, this.$t('chanePassword'))
                 ])
               } else {
                 return h('div', [
@@ -125,7 +125,7 @@
                         this.editPass(params.row)
                       }
                     }
-                  }, '更改密码'),
+                  }, this.$t('chanePassword')),
                   h('Button', {
                     props: {
                       type: 'error',
@@ -136,7 +136,7 @@
                         this.deleteUser(params.row)
                       }
                     }
-                  }, '删除')
+                  }, this.$t('delete'))
                 ])
               }
             }
@@ -155,30 +155,30 @@
         editValidate: {
           username: [{
             required: true,
-            message: '请输入用户名',
+            message: this.$t('inputUsernameTips'),
             trigger: 'blur'
           }],
           pass: [
             {
               required: true,
-              message: '请输入新密码',
+              message: this.$t('inputPasswordTips'),
               trigger: 'blur'
             },
             {
               min: 6,
-              message: '请至少输入6个字符',
+              message: this.$t('inputPasswordTips'),
               trigger: 'blur'
             },
             {
               max: 32,
-              message: '最多输入32个字符',
+              message: this.$t('max32Chars'),
               trigger: 'blur'
             }
           ],
           rePass: [
             {
               required: true,
-              message: '请再次输入新密码',
+              message: this.$t('reInputPasswordTips'),
               trigger: 'blur'
             },
             {
@@ -233,13 +233,13 @@
       addUser () {
         this.notEdit = true
         this.editModal = true
-        this.modelTitle = '增加用户'
+        this.modelTitle = this.$t('addUser')
       },
       editPass (params) {
         this.editForm['username'] = params.username
         this.notEdit = false
         this.editModal = true
-        this.modelTitle = '修改用户密码'
+        this.modelTitle = this.$t('chanePassword')
       },
       cancelEdit () {
         this.$refs['editForm'].resetFields()
@@ -248,7 +248,7 @@
       commit () {
         this.$refs['editForm'].validate((valid) => {
           if (valid) {
-            this.$Message.success('开始操作')
+            this.$Message.success(this.$t('commitBegin'))
             this.saveLoading = true
             if (this.notEdit) {
               this.realAddUser()
@@ -256,7 +256,7 @@
               this.saveEdit()
             }
           } else {
-            this.$Message.error('表单检查失败!')
+            this.$Message.error(this.$t('form.checkErr'))
           }
         })
         
@@ -283,7 +283,7 @@
       },
       delUser () {
         if (this.username === this.confirmuser) {
-          this.$Message.success('开始删除')
+          this.$Message.success(this.$t('commitBegin'))
           // axios.delete(this.baseurl + '/userinfo/' + this.username)
           user.deleteUserinfo(this.username)
             .then(res => {
@@ -297,7 +297,7 @@
               util.notice(this, error, 'error')
             })
         } else {
-          this.$Message.error('用户名不一致!请重新操作!')
+          this.$Message.error(this.$t('usernameNotSame'))
         }
       },
       cancelDelUser () {
