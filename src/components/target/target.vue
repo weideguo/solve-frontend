@@ -3,12 +3,12 @@
     <Row>
       <Card>
         <div slot="title" style="height: 32px">
-          <Tooltip content="修改字段信息">
+          <Tooltip :content="$t('modifyFiled')"  placement="bottom-start">
             <Button type="info" icon="md-list" @click.native="switchFormInfo=true" ></Button>
           </Tooltip>
           <Button type="info" icon="md-add" @click.native="targetinfoAdd()">{{filter}}</Button>
           <div style="float:right;margin-right: 0px">
-            <Input v-model="searchWord" @on-search="search()" search enter-button placeholder="* 可用为搜索通配符" style="width: 350px"/>
+            <Input v-model="searchWord" @on-search="search()" search enter-button :placeholder="$t('searchTips')" style="width: 350px"/>
           </div>
         </div>
         
@@ -26,19 +26,30 @@
       <p slot="header">
         <span>{{modelTitle}}</span>
       </p>
-      <safe-form ref="myform" :labelwidth="100" :formdata="formItem" :dynamic="true" :formvalidate="formItemValidate" @primaryClick="formCommit" @secondClick="optionOperate" :secondCheck="!isAdd" :secondButtonName="isAdd?'取消':'复制'"></safe-form>
+      <safe-form ref="myform" :labelwidth="100" :formdata="formItem" :dynamic="true" :formvalidate="formItemValidate" @primaryClick="formCommit" @secondClick="optionOperate" :secondCheck="!isAdd" :secondButtonName="isAdd? $t('cancel') : $t('copy') "></safe-form>
       <div slot="footer"></div>
     </Modal>
 
     <Modal v-model="switchFormInfo" width="50%">          
       <p slot="header">
-        <span>{{filter}} 修改字段信息</span>
+        <span>{{filter}} {{ $t('modifyFiled') }}</span>
       </p>
       <safe-form ref="formInfo" :labelwidth="100" :dynamicData="formItemInfo" :dynamic="true" @primaryClick="formInfoCommit" @secondClick="switchFormInfo=false" ></safe-form>
       <div slot="footer"></div>
     </Modal>
 
-
+    <Modal v-model="deleteConfirm" width="50%" :closable="false">
+      <p style="color:#f60;margin-left:5%">
+        <font size="5">
+        <Icon type="ios-help-circle"></Icon>
+        {{ $t('confirmDelete') }} {{delname}}
+        </font>
+      </p>
+      <div slot="footer">
+        <Button type="text" @click="deleteConfirm=false">{{ $t('cancel') }}</Button>
+        <Button type="error" @click="realDelTarget" >{{ $t('delete') }}</Button>
+      </div>
+    </Modal>
 
   </div>
 </template>
@@ -70,7 +81,7 @@
           name: [
             {
               required: true,
-              message: '请输入执行对象名',
+              message: this.$t('inputTargetNameTips'),
               trigger: 'blur'
             },
             {
@@ -91,13 +102,13 @@
             sortable: true
           },
           {
-            title: '信息',
+            title: this.$t('info'),
             tooltip: true,
             key: 'info',
             minWidth: 600
           },
           {
-            title: '操作',
+            title: this.$t('detail'),
             key: 'action',
             align: 'center',
             width: 200,
@@ -113,12 +124,12 @@
                       this.targetinfoDetail(params.row)
                     }
                   }
-                }, '详细')
+                }, this.$t('detail'))
               ])
             }
           },
           {
-            title: '删除',
+            title: this.$t('delete'),
             key: 'action',
             align: 'center',
             width: 100,
@@ -134,7 +145,7 @@
                       this.delTarget(params.row['name']);
                     }
                   }
-                }, '删除')
+                }, this.$t('delete'))
               ])
             }
           }
@@ -147,7 +158,9 @@
         modelTitle: '',
         openswitch: false,
         switchFormInfo: false,
-        isAdd: true
+        isAdd: true,
+        deleteConfirm: false,
+        delname: ''
       }
     },
     methods: {
@@ -175,7 +188,7 @@
       targetinfoDetail (paramsDict) {
         this.openswitch = true
         this.isAdd = false
-        this.modelTitle = this.filter+" 更新信息"
+        this.modelTitle = this.filter+' '+this.$t('updateInfo')
         this.opentarget = paramsDict['name']
         let formItemNew = util.dict2arry(JSON.parse(paramsDict['info']), 'key', 'value', this.itemSort)
         formItemNew.forEach((item, i) => {
@@ -198,7 +211,7 @@
         this.openswitch = true
         this.isAdd = true
         this.formItem = this.formItemOrigin
-        this.modelTitle = this.filter+" 新增信息"
+        this.modelTitle = this.filter+' '+this.$t('addInfo') 
       },
       formCommit (data) {
         if (!this.isAdd) {
@@ -212,7 +225,7 @@
         if (!this.isAdd) {
           console.log('is add')
           if (data['name'] === this.opentarget) {
-            this.$Message.error('新增name必须与现有的不同')
+            this.$Message.error(this.$t('nameUniqueTips'))
           } else {
             this.addTarget(data)
             this.openswitch = false
@@ -229,7 +242,7 @@
         config.postKey(`tmpl_${this.$route.name}`,data)
           .then(res => {
             if (res.data['status'] >= 1) {
-              util.notice(this, '更改成功', 'success')
+              util.notice(this, this.$t('modifySuccess'), 'success')
               this.reflashTmpl()
             } else {
               util.notice(this, `${res.data['msg']}`, 'warning')
@@ -253,9 +266,11 @@
       },
       delTarget (t) {
         this.delname = t
-        this.$Modal.confirm({'title': `确认删除 ${this.delname} ？`,'onOk': this.realDelTarget, 'cancelText': '取消', 'width': '700px'});
+        this.deleteConfirm = true
+        // this.$Modal.confirm({'title': `确认删除 ${this.delname} ？`,'onOk': this.realDelTarget, 'cancelText': '取消', 'width': '700px'});
       },
       realDelTarget () {
+        this.deleteConfirm=false
         let t = this.delname
 
         // axios.get(`${this.baseurl}/target/del?target=${t}`)
@@ -263,9 +278,9 @@
           .then(res => {
             if (res.data['status'] === 1) {
               this.getCurrentPage();
-              util.notice(this, `${t} 删除成功`, 'success')
+              util.notice(this, `${t} `+this.$t('deleteSuccess'), 'success')
             } else {
-              util.notice(this, `${t} 删除失败`, 'error')
+              util.notice(this, `${t} `+this.$t('deleteFailed'), 'error')
             }
           })
           .catch(error => {

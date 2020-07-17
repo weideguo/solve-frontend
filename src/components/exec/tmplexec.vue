@@ -3,10 +3,10 @@
     <Row>
       <Card>
         <div slot="title">
-          <Tooltip content="修改选择信息">
+          <Tooltip :content="$t('modifySelectedInfo')" placement="bottom-start">
             <Button type="info" icon="md-list" @click.native="switchFormInfo=true" ></Button>
           </Tooltip>
-          <Button type="info" icon="md-add" @click.native="targetinfoAdd()" >增加任务模板</Button>
+          <Button type="info" icon="md-add" @click.native="targetinfoAdd()" >{{ $t('addTemplate') }}</Button>
         </div>
         
         <Row>
@@ -31,28 +31,38 @@
 
     <Modal v-model="switchFormInfo" width="50%" @on-cancel="cancelFormInfo">
       <p slot="header">
-        <span>修改以下可选项信息</span>
+        <span>{{ $t('modifyTips') }}</span>
       </p>
        <Form :label-width="80">
         <FormItem label="target_type">
-          <!--<Input v-model="target_type" placeholder="请输入可选的可执行对象类型，以“,”分隔" />-->
           <Select v-model="target_type" filterable multiple allow-create @on-create="putTargetType">
             <Option v-for="item in target_type_tmp" :value="item" :key="item">{{ item }}</Option>
           </Select>
         </FormItem>
         <FormItem label="job_type">
-          <!--<Input v-model="job_type" placeholder="请输入可选的任务类型，以“,”分隔"/>-->
           <Select v-model="job_type" filterable multiple allow-create @on-create="putJobType">
             <Option v-for="item in job_type_tmp" :value="item" :key="item">{{ item }}</Option>
           </Select>
         </FormItem>
        </Form> 
        <div slot="footer">
-        <Button type="primary" @click="cancelFormInfo">取消</Button>
-        <Button @click="commitFormInfo">提交</Button>
+        <Button type="primary" @click="cancelFormInfo">{{ $t('cancel') }}</Button>
+        <Button @click="commitFormInfo">{{ $t('commit') }}</Button>
       </div>
     </Modal>
-
+    
+    <Modal v-model="deleteConfirm" width="50%" :closable="false">
+      <p style="color:#f60;margin-left:5%">
+        <font size="5">
+        <Icon type="ios-help-circle"></Icon>
+        {{ $t('confirmDelete') }} {{delname}}
+        </font>
+      </p>
+      <div slot="footer">
+        <Button type="text" @click="deleteConfirm=false">{{ $t('cancel') }}</Button>
+        <Button type="error" @click="realDelTarget" >{{ $t('delete') }}</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -79,17 +89,17 @@
         openswitch: false,
         formItem: [],
         formItemOrigin: [
-          {key: 'name', label: 'name', comment: '模板名'},
-          {key: 'target_type', label: 'target_type', comment: '任务的执行对象类型', select: []},
+          {key: 'name', label: 'name', comment: this.$t('templateName')},
+          {key: 'target_type', label: 'target_type', comment: this.$t('targetType'), select: []},
           {key: 'playbook', label: 'playbook', comment: 'playbook'},
-          {key: 'job_type', label: 'job_type', comment: '任务的类型', select: []},
-          {key: 'comment', label: 'comment', comment: '简要说明'},
+          {key: 'job_type', label: 'job_type', comment: this.$t('jobType'), select: []},
+          {key: 'comment', label: 'comment', comment: this.$t('comment')},
         ],
         formItemValidate: {
           name: [
             {
               required: true,
-              message: '请输入模板名',
+              message: this.$t('inputTemplateNameTips'),
               trigger: 'blur'
             },
             {
@@ -100,14 +110,14 @@
           target_type: [
             {
               required: true,
-              message: '请选择任务的执行对象',
+              message: this.$t('selectTargetTypeTips'),
               trigger: 'blur'
             }
           ],
           playbook: [
             {
               required: true,
-              message: '请输入playbook',
+              message: this.$t('inputPlaybookTips'),
               trigger: 'blur'
             },
             {
@@ -118,14 +128,14 @@
           job_type: [
             {
               required: true,
-              message: '请选择任务的类型',
+              message: this.$t('selectJobTypeTips'),
               trigger: 'blur'
             }
           ],
           comment: [
             {
               required: true,
-              message: '请输入简要说明',
+              message: this.$t('inputCommentTips'),
               trigger: 'blur'
             }
           ],
@@ -175,7 +185,7 @@
             sortable: true
           },
           {
-            title: '操作',
+            title: this.$t('operation'),
             key: 'action',
             align: 'center',
             width: 150,
@@ -191,12 +201,12 @@
                       this.generateJob(params);
                     }
                   }
-                }, '生成任务')
+                }, this.$t('createJob'))
               ])
             }
           },
           {
-            title: '详细',
+            title: this.$t('detail'),
             key: 'action',
             align: 'center',
             width: 150,
@@ -213,13 +223,13 @@
                       this.targetinfoDetail(params.row)
                     }
                   }
-                }, '详细')
+                }, this.$t('detail'))
                 ])
               return x
             }
           },
           {
-            title: '删除',
+            title: this.$t('delete'),
             key: 'action',
             align: 'center',
             width: 100,
@@ -235,7 +245,7 @@
                       this.delTarget(params.row.name)
                     }
                   }
-                }, '删除')
+                }, this.$t('delete'))
               ])
             }
           }
@@ -247,7 +257,9 @@
         pageSizeOpts: [10,20,40,80,100,200],
         filter: '',
         job_type_tmp: [],
-        target_type_tmp: []
+        target_type_tmp: [],
+        deleteConfirm: false,
+        delname: ''
       }
     },
     methods: {
@@ -306,7 +318,7 @@
           vconfig.postKey('job_types',this.job_type,'set')
             .then(res => {
               if (res.data['status'] >= 1) {
-                util.notice(this, 'job_types 更改成功', 'success')
+                util.notice(this, 'job_types '+this.$t('modifySuccess'), 'success')
                 this.getJobTypes()
               } else {
                 util.notice(this, `job_types ${res.data['msg']}`, 'warning')
@@ -321,7 +333,7 @@
           vconfig.postKey('target_types',this.target_type,'set')
             .then(res => {
               if (res.data['status'] >= 1) {
-                util.notice(this, 'target_types 更改成功', 'success')
+                util.notice(this, 'target_types '+this.$t('modifySuccess'), 'success')
                 this.getTargetTypes()
               } else {
                 util.notice(this, `target_types ${res.data['msg']}`, 'warning')
@@ -341,13 +353,13 @@
         })
         this.openswitch = true
         this.isAdd = false
-        this.modelTitle = '任务模板详细'
+        this.modelTitle = this.$t('templateDetail')
       },
       targetinfoAdd () {
         this.openswitch = true
         this.formItem = this.formItemOrigin
         this.isAdd = true
-        this.modelTitle = '增加任务模板'
+        this.modelTitle = this.$t('addTemplate')
       },
       formSubmit(data) {
         let formInfo = util.dictDeepCopy(data)
@@ -398,19 +410,21 @@
       },
       delTarget (d) {
         this.delname = d
-        console.log(`确认删除 ${this.delname} ？`)
-        this.$Modal.confirm({'title': `确认删除 ${this.delname} ？`,'onOk': this.realDelTarget, 'cancelText': '取消', 'width': '700px'})
+        this.deleteConfirm=true
+        // console.log(`确认删除 ${this.delname} ？`)
+        // this.$Modal.confirm({'title': `确认删除 ${this.delname} ？`,'onOk': this.realDelTarget, 'cancelText': '取消', 'width': '700px'})
       },
       realDelTarget () {
+        this.deleteConfirm=false
         let d = this.delname
         // axios.get(`${this.baseurl}/executionInfo/del?target=${t}`)
         exec.delExecutionInfo(d)
           .then(res => {
             if (res.data['status'] === 1) {
               this.getCurrentPage();
-              util.notice(this, `${d} 删除成功`, 'success')
+              util.notice(this, `${d} `+this.$t('deleteSuccess'), 'success')
             } else if (res.data['status'] === 0) {
-              util.notice(this, `${d} 删除失败`, 'error')
+              util.notice(this, `${d} `+this.$t('deleteFailed'), 'error')
             }
           })
           .catch(error => {

@@ -30,8 +30,8 @@
             <Button type="primary" shape="circle" icon="md-bookmarks" ghost @click.native="summary()"></Button>
           </Tooltip>
           <i-switch size="large" @on-change="finishFilter" style="margin-left: 50px">
-            <span slot="open">{{ $t('all') }}</span>
-            <span slot="close">{{ $t('filter') }}</span>
+            <span slot="open">{{ $t('filter') }}</span>
+            <span slot="close">{{ $t('all') }}</span>
           </i-switch>
 
           <Tooltip disabled style="float:right;margin-right: 50px">

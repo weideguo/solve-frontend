@@ -4,7 +4,7 @@
       <Card>
         <!--p slot="title">
           <Icon type="md-flower"></Icon>
-          可执行列表
+          {{ $t('executeList') }}
         </p-->
         <Row>
           <Col span="24">
@@ -21,31 +21,31 @@
       <div v-if="current === 0">
         <div>
           <Icon type="md-pin"></Icon>
-          <b>{{openinfo.name_s}}-session参数设置</b>
+          <b>{{openinfo.name_s}}-{{ $t('sessionParamsSetting') }}</b>
           <br><br>
         </div>
-        <constrict-form ref="varsForm" :formdata="sessionFull" nullInfo="没有需要设置的session参数" buttonTooltip="只是保存session，可选" @buttonOperation="saveSession"></constrict-form>
+        <constrict-form ref="varsForm" :formdata="sessionFull" :nullInfo="$t('noSessionNeed')" :buttonTooltip="$t('savaSessionTips')" @buttonOperation="saveSession"></constrict-form>
       </div>
       
       <div v-else-if="current === 1">
         <div>
           <Icon type="md-pin"></Icon>
-          <b>{{openinfo.name_s}}-确认执行</b>
+          <b>{{openinfo.name_s}}-{{ $t('confirmRun') }}</b>
           <br><br>
         </div>
-        <Table border stripe :columns="columnsInfo" :data="dataDetailInfo" :show-header="false" no-data-text="获取执行信息失败"></Table>
+        <Table border stripe :columns="columnsInfo" :data="dataDetailInfo" :show-header="false" :no-data-text="$t('templateInfoFailed')"></Table>
       </div>
       
       <br>
       <Steps :current="current">
-          <Step title="参数设置"></Step>
-          <Step title="确认执行"></Step>
+          <Step :title="$t('paramsSetting')"></Step>
+          <Step :title="$t('confirmRun')"></Step>
       </Steps>
       
       <div slot="footer">
-        <Button @click="previous">上一步</Button>
-        <Button v-if="current != 1" type="primary" @click="next">下一步</Button>
-        <Button v-else type="primary" @click="commit">执行</Button>
+        <Button @click="previous">{{ $t('previousStep') }}</Button>
+        <Button v-if="current != 1" type="primary" @click="next">{{ $t('nextStep') }}</Button>
+        <Button v-else type="primary" @click="commit">{{ $t('run') }}</Button>
       </div>
     </Modal>
 
@@ -55,14 +55,14 @@
         {{showTitle}}
       </p>
       <Tabs value="target">
-        <TabPane label="执行对象" name="target">
+        <TabPane :label="$t('executeTarget')" name="target">
           <div>
-            <p v-if="showContent.length === 0" align="center">执行对象为空</p>
+            <p v-if="showContent.length === 0" align="center">{{ $t('executeTargetEmpty') }}</p>
             <p v-else v-for="item in showContent" :key="item">{{item}}</p>
           </div>
         </TabPane>
-        <TabPane label="模板详情" name="tmpl">
-          <Table border stripe :columns="columnsInfo" :data="tmplInfo" :show-header="false" no-data-text="获取信息失败"></Table>
+        <TabPane :label="$t('templateDetail')" name="tmpl">
+          <Table border stripe :columns="columnsInfo" :data="tmplInfo" :show-header="false" :no-data-text="$t('templateInfoFailed')"></Table>
         </TabPane>
         <TabPane label="playbook" name="playbook">
           <Input v-model="playbookContent" type="textarea" :autosize="{minRows: 10,maxRows: 20}" placeholder="playbook is null" readonly />
@@ -75,7 +75,7 @@
       <p style="color:#f60;margin-left:5%">
         <font size="5">
         <Icon type="ios-help-circle"></Icon>
-        确认删除 {{delname}}
+        {{ $t('confirmDelete') }} {{delname}}
         </font>
       </p>
       <div slot="footer">
@@ -93,6 +93,7 @@
   import util from '@/libs/util'
   import file from '@/api/file'
   import constrictForm from '@/components/common/constrictForm.vue'
+  import VueI18n from 'vue-i18n'
 
   export default {
     components: {
@@ -139,28 +140,28 @@
           },
           
           {
-            title: '执行对象数量',
+            title: this.$t('executeTargetNum'),
             key: 'number',
             align: 'center',
             width: 150,
             sortable: true
           },
           {
-            title: '模板',
+            title: this.$t('template'),
             key: 'tmpl',
             // sortType: 'desc',
             width: 300,
             sortable: true
           },
           {
-            title: 'comment',
+            title: this.$t('comment'),
             key: 'comment',
             tooltip: true,
             sortable: true,
             minWidth: 300
           },
           {
-            title: '执行',
+            title: this.$t('run'),
             key: 'action',
             align: 'center',
             width: 150,
@@ -176,12 +177,12 @@
                       this.execJob(params);
                     }
                   }
-                }, '执行')
+                }, this.$t('run'))
               ])
             }
           },
           {
-            title: '操作',
+            title: this.$t('operation'),
             key: 'action',
             align: 'center',
             width: 150,
@@ -197,12 +198,12 @@
                       this.targetinfoDetail(params)
                     }
                   }
-                }, '设置')
+                }, this.$t('setting'))
               ])
             }
           },
           {
-            title: '删除',
+            title: this.$t('delete'),
             key: 'action',
             align: 'center',
             width: 100,
@@ -218,7 +219,7 @@
                       this.delTarget(params.row.name);
                     }
                   }
-                }, '删除')
+                }, this.$t('delete'))
               ])
             }
           }
@@ -244,7 +245,7 @@
       next () {
         if (this.current === 0) {
           if (this.errFlag) {
-            this.$Message.error('获取playbook的信息失败，不能执行任务')
+            this.$Message.error(this.$t('getPlaybookFailedTips'))
           } else if (JSON.stringify(this.formItem) === '{}') {
             this.current += 1
             this.summary()
@@ -258,7 +259,7 @@
               this.current += 1
               this.summary()
             } else {
-              this.$Message.error('表单检查失败')
+              this.$Message.error(this.$t('form.checkErr'))
             }
           }
         }
@@ -269,7 +270,7 @@
         /**/
         exec.postSession(`${this.openinfo['name']}`, data)
           .then(res => {
-            util.notice(this, 'session保存成功', 'info')
+            util.notice(this, this.$t('sessionSaveSuccess'), 'info')
           })
           .catch(error => {
             util.notice(this, error, 'error')
@@ -315,7 +316,7 @@
             /**/
           })
           .catch(error => {
-            this.$Message.error('获取模板信息失败，请检查模板是否存在！')
+            this.$Message.error(this.$t('getTemplateFailedTips'))
           })
       },
       execJob (params) {
@@ -335,22 +336,22 @@
               this.formItem = {}
               this.formKey = []
               // util.notice(this, '获取session参数失败，请检查playbook是否正确！', 'error')
-              this.$Message.error('获取session参数失败，请检查playbook是否正确')
+              this.$Message.error(this.$t('getSessionFailedTips'))
             })
         } else {
-          this.$Message.error('请先选择执行对象')
+          this.$Message.error(this.$t('getExecuteTargetTips'))
         } 
       },
       commit () {
         if (this.errFlag) {
-          this.$Modal.error({'title': '获取playbook的信息失败，不能执行任务'})
+          this.$Message.error(this.$t('getPlaybookFailedTips') )
         } else {
           this.openswitch = false
-          this.$Message.info('开始提交，请勿多次运行')
+          this.$Message.info(this.$t('afterCommitTips'))
           // axios.post(`${this.baseurl}/execution/?filter=${this.openinfo['name']}`, this.sessionInfo)
           exec.postExecution(this.openinfo['name'], this.sessionInfo)
             .then(res => {
-              util.notice(this, `${this.openinfo['name_s']} 开始执行`, 'info')
+              util.notice(this, `${this.openinfo['name_s']} `+this.$t('commitBegin'), 'info')
               util.openPageEx(this, 'orderDetail', {workid: res.data['data']})
             })
             .catch(error => {
@@ -405,9 +406,9 @@
           .then(res => {
             if (res.data['status'] === 1) {
               this.getCurrentPage();
-              util.notice(this, `${d} 删除成功`, 'success');
+              util.notice(this, `${d} `+this.$t('deleteSuccess'), 'success');
             } else {
-              util.notice(this, `${d} 删除失败`, 'error');
+              util.notice(this, `${d} `+this.$t('deleteFailed'), 'error');
             }
           })
           .catch(error => {

@@ -9,16 +9,18 @@
         <span class="error401-0-span"><Icon type="md-lock"></Icon></span>
         1
       </div>
-      <p class="error401-body-con-message">对不起,该用户没有此页面访问权限，请联系管理员!</p>
+      <p class="error401-body-con-message">{{ $t('msg401Tips') }}</p>
       <div class="error401-btn-con">
-        <Button @click="goHome" size="large" style="width: 200px;" type="text">返回首页</Button>
-        <Button @click="backPage" size="large" style="width: 200px;margin-left: 40px;" type="primary">返回上一页</Button>
+        <Button @click="goHome" size="large" style="width: 200px;" type="text">{{ $t('backToHome') }}</Button>
+        <Button @click="backPage" size="large" style="width: 200px;margin-left: 40px;" type="primary">{{ $t('backToPre') }}</Button>
       </div>
     </Card>
   </div> 
 </template>
 
 <script>
+  import VueI18n from 'vue-i18n'
+
   export default {
     name: 'Error401',
     methods: {

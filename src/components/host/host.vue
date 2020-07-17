@@ -3,15 +3,14 @@
     <Row>
       <Card>
         <div slot="title" style="height: 32px">
-          <Button type="info" icon="md-add" @click.native="targetinfoAdd()">添加主机</Button>
-          <!--<Checkbox v-model="isOnline" @click.prevent.native="onlineFilter" style="margin-left: 50px">只选已连接</Checkbox>-->
+          <Button type="info" icon="md-add" @click.native="targetinfoAdd()">{{ $t('addHost') }}</Button>
           <!--Vue 限制的两个标签 Switch 和 Circle-->
           <i-switch size="large" @on-change="onlineFilter" style="margin-left: 50px">
-            <span slot="open">连接</span>
-            <span slot="close">全部</span>
+            <span slot="open">{{ $t('connect') }}</span>
+            <span slot="close">{{ $t('all') }}</span>
           </i-switch>
           <div style="float:right;margin-right: 0px">
-            <Input v-model="searchWord" @on-search="search()" search enter-button placeholder="* 可用为搜索通配符" style="width: 350px"/>
+            <Input v-model="searchWord" @on-search="search()" search enter-button :placeholder="$t('searchTips')" style="width: 350px"/>
           </div>
         </div>
         
@@ -30,10 +29,22 @@
         <span>{{modelTitle}}</span>
       </p>
       
-      <safe-form ref="myform" :labelwidth="100" :formdata="formItem" :formvalidate="formItemValidate" @primaryClick="formCommit" @secondClick="optionOperate" :secondCheck="!isAdd" :secondButtonName="isAdd?'取消':'复制'"></safe-form>
+      <safe-form ref="myform" :labelwidth="100" :formdata="formItem" :formvalidate="formItemValidate" @primaryClick="formCommit" @secondClick="optionOperate" :secondCheck="!isAdd" :secondButtonName="isAdd? $t('cancel') : $t('copy')"></safe-form>
       <div slot="footer"></div>
     </Modal>
 
+    <Modal v-model="deleteConfirm" width="50%" :closable="false">
+      <p style="color:#f60;margin-left:5%">
+        <font size="5">
+        <Icon type="ios-help-circle"></Icon>
+        {{ $t('confirmDelete') }} {{delname}}
+        </font>
+      </p>
+      <div slot="footer">
+        <Button type="text" @click="deleteConfirm=false">{{ $t('cancel') }}</Button>
+        <Button type="error" @click="realDelTarget" >{{ $t('delete') }}</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 "
@@ -60,7 +71,7 @@
           ip: [
             {
               required: true,
-              message: '请输入主机ip',
+              message: this.$t('inputIpTips'),
               trigger: 'blur'
             },
             {
@@ -71,7 +82,7 @@
           user: [
             {
               required: true,
-              message: '请输入连接的用户',
+              message: this.$t('inputUserTips'),
               trigger: 'blur'
             },
             {
@@ -82,7 +93,7 @@
           ssh_port: [
             {
               required: true,
-              message: '请输入连接的SSH端口',
+              message: this.$t('inputSshPortTips'),
               trigger: 'blur'
             },
             {
@@ -93,7 +104,7 @@
           passwd: [
             {
               required: true,
-              message: '请输入连接的密码',
+              message: this.$t('inputHostPasswordTips'),
               trigger: 'blur'
             },
             {
@@ -118,20 +129,20 @@
             sortable: true
           },
           {
-            title: 'SSH端口',
+            title: this.$t('sshPort'),
             key: 'ssh_port',
             width: 200,
             sortable: true
           },
           {
-            title: '用户',
+            title: this.$t('user'),
             key: 'user',
             align: 'center',
             sortable: true,
             width: 100
           },
           {
-            title: '操作',
+            title: this.$t('operation'),
             key: 'action',
             align: 'center',
             width: 200,
@@ -149,7 +160,7 @@
                         this.createConn(params);
                       }
                     }
-                  }, '创建连接')
+                  }, this.$t('createConnect'))
                 ])
               } else if (params.row['is_conn'] === 1) {
                 x = h('div', [
@@ -163,7 +174,7 @@
                         this.closeConn(params);
                       }
                     }
-                  }, '断开连接')
+                  }, this.$t('closeConnect'))
                 ])
               } else if (params.row['is_conn'] === 2) {
                 x = h('div', [
@@ -178,7 +189,7 @@
                         this.closeConn(params);
                       }
                     }
-                  }, '断开连接...')
+                  }, this.$t('closeConnecting'))
                 ])
               } else if (params.row['is_conn'] === 3) {
                 x = h('div', [
@@ -193,14 +204,14 @@
                         this.createConn(params);
                       }
                     }
-                  }, '创建连接...')
+                  }, this.$t('createConnecting'))
                 ])
               }
               return x
             }
           },
           {
-            title: '详细',
+            title: this.$t('detail'),
             key: 'action',
             align: 'center',
             width: 200,
@@ -217,13 +228,13 @@
                       this.targetinfoDetail(params.row)
                     }
                   }
-                }, '详细')
+                }, this.$t('detail'))
                 ])
               return x
             }
           },
           {
-            title: '删除',
+            title: this.$t('delete'),
             key: 'action',
             align: 'center',
             width: 100,
@@ -239,7 +250,7 @@
                       this.delTarget(params.row.name);
                     }
                   }
-                }, '删除')
+                }, this.$t('delete'))
               ])
             }
           }
@@ -251,7 +262,9 @@
         filter: '',
         openswitch: false,
         modelTitle: '',
-        isAdd: false
+        isAdd: false,
+        deleteConfirm: false,
+        delname: ''
       }
     },
     methods: {
@@ -270,7 +283,7 @@
           console.log('is add')
           data['name'] = 'realhost_' + data['ip']
           if (data['name'] === this.opentarget) {
-            this.$Message.error('新增ip必须与现有的不同')
+            this.$Message.error(this.$t('ipUniqueTips'))
           } else {
             this.addTarget(data)
             this.openswitch = false
@@ -343,7 +356,7 @@
         if (info['name'].search('^' + this.$route.name) > -1) {
           this.openswitch = true
           this.isAdd = false
-          this.modelTitle = "更新信息"
+          this.modelTitle = this.$t('updateInfo')
           this.opentarget = info['name']
           let x = ['name','is_conn','_index','_rowKey']
           x.forEach((item,i) => {
@@ -356,14 +369,14 @@
           this.formItem = this.formItemNew
         } else {
           // util.notice(this, '当前项不在此查看详细', 'info')
-          this.$Message.info('当前项不能在此查看与修改')
+          this.$Message.info(this.$t('notUpdateTips'))
         }
       },
       targetinfoAdd () {
         this.openswitch = true;
         this.isAdd = true
         this.formItem = this.formItemOrigin
-        this.modelTitle = "新增信息"
+        this.modelTitle = this.$t('addInfo')
       },
       getCurrentPage (vl) {
         this.filter = this.$route.name;
@@ -379,9 +392,11 @@
       },
       delTarget (t) {
         this.delname = t
-        this.$Modal.confirm({'title': `确认删除 ${this.delname} ？`,'onOk': this.realDelTarget, 'cancelText': '取消'});
+        this.deleteConfirm = true
+        // this.$Modal.confirm({'title': `确认删除 ${this.delname} ？`,'onOk': this.realDelTarget, 'cancelText': '取消'});
       },
       realDelTarget () {
+        this.deleteConfirm = false
         let t = this.delname
         // axios.get(`${this.baseurl}/target/del?target=${t}`)
         target.delTarget(t.replace('#','%23'))
@@ -389,9 +404,9 @@
             // console.log(res.data.status);
             if (res.data['status'] === 1) {
               this.getCurrentPage();
-              util.notice(this, `${t} 删除成功`, 'success')
+              util.notice(this, `${t} `+this.$t('deleteSuccess'), 'success')
             } else {
-              util.notice(this, `${t} 删除失败`, 'error')
+              util.notice(this, `${t} `+this.$t('deleteFailed'), 'error')
             }
           })
           .catch(error => {
@@ -430,7 +445,7 @@
               util.notice(this, error, 'error')
             })
         } else {
-          this.$Message.info('ip不存在，不能关闭连接')
+          this.$Message.info(this.$t('notCloseConnectTips'))
         }    
       },
       createConn (params) {
@@ -451,7 +466,7 @@
               util.notice(this, error, 'error')
             })
         } else {
-          this.$Message.info('ip不存在，不能建立连接')
+          this.$Message.info(this.$t('notCreateConnectTips'))
         }
       },
       reflashTmpl() {

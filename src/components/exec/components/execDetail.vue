@@ -5,7 +5,7 @@
         <div slot="title">
           <p>{{title}}</p>
           <br><br>
-          <Tooltip :content="$t('showPlaybook')" placement="bottom">
+          <Tooltip :content="$t('showPlaybook')" placement="bottom-start">
             <Button type="primary" shape="circle" icon="md-book" ghost @click.native="playbookDetial()"></Button>
           </Tooltip>
           <Tooltip :content="$t('save')" placement="bottom" style="margin-left: 20px">

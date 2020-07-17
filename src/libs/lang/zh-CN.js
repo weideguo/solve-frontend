@@ -112,6 +112,80 @@ const lang = {
     addUser: '增加用户',
     chanePassword: '修改用户密码',
     usernameNotSame: '用户名不一致!请重新操作!',
+    deleteUser :'删除用户',
+    confirmDelete: '确认删除',
+    confirm: '确定',
+    getTemplateFailedTips: '获取任务模板信息失败，请检查使用的任务模板！',
+    templateNotMatchTips: '执行对象必须与模板匹配！',
+    addJob: '任务添加',
+    modifyJob: '任务修改',
+    setTemplateTips: '请先设置模板',
+    commitTips: '确认执行？',
+    executeList: '可执行列表',
+    sessionParamsSetting: 'session参数设置',
+    noSessionNeed: '没有需要设置的session参数',
+    savaSessionTips: '只是保存session，可选',
+    confirmRun: '确认执行',
+    paramsSetting: '参数设置',
+    previousStep: '上一步',
+    nextStep: '下一步',
+    executeTargetEmpty: '执行对象为空',
+    templateDetail: '模板详情',
+    templateInfoFailed: '获取信息失败',
+    template: '模板',
+    comment: '注释',
+    getPlaybookFailedTips: '获取playbook的信息失败，不能执行任务',
+    getSessionFailedTips: '获取session参数失败，请检查playbook是否正确',
+    getExecuteTargetTips: '请先选择执行对象',
+    afterCommitTips: '开始提交，请勿多次运行',
+    modifySelectedInfo: '修改选择信息',
+    addTemplate: '增加任务模板',
+    modifyTips: '修改以下可选项信息',
+    commit: '提交',
+    templateName: '模板名',
+    targetType: '任务的执行对象类型',
+    jobType: '任务的类型',
+    inputTemplateNameTips: '请输入模板名',
+    selectTargetTypeTips: '请选择任务的执行对象',
+    inputPlaybookTips: '请输入playbook',
+    selectJobTypeTips: '请选择任务的类型',
+    inputCommentTips: '请输入简要说明',
+    createJob: '生成任务',
+    modifySuccess: '更改成功',
+    spliter: '分隔符',
+    executeType: '执行方式',
+    serial: '串行',
+    parallel: '并行',
+    config: '配置信息',
+    inputConfigTips: '请输入配置信息',
+    changeTips: '请按照提示更改输入项',
+    fastJobBegin: '开始执行快速任务',
+    playbookFistLineTips: '非空以及非注释的第一行应该为跳转语句 [XXX]',
+    playbookNotEmptyTips: '不能都为注释或者空行',
+    addHost: '添加主机',
+    connect: '连接',
+    searchTips: '* 可用为搜索通配符',
+    inputIpTips: '请输入主机ip',
+    inputUserTips: '请输入连接的用户',
+    inputSshPortTips: '请输入连接的SSH端口',
+    inputHostPasswordTips: '请输入连接的密码',
+    sshPort: 'SSH端口',
+    user: '用户',
+    createConnect: '创建连接',
+    closeConnect: '断开连接',
+    closeConnecting: '断开连接...',
+    createConnecting: '创建连接...',
+    ipUniqueTips: '新增ip必须与现有的不同',
+    updateInfo: '更新信息',
+    notUpdateTips: '当前项不能在此查看与修改',
+    addInfo: '新增信息',
+    notCloseConnectTips: 'ip不存在，不能关闭连接',
+    notCreateConnectTips: 'ip不存在，不能建立连接',
+    modifyFiled: '修改字段信息',
+    inputTargetNameTips: '请输入执行对象名',
+    info: '信息',
+    nameUniqueTips: '新增name必须与现有的不同',
+    copy: '复制',
     msg_404: '404-页面不存在',
     form: {
         checkErr: '表单检查失败',
@@ -121,7 +195,19 @@ const lang = {
         projectEmpty: '请选择项目'
 
     },
-
+    exeinfoDemo: 
+                 '# 每一行通过分割符分割后当成一个对象使用playbook执行       \n'+
+                 '# 样例如：                                              \n'+
+                 '10.0.0.1  |  whoami  |  pwd                            \n'+
+                 '10.0.0.2  |  who     |  date                            \n'+
+                 '10.0.0.3  |  date    |  who                              ',
+    playbookDemo: 
+                  '# 使用方式跟普通的playbook类似                                      \n'+
+                  '# 不同之处为使用 _1 _2 _3 ... 接受单行配置信息分割后的对应参数         \n'+
+                  '# 样例如：                                                          \n'+
+                  '[{{_1}}]                                                           \n'+
+                  'echo {{_2}}                                                        \n'+
+                  'echo {{_3}}                                                          ',
 
 }
 
