@@ -38,19 +38,6 @@
       <div slot="footer"></div>
     </Modal>
 
-    <Modal v-model="deleteConfirm" width="50%" :closable="false">
-      <p style="color:#f60;margin-left:5%">
-        <font size="5">
-        <Icon type="ios-help-circle"></Icon>
-        {{ $t('confirmDelete') }} {{delname}}
-        </font>
-      </p>
-      <div slot="footer">
-        <Button type="text" @click="deleteConfirm=false">{{ $t('cancel') }}</Button>
-        <Button type="error" @click="realDelTarget" >{{ $t('delete') }}</Button>
-      </div>
-    </Modal>
-
   </div>
 </template>
 
@@ -159,8 +146,8 @@
         openswitch: false,
         switchFormInfo: false,
         isAdd: true,
-        deleteConfirm: false,
-        delname: ''
+        // deleteConfirm: false,
+        // delname: ''
       }
     },
     methods: {
@@ -266,11 +253,11 @@
       },
       delTarget (t) {
         this.delname = t
-        this.deleteConfirm = true
-        // this.$Modal.confirm({'title': `确认删除 ${this.delname} ？`,'onOk': this.realDelTarget, 'cancelText': '取消', 'width': '700px'});
+        // this.deleteConfirm = true
+        this.$Modal.confirm({'title': this.$t('confirmDelete')+` ${this.delname} ？`,'onOk': this.realDelTarget, 'okText':this.$t('delete'), 'cancelText': this.$t('cancel') , 'width': '700px'});
       },
       realDelTarget () {
-        this.deleteConfirm=false
+        // this.deleteConfirm=false
         let t = this.delname
 
         // axios.get(`${this.baseurl}/target/del?target=${t}`)

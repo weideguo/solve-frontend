@@ -37,7 +37,7 @@ const RouterConfig = {
   routes: MainRoute
 }
 
-Vue.locale = () => {};
+// Vue.locale = () => {};
 const messages = {
     'en-US': Object.assign(myEN, en),
     'zh-CN': Object.assign(myZH, zh)

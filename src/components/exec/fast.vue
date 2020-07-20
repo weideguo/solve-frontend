@@ -25,20 +25,6 @@
         </FormItem>
     </Form>
 
-  <Modal v-model="commitConfirm" width="50%" :closable="false">
-    <p style="color:#f60;margin-left:5%">
-      <font size="5">
-      <Icon type="ios-help-circle"></Icon>
-      {{ $t('commitTips') }}
-      </font>
-    </p>
-    <div slot="footer">
-      <Button type="text" @click="commitConfirm=false">{{ $t('cancel') }}</Button>
-      <Button type="error" @click="realCommit" >{{ $t('commit') }}</Button>
-    </div>
-  </Modal>
-
-
   </Card>
 </template>
 
@@ -80,7 +66,7 @@
             }
           ],
         },
-        commitConfirm: false,
+        // commitConfirm: false,
         exeinfoDemo: this.$t('exeinfoDemo'),
         playbookDemo: this.$t('playbookDemo')
       }
@@ -98,10 +84,10 @@
         sessionStorage.setItem("fast_info", JSON.stringify(this.formItem))
         this.$refs['fastForm'].validate((valid) => {
             if (valid) {
-              this.commitConfirm = true
-              // this.$Modal.confirm({'title': '确认执行？','onOk': this.realCommit, 'cancelText': '取消'})
+              // this.commitConfirm = true
+              this.$Modal.confirm({'title': this.$t('commitTips') ,'onOk': this.realCommit, 'okText': this.$t('commit'), 'cancelText': this.$t('cancel')})
             } else {
-              this.commitConfirm = false
+              // this.commitConfirm = false
               this.$Message.error(this.$t('changeTips'))
             }
         })
