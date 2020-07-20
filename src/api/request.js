@@ -8,6 +8,7 @@ const request = axios.create({
 
 request.interceptors.request.use(
   config => {
+    config.headers['Accept-Language'] =  localStorage.getItem('language')
     config.headers['Authorization'] =  sessionStorage.getItem('jwt')
     return config
   },
