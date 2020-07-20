@@ -13,7 +13,7 @@ import particles from 'particles.js/particles'
 import VueI18n from 'vue-i18n';
 import en from 'view-design/dist/locale/en-US';
 import zh from 'view-design/dist/locale/zh-CN';
-
+import { locale } from 'view-design';
 // 自定义lang
 import myEN from './libs/lang/en-US';
 import myZH  from './libs/lang/zh-CN';
@@ -50,14 +50,16 @@ let languageList= [
 sessionStorage.setItem('languageList', JSON.stringify(languageList))
 
 // 在其他页面通过设置localStorage并重新加载，实现语言设置
-let locale = localStorage.getItem('language')
-if (locale === null) {
-  locale='zh-CN'
+let _locale = localStorage.getItem('language')
+if (_locale === null) {
+  _locale='zh-CN'
 }
 const i18n = new VueI18n({
-    locale: locale,  // set locale
+    locale: _locale,  // set locale
     messages  // set locale messages
 });
+// locale(en)
+locale(messages[_locale])
 
 const router = new VueRouter(RouterConfig)
 
