@@ -46,6 +46,7 @@
         <Button @click="previous">{{ $t('previousStep') }}</Button>
         <Button v-if="current != 1" type="primary" @click="next">{{ $t('nextStep') }}</Button>
         <Button v-else type="primary" @click="commit">{{ $t('run') }}</Button>
+        <Button v-if="current === 1 && debugAble" type="info" @click="debugRun">{{ $t('debugRun') }}</Button>
       </div>
     </Modal>
 
@@ -232,6 +233,7 @@
         filter: '',
         sessionFull: [],
         sessionInfo: [],
+        debugAble: false
         // deleteConfirm: false,
         // delname: ''
       }
@@ -321,6 +323,11 @@
       },
       execJob (params) {
         if (parseInt(params.row['number'])){
+          if ((parseInt(params.row['number'])) === 1) {
+            this.debugAble = true
+          } else {
+            this.debugAble = false
+          }
           this.openinfo = params.row
           this.openinfo_s = params.row['name_s']
           // axios.get(`${this.baseurl}/session/extend?filter=${params.row['name']}`)
@@ -358,6 +365,9 @@
               util.notice(this, error, 'error')
             })
         }
+      },
+      debugRun () {
+        console.log("debug running")
       },
       targetinfoDetail (params) {
         this.execInfo = params.row;

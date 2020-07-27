@@ -73,7 +73,27 @@
       <div>
         <Table border stripe :columns="columnsDetailInfo" :data="dataDetailInfo" :show-header="false" :no-data-text="$t('noCommandInfo')"></Table>
       </div>
-      <div slot="footer">
+      <div v-if="pauseOpt" slot="footer">
+        <Tooltip :content="$t('pauseAbort')" placement="top">
+          <Button type="warning" shape="circle" icon="md-close" @click.native="pauseAbort"></Button>
+        </Tooltip>
+        <Tooltip :content="$t('pauseRunAll')" placement="top">
+          <Button type="info" shape="circle" icon="md-checkmark" @click.native="pauseRunAll"></Button>
+        </Tooltip>
+        <Tooltip :content="$t('pauseRunNext')" placement="top">
+          <Button type="info" shape="circle" icon="md-fastforward" @click.native="pauseRunNext"></Button>
+        </Tooltip>
+        <Tooltip :content="$t('prePage')" placement="top">
+          <Button type="primary" shape="circle" icon="md-arrow-round-back" ghost @click.native="showDetailPre"></Button>
+        </Tooltip>
+        <Tooltip :content="$t('nextPage') " placement="top">
+          <Button type="primary" shape="circle" icon="md-arrow-forward" ghost @click.native="showDetailNext"></Button>
+        </Tooltip>
+        <Tooltip :content="$t('refresh')" placement="top" style="margin-right: 20px">
+          <Button type="primary" shape="circle" icon="md-refresh" ghost @click.native="refreshDetailInfo"></Button>
+        </Tooltip>
+      </div>
+      <div v-else slot="footer">
         <Tooltip :content="$t('prePage')" placement="top">
           <Button type="primary" shape="circle" icon="md-arrow-round-back" ghost @click.native="showDetailPre"></Button>
         </Tooltip>
@@ -350,7 +370,8 @@
         runTitle: '',
         currentTarget: '',
         finishOnly: false,
-        newJobId:''
+        newJobId:'',
+        pauseOpt: false
       }
     },
     methods: {
@@ -444,23 +465,33 @@
             util.notice(this, error, 'error')
           })
       },
+      realQuickShow (targetId) {
+        order.exelist(targetId)
+          .then(res => {
+            this.pauseTarget=''
+            if(res.data['pause']) {
+              this.pauseTarget=targetId
+            }
+            console.log(this.pauseTarget)
+            this.exelist=res.data['exelist']
+            this.dataDetail = []
+            res.data['exelist'].forEach((item, index) => {
+              this.dataDetail.push({'index': index + 1, 'log_id': item})
+            })
+          })
+          .catch(error => {
+            util.notice(this, error, 'error')
+          })
+      },
       quickShow (params, index) {
         this.modalList = !this.modalList
         if (this.modalList) {
           this.currentTarget = params['target']
           this.currentTargetId = params['target_id']
           // axios.get(`${this.baseurl}/order/exelist?id=${params['target_id']}`)
-          order.exelist(params['target_id'])
-            .then(res => {
-              this.exelist=res.data['exelist']
-              this.dataDetail = []
-              res.data['exelist'].forEach((item, index) => {
-                this.dataDetail.push({'index': index + 1, 'log_id': item})
-              })
-            })
-            .catch(error => {
-              util.notice(this, error, 'error')
-            })
+          this.realQuickShow(params['target_id'])
+        } else {
+          this.currentTargetId = ''
         }
       },
       showDetailPre () {
@@ -473,13 +504,14 @@
         console.log(this.exelist[this.detailIndex-1],this.detailIndex)
       },
       showDetailNext () {
+        this.realQuickShow(this.currentTargetId)
         if ( this.detailIndex < this.exelist.length ) {
           this.detailIndex=this.detailIndex+1
         } else {
           this.$Message.info(this.$t('noBackward'))
         }
         this.realShowDetail(this.exelist[this.detailIndex-1],this.detailIndex)
-        console.log(this.exelist[this.detailIndex-1],this.detailIndex)
+        // console.log(this.exelist[this.detailIndex-1],this.detailIndex)
       },
       showDetail (params, index) {
         this.realShowDetail(params['log_id'], params['index'])
@@ -495,6 +527,15 @@
         // axios.get(`${this.baseurl}/order/exedetail?id=${logID}`)
         order.exedetail(logID)
           .then(res => {
+            this.pauseOpt=false
+            if (this.pauseTarget) {
+              // 当前执行信息为 {stdout: "pausing"} 则显示断点执行的操作
+              let tmp_exedetail=res.data['exedetail']
+              if (tmp_exedetail['stdout'] === 'pausing' && Object.keys(tmp_exedetail).length === 1 ){
+                this.pauseOpt=true
+              }
+            } 
+            // console.log(this.pauseTarget+' '+this.pauseOpt)
             this.dataDetailInfo = util.dict2arry(res.data['exedetail'], 'key', 'value')
           })
           .catch(error => {
@@ -541,6 +582,9 @@
         }
       },
       getCurrentPage (exclude='') {
+        if (this.currentTargetId) {
+          this.realQuickShow(this.currentTargetId)
+        }
         this.workid = this.$route.query['workid']
         if (this.workid) {
           sessionStorage.setItem('order_list_workid', this.workid)
@@ -562,6 +606,36 @@
             } else {
               util.notice(this, res.data['msg'], 'error')
             }
+          })
+          .catch(error => {
+            util.notice(this, error, 'error')
+          })
+      },
+      pauseAbort() {
+        exec.pauseRun(this.pauseTarget, 'abort')
+          .then(res => {
+            this.refreshCurrentPage()
+            this.modalDetail = false
+          })
+          .catch(error => {
+            util.notice(this, error, 'error')
+          })
+      },
+      pauseRunAll() {
+        exec.pauseRun(this.pauseTarget, '-1')
+          .then(res => {
+            this.refreshCurrentPage()
+            this.modalDetail = false
+          })
+          .catch(error => {
+            util.notice(this, error, 'error')
+          })
+      },
+      pauseRunNext() {
+        exec.pauseRun(this.pauseTarget, '0')
+          .then(res => {
+            // this.refreshCurrentPage()
+            this.showDetailNext()
           })
           .catch(error => {
             util.notice(this, error, 'error')
