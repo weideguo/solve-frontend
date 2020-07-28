@@ -186,7 +186,10 @@ const lang = {
     info: '信息',
     nameUniqueTips: '新增name必须与现有的不同',
     copy: '复制',
-    msg_404: '404-页面不存在',
+    pauseAbort: '终止断点运行',
+    pauseRunAll: '取消断点正常运行',
+    pauseRunNext: '运行当前暂停任务',
+    debugRun: '断点运行',
     form: {
         checkErr: '表单检查失败',
         userEmpty: '请填写用户名',
