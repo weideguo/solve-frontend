@@ -46,9 +46,9 @@ export default {
       method: 'get',
     })
   },
-  postExecution: function (filter,params) {
+  postExecution: function (filter,params,debug=0) {
     return request({
-      url: `/execution/?filter=${filter}`,
+      url: `/execution/?filter=${filter}&debug=${debug}`,
       method: 'post',
       data: params
     })

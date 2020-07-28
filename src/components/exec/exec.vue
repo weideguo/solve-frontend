@@ -349,14 +349,14 @@
           this.$Message.error(this.$t('getExecuteTargetTips'))
         } 
       },
-      commit () {
+      realCommit (debug=0) {
         if (this.errFlag) {
           this.$Message.error(this.$t('getPlaybookFailedTips') )
         } else {
           this.openswitch = false
           this.$Message.info(this.$t('afterCommitTips'))
           // axios.post(`${this.baseurl}/execution/?filter=${this.openinfo['name']}`, this.sessionInfo)
-          exec.postExecution(this.openinfo['name'], this.sessionInfo)
+          exec.postExecution(this.openinfo['name'], this.sessionInfo, debug)
             .then(res => {
               util.notice(this, `${this.openinfo['name_s']} `+this.$t('commitBegin'), 'info')
               util.openPageEx(this, 'orderDetail', {workid: res.data['data']})
@@ -366,8 +366,11 @@
             })
         }
       },
+      commit () {
+        this.realCommit()
+      },
       debugRun () {
-        console.log("debug running")
+        this.realCommit(1)
       },
       targetinfoDetail (params) {
         this.execInfo = params.row;
