@@ -252,8 +252,8 @@
             this.current += 1
             this.summary()
           } else {
-            // this.sessionInfo = this.$refs['varsForm'].getFormItem()
-            this.sessionInfo = this.$refs['varsForm'].formItem
+            this.sessionInfo = this.$refs['varsForm'].getFormItem()
+            // this.sessionInfo = this.$refs['varsForm'].formItem
             this.sessionFull.forEach((item) => {
               item['value'] = this.sessionInfo[item['key']]
             })

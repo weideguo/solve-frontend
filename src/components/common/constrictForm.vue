@@ -20,6 +20,7 @@
           </Upload>
           <div style="clear:both"></div>
         </div>
+        <DatePicker v-else-if="formType[k] === 'datetime'" v-model="formItem[k]" format="yyyy-MM-dd HH:mm:ss" type="datetime" :placeholder="formComment[k]" ></DatePicker>
         <Input v-else v-model="formItem[k]" type="textarea" :autosize="true" :placeholder="formComment[k]" clearable></Input>
       </FormItem>
 
@@ -77,6 +78,7 @@ export default {
         'Authorization': sessionStorage.getItem('jwt')
       },
       baseurl: this.$store.getters.sessionGet('baseurl'),
+      cache_date_str: ''
     }
   },
   methods: {
@@ -93,7 +95,8 @@ export default {
     },
     buttonOperation() {
       // console.log(this.formItem)
-      this.$emit('buttonOperation', this.formItem)
+      // this.$emit('buttonOperation', this.formItem)
+      this.$emit('buttonOperation', this.getFormItem())
     },
     updateFormdata() {
       let formdataCopy = util.dictDeepCopy(this.formdata)
@@ -134,9 +137,10 @@ export default {
       this.formComment = util.arry2dict(formdataCopy,'key','comment')
       this.formType = util.arry2dict(formdataCopy,'key','type')
       this.formConstrict = util.arry2dict(formdataCopy,'key','constrict')
-      this.formKey = util.dictKeys(this.formItem)          
+      this.formKey = util.dictKeys(this.formItem)         
     },
     checkValidate() {
+      // console.log(this.formItem)
       let f
       this.$refs[this.formRef].validate((valid) => {
         f = valid
@@ -144,6 +148,18 @@ export default {
       return f
     },
     getFormItem() {
+      function p (s) {
+        return s < 10 ? '0' + s : s;
+      }
+      for( let k in this.formItem) {
+        // 为时间类型是格式转换
+        if ( this.formItem[k] instanceof Date) {
+          let d=this.formItem[k]
+          let date = (d.getFullYear()) + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds())
+          this.formItem[k] = date
+        }
+      }
+      // console.log(this.formItem)
       return this.formItem
     }
   },

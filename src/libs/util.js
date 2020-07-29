@@ -274,7 +274,10 @@ util.download = function(vm, url, filename) {
 util.validatorGenerator = function(constrict) {
   return function(rule, value, callback) {
     // console.log(value, rule, constrict)
-    if ((typeof constrict) === 'string') {
+    if ( value instanceof Date){
+      // 为时间时
+      callback()
+    }else if ((typeof constrict) === 'string') {
       let reg = new RegExp(constrict)
       if (value.search(reg) < 0) {
         callback(new Error('RegExp: '+constrict))
