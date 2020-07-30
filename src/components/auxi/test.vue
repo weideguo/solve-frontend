@@ -17,6 +17,7 @@
   import axios from 'axios'
   import util from '@/libs/util'
   import VueI18n from 'vue-i18n'
+  import request from '@/api/request'
 
   export default {
     name: 'test',
@@ -30,13 +31,14 @@
       console.log(this.$t("message.title"))
     },
     created () {
-      // axios.get("http://192.168.253.128:9000/file/list?path=/tmpx")
-      //   .then(res => {
-      //     this.title=res.data['path']
-      //     console.log(res.data)
-      //   }).catch(error => {
-      //     util.notice(this, error, 'error')
-      //   })
+      //axios.get("http://192.168.253.128:8000/api/v1/test/")
+      request.get("http://192.168.253.128:8000/api/v1/config/?key=job_typesx")
+        .then(res => {
+          // this.title=res.data['path']
+          console.log(res.data)
+        }).catch(error => {
+          util.notice(this, error, 'error')
+        })
     }
   }
 </script>

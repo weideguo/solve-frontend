@@ -43,10 +43,11 @@
       </Steps>
       
       <div slot="footer">
-        <Button @click="previous">{{ $t('previousStep') }}</Button>
-        <Button v-if="current != 1" type="primary" @click="next">{{ $t('nextStep') }}</Button>
-        <Button v-else type="primary" @click="commit">{{ $t('run') }}</Button>
-        <Button v-if="current === 1 && debugAble" type="info" @click="debugRun">{{ $t('debugRun') }}</Button>
+        <Button v-if="current != 0" @click="previous">{{ $t('previousStep') }}</Button>
+        <Button v-if="current === 0" type="primary" @click="next">{{ $t('nextStep') }}</Button>
+        <Button v-if="current === 1" type="primary" @click="commit">{{ $t('run') }}</Button>
+        <Button v-if="current === 1" type="info" @click="debugRun">{{ $t('debugRun') }}</Button>
+        <!--Button v-if="current === 1 && debugAble" type="info" @click="debugRun">{{ $t('debugRun') }}</Button-->
       </div>
     </Modal>
 
