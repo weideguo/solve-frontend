@@ -1,23 +1,38 @@
 <template>
   <Card>
     <Form ref="fastForm" :model="formItem" :rules="formItemValidate" :label-width="80">
-
-        <FormItem :label="$t('spliter') " >
-          <Select v-model="formItem.spliter" filterable allow-create @on-create="pushItem">
-                <Option v-for="item in spliterList" :value="item" :key="item">{{ item }}</Option>
-          </Select>
-        </FormItem>
-        <FormItem :label="$t('executeType')">
-          <i-switch v-model="formItem.parallel" size="large">
-            <span slot="open">{{ $t('parallel') }}</span>
-            <span slot="close">{{ $t('serial') }}</span>
-          </i-switch>
+        <FormItem :label="$t('spliter')">
+          <Row>
+            <Col span="3">
+              <FormItem>
+                <Select v-model="formItem.spliter" filterable allow-create @on-create="pushItem">
+                  <Option v-for="item in spliterList" :value="item" :key="item">{{ item }}</Option>
+                </Select>
+              </FormItem>
+            </Col>    
+            <Col span="20">    
+              <FormItem :label="$t('executeType')">
+                <i-switch v-model="formItem.parallel" size="large">
+                  <span slot="open">{{ $t('parallel') }}</span>
+                  <span slot="close">{{ $t('serial') }}</span>
+                </i-switch>
+              </FormItem>
+            </Col>
+            <Col span="1">    
+              <FormItem>
+                <i-switch v-model="debugRun" size="large">
+                  <span slot="open">debug</span>
+                  <span slot="close"></span>
+                </i-switch>
+              </FormItem>
+            </Col>
+          </Row>
         </FormItem>
         <FormItem :label="$t('config')" prop="exeinfo">
             <Input v-model="formItem.exeinfo" type="textarea" :autosize="{minRows: 15}" :placeholder="exeinfoDemo"></Input>
         </FormItem>
         <FormItem label="playbook" prop="playbook">
-            <Input v-model="formItem.playbook" type="textarea" :autosize="{minRows: 10}" :placeholder="playbookDemo"></Input>
+            <Input v-model="formItem.playbook" type="textarea" :autosize="{minRows: 14}" :placeholder="playbookDemo"></Input>
         </FormItem>
         <FormItem>
             <Button type="primary" @click="commit">{{ $t('run') }}</Button>
@@ -38,6 +53,7 @@
   export default {
     data () {
       return {
+        debugRun: false,
         formItem: {
                     spliter: '|',
                     parallel: true,
@@ -94,7 +110,11 @@
       },
       realCommit() {
         // console.log(this.formItem)
-        exec.postFastExecution(this.formItem)
+        let debug=0
+        if (this.debugRun) {
+          debug=1
+        }
+        exec.postFastExecution(this.formItem,debug)
           .then(res => {
             if (res.data['status'] > 0) {
               util.notice(this, this.$t('fastJobBegin'), 'info')
