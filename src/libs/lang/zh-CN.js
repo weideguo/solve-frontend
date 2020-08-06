@@ -190,6 +190,10 @@ const lang = {
     pauseRunAll: '取消断点正常运行',
     pauseRunNext: '运行当前暂停任务',
     debugRun: '断点运行',
+    selectTitle: '请为参数选择值',
+    selectTips: '多个值传给后端时以空格分割',
+    emptySelectWarn: '至少为参数选择一个值！',
+    commitSelectSuccess: '设置select参数成功',
     form: {
         checkErr: '表单检查失败',
         userEmpty: '请填写用户名',

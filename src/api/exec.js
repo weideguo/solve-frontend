@@ -53,9 +53,9 @@ export default {
       data: params
     })
   },
-  postFastExecution: function (params) {
+  postFastExecution: function (params,debug=0) {
     return request({
-      url: `/fast/`,
+      url: `/fast/?debug=${debug}`,
       method: 'post',
       data: params
     })

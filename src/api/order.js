@@ -43,4 +43,11 @@ export default {
       method: 'get'
     })
   },
+  setSelect: function (keyid,params) {
+    return request({
+      url: `/order/select?id=${keyid}`,
+      method: 'post',
+      data: params
+    })
+  },
 }

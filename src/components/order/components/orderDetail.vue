@@ -146,6 +146,19 @@
       </div>
     </Modal>
 
+    <Modal v-model="modalSelect" @on-ok="setSelect" scrollable width="55%" :z-index="30000">
+      <p slot="header">{{ $t('selectTitle') }}  {{selectVar}}</p>
+      <div>
+      <Select v-model="selectValue" :placeholder="$t('selectTips')" multiple>
+          <Option v-for="j in selectList" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
+      </Select>
+      </div>
+      <!--
+      <div slot="footer">
+          <Button type="primary" size="large" @click.native="setSelect">{{ $t('run') }}</Button>
+      </div>-->
+    </Modal>
+
   </div>
 </template>
 
@@ -165,6 +178,7 @@
         modalList: false,
         modalDetail: false,
         modalSummary: false,
+        modalSelect: false,
         summaryInfo: [],
         columnsSummaryInfo: [
           {
@@ -371,7 +385,10 @@
         currentTarget: '',
         finishOnly: false,
         newJobId:'',
-        pauseOpt: false
+        pauseOpt: false,
+        selectVar: '',
+        selectValue: '',
+        selectList: []
       }
     },
     methods: {
@@ -527,20 +544,48 @@
         // axios.get(`${this.baseurl}/order/exedetail?id=${logID}`)
         order.exedetail(logID)
           .then(res => {
-            this.pauseOpt=false
-            if (this.pauseTarget) {
-              // 当前执行信息为 {stdout: "pausing"} 则显示断点执行的操作
-              let tmp_exedetail=res.data['exedetail']
-              if (tmp_exedetail['stdout'] === 'pausing' && Object.keys(tmp_exedetail).length === 1 ){
-                this.pauseOpt=true
+            if (res.data['status'] > 0) {
+              if (res.data['select']) {
+                // 存在可选信息时
+                this.modalSelect= true
+                this.selectVar=res.data['select_var']
+                // this.selectList=['aaa','bbb','ccc']
+                this.selectList=res.data['select']
+                this.selectID=logID
               }
-            } 
-            // console.log(this.pauseTarget+' '+this.pauseOpt)
-            this.dataDetailInfo = util.dict2arry(res.data['exedetail'], 'key', 'value')
+
+              this.pauseOpt=false
+              if (this.pauseTarget) {
+                // 当前执行信息为 {stdout: "pausing"} 则显示断点执行的操作
+                let tmp_exedetail=res.data['exedetail']
+                if (tmp_exedetail['stdout'] === 'pausing' && Object.keys(tmp_exedetail).length === 1 ){
+                  this.pauseOpt=true
+                }
+              } 
+              // console.log(this.pauseTarget+' '+this.pauseOpt)
+              this.dataDetailInfo = util.dict2arry(res.data['exedetail'], 'key', 'value')              
+            } else {
+              this.$Message.error(res.data['msg'])
+            }
           })
           .catch(error => {
             util.notice(this, error, 'error')
           })
+      },
+      setSelect() {
+        if (this.selectValue.length) {
+          console.log(this.selectValue,this.selectID,this.selectValue.length)
+          order.setSelect(this.selectID, this.selectValue)
+            .then(res => {
+              // console.log("set select success")
+              util.notice(this, this.$t('commitSelectSuccess'), 'success')
+            })
+            .catch(error => {
+              util.notice(this, error, 'error')
+            })
+        } else {
+          this.$Message.error(this.$t('emptySelectWarn'))
+        }
       },
       refreshDetailInfo () {
         this.refreshShowDetail(this.logID)
@@ -582,7 +627,7 @@
         }
       },
       getCurrentPage (exclude='') {
-        if (this.currentTargetId) {
+        if (this.modalList) {
           this.realQuickShow(this.currentTargetId)
         }
         this.workid = this.$route.query['workid']
