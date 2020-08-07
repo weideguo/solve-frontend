@@ -68,7 +68,7 @@
     </Drawer>
 
     <!--命令的详细信息-->
-    <Modal v-model="modalDetail" scrollable width="55%" :z-index="20000">
+    <Modal v-model="modalDetail" scrollable width="55%">
       <p slot="header">{{detailTitle}}</p>
       <div>
         <Table border stripe :columns="columnsDetailInfo" :data="dataDetailInfo" :show-header="false" :no-data-text="$t('noCommandInfo')"></Table>
@@ -106,7 +106,7 @@
       </div>
     </Modal>
 
-    <Modal v-model="modalSummary" scrollable width="55%" :z-index="20000">
+    <Modal v-model="modalSummary" scrollable width="55%">
       <p slot="header">{{ $t('summaryTitle') }}</p>
       <div>
         <Table border stripe :columns="columnsSummaryInfo" :data="summaryInfo" ></Table>
@@ -118,7 +118,7 @@
       </div>
     </Modal>
 
-    <Modal v-model="modalRerun" scrollable width="55%" :z-index="20000">
+    <Modal v-model="modalRerun" scrollable width="55%" >
       <p slot="header">{{runTitle}}</p>
       <div>
         <Form :label-width="100">
@@ -146,7 +146,7 @@
       </div>
     </Modal>
 
-    <Modal v-model="modalSelect" @on-ok="setSelect" scrollable width="55%" :z-index="30000">
+    <Modal v-model="modalSelect" @on-ok="setSelect" scrollable width="55%" >
       <p slot="header">{{ $t('selectTitle') }}  {{selectVar}}</p>
       <div>
       <Select v-model="selectValue" :placeholder="$t('selectTips')" multiple>
