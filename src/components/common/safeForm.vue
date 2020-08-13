@@ -12,10 +12,10 @@
       <FormItem v-for="(item, index) in formDynamic" :key="index">  
           <Row>
             <Col span="5">
-            <Input type="text" v-model="item.key" :placeholder="$t('inputFieldTips')"></Input>
+            <Input type="text" v-model="item.key" :placeholder="_inputFieldTips"></Input>
             </Col>
             <Col span="13" offset="1">
-            <Input type="text" v-model="item.value" :placeholder="$t('inputValueTips')"></Input>
+            <Input type="text" v-model="item.value" :placeholder="_inputValueTips"></Input>
             </Col>
             <Col span="4" offset="1">
             <!---->
@@ -34,8 +34,8 @@
       </div>
       <div :style="{height: buttonDivHeight}"> 
         <div :style="{'float': 'right', 'margin-top': buttonMarginTop}"> 
-          <Button style="margin-right: 5px" @click="secondClick('safeform')">{{secondButtonName}}</Button>
-          <Button type="primary" @click="primaryClick('safeform')">{{primaryButtonName}}</Button>
+          <Button style="margin-right: 5px" @click="secondClick('safeform')">{{_secondButtonName}}</Button>
+          <Button type="primary" @click="primaryClick('safeform')">{{_primaryButtonName}}</Button>
         </div>
       </div>
     </Form>
@@ -82,16 +82,24 @@ export default {
     },
     secondButtonName: {
       type: String,
-      default: 'cancel'
+      default: ''
     },
     primaryButtonName: {
       type: String,
-      default: 'confirm'
+      default: ''
     },
     secondCheck: {
       type: Boolean,
       default: false
-    }
+    },
+    inputFieldTips: {
+      type: String,
+      default: ''
+    },
+    inputValueTips: {
+      type: String,
+      default: ''
+    },
   },
   data () {
     return {
@@ -155,6 +163,30 @@ export default {
     allValue () {
       let info = util.dict2arry(this.formValue, 'key', 'value')
       return util.arry2dict(util.listCombine(info, this.formDynamic), 'key', 'value')
+    },
+    _primaryButtonName () {
+      if(this.primaryButtonName) {
+        return this.primaryButtonName
+      } 
+      return this.$t('confirm')
+    },
+    _secondButtonName () {
+      if(this.secondButtonName) {
+        return this.secondButtonName
+      } 
+      return this.$t('cancel')
+    },
+    _inputFieldTips () {
+      if(this.inputFieldTips) {
+        return this.inputFieldTips
+      }
+      return this.$t('inputFieldTips')
+    },
+    _inputValueTips () {
+      if (this.inputValueTips) {
+        return this.inputValueTips
+      }
+      return this.$t('inputValueTips')
     }
   },
   watch:{

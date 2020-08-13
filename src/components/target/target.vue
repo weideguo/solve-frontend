@@ -26,7 +26,10 @@
       <p slot="header">
         <span>{{modelTitle}}</span>
       </p>
-      <safe-form ref="myform" :labelwidth="100" :formdata="formItem" :dynamic="true" :formvalidate="formItemValidate" @primaryClick="formCommit" @secondClick="optionOperate" :secondCheck="!isAdd" :secondButtonName="isAdd? $t('cancel') : $t('copy') "></safe-form>
+      <safe-form ref="myform" :labelwidth="100" :formdata="formItem" :dynamic="true" :formvalidate="formItemValidate" 
+        @primaryClick="formCommit" @secondClick="optionOperate" 
+        :secondCheck="!isAdd" :secondButtonName="isAdd? $t('cancel') : $t('copy') " :inputValueTips="$t('inputFieldValueTips')">
+      </safe-form>
       <div slot="footer"></div>
     </Modal>
 
@@ -34,7 +37,9 @@
       <p slot="header">
         <span>{{filter}} {{ $t('modifyFiled') }}</span>
       </p>
-      <safe-form ref="formInfo" :labelwidth="100" :dynamicData="formItemInfo" :dynamic="true" @primaryClick="formInfoCommit" @secondClick="switchFormInfo=false" ></safe-form>
+      <safe-form ref="formInfo" :labelwidth="100" :dynamicData="formItemInfo" :dynamic="true" :inputValueTips="$t('inputDescValueTips')"
+        @primaryClick="formInfoCommit" @secondClick="switchFormInfo=false" >
+      </safe-form>
       <div slot="footer"></div>
     </Modal>
 
@@ -296,8 +301,18 @@
         // axios.get(`${this.baseurl}/config/?key=tmpl_${this.$route.name}`)
         config.getKey(`tmpl_${this.$route.name}`)
           .then(res => {
-            this.formItemInfo = util.dictDeepCopy(res.data['data'])
-            this.formItemOrigin = util.dict2arry(res.data['data'], 'key', 'comment', this.itemSort)
+            let keyInfo={}
+            if(res.data['data']) {
+              keyInfo=res.data['data']
+            }
+            // 后端不存在的字段说明时使用排序指定的key当成默认
+            this.itemSort.forEach((k, i) => {
+              if(!keyInfo[k]) {
+                keyInfo[k]=""
+              }
+            })
+            this.formItemInfo = util.dictDeepCopy(keyInfo)
+            this.formItemOrigin = util.dict2arry(keyInfo, 'key', 'comment', this.itemSort)
             this.formItemOrigin.forEach((item, i) => {
               item['label'] = item['key']
               if (item['key'] === 'const') {

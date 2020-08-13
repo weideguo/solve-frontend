@@ -194,6 +194,8 @@ const lang = {
     selectTips: '多个值传给后端时以空格分割',
     emptySelectWarn: '至少为参数选择一个值！',
     commitSelectSuccess: '设置select参数成功',
+    inputFieldValueTips: '请输入值',
+    inputDescValueTips: '请输入字段的描述',
     form: {
         checkErr: '表单检查失败',
         userEmpty: '请填写用户名',

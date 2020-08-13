@@ -99,7 +99,8 @@
               validator: util.validatorGenerator(),
               trigger: 'blur'
             },
-          ]
+          ],
+          proxy: []
         }, 
         formItem: [],
         opentarget: '',
@@ -463,7 +464,17 @@
         config.getKey(`tmpl_${this.$route.name}`)
           .then(res => {
             delete res.data['data']['name']
-            this.formItemOrigin = util.dict2arry(res.data['data'], 'key', 'comment', this.itemSort)
+            let keyInfo={}
+            if(res.data['data']) {
+              keyInfo=res.data['data']
+            }
+            // 后端不存在的字段说明时使用排序指定的key当成默认
+            this.itemSort.forEach((k, i) => {
+              if(!keyInfo[k]) {
+                keyInfo[k]=""
+              }
+            })
+            this.formItemOrigin = util.dict2arry(keyInfo, 'key', 'comment', this.itemSort)
             this.formItemOrigin.forEach((item, i) => {
               item['label'] = item['key']
             })

@@ -26,7 +26,7 @@
 
       <div style="float:right;" >
         <Tooltip :content="buttonTooltip" placement="bottom">
-          <Button @click="buttonOperation" type="primary" ghost>{{buttonName}}</Button>
+          <Button @click="buttonOperation" type="primary" ghost>{{_buttonName}}</Button>
         </Tooltip>
       </div>
       <div  style="clear:both"></div>
@@ -55,7 +55,7 @@ export default {
     },
     buttonName: {
       type: String,
-      default: 'save'
+      default: ''
     },
     formRef: {
       type: String,
@@ -176,6 +176,12 @@ export default {
       let d = new Date()
       return this.baseurl + '/file/?path=' + d.getFullYear()+''+(d.getMonth()+1)+''+d.getDate()+'/'+d.valueOf()
     },
+    _buttonName () {
+      if (this.buttonName) {
+        return this.buttonName
+      }
+      return this.$t('save')
+    }
   },
   mounted () {
     this.updateFormdata()
