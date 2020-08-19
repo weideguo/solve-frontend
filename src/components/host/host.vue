@@ -29,7 +29,7 @@
         <span>{{modelTitle}}</span>
       </p>
       
-      <safe-form ref="myform" :labelwidth="100" :formdata="formItem" :formvalidate="formItemValidate" @primaryClick="formCommit" @secondClick="optionOperate" :secondCheck="!isAdd" :secondButtonName="isAdd? $t('cancel') : $t('copy')"></safe-form>
+      <safe-form ref="myform" :labelwidth="100" :formdata="formItem" :formvalidate="formItemValidate" @primaryClick="formCommit" :primaryButtonName="$t('update')" @secondClick="optionOperate" :secondCheck="!isAdd" :secondButtonName="isAdd? $t('cancel') : $t('copy')"></safe-form>
       <div slot="footer"></div>
     </Modal>
     

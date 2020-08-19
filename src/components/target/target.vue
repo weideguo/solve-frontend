@@ -27,7 +27,7 @@
         <span>{{modelTitle}}</span>
       </p>
       <safe-form ref="myform" :labelwidth="100" :formdata="formItem" :dynamic="true" :formvalidate="formItemValidate" 
-        @primaryClick="formCommit" @secondClick="optionOperate" 
+        @primaryClick="formCommit" @secondClick="optionOperate" :primaryButtonName="$t('update')"
         :secondCheck="!isAdd" :secondButtonName="isAdd? $t('cancel') : $t('copy') " :inputValueTips="$t('inputFieldValueTips')">
       </safe-form>
       <div slot="footer"></div>

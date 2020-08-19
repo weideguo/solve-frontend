@@ -196,6 +196,7 @@ const lang = {
     commitSelectSuccess: '设置select参数成功',
     inputFieldValueTips: '请输入值',
     inputDescValueTips: '请输入字段的描述',
+    update: '修改',
     form: {
         checkErr: '表单检查失败',
         userEmpty: '请填写用户名',
