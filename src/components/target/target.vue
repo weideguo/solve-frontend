@@ -24,7 +24,7 @@
 
     <Modal v-model="openswitch" width="50%">    
       <div slot="header">   
-        <Button shape="circle" icon="md-list" @click.native="getTreeNode"></Button>
+        <Button v-if="!isAdd" shape="circle" icon="md-list" @click.native="getTreeNode"></Button>
         <p style="display:inline"><span>{{modelTitle}}</span></p>
       </div>
       <safe-form ref="myform" :labelwidth="100" :formdata="formItem" :dynamic="true" :formvalidate="formItemValidate" 
@@ -391,7 +391,7 @@
       getTreeNode() {
         this.treeswitch=true
         this.treeLevel='{{}}'
-        console.log(this.opentarget)
+        this.targetDataTree=[]
         target.getTreeInfo(this.opentarget) 
           .then(res => {
             this.targetDataTree=res.data['data']
