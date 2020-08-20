@@ -197,6 +197,9 @@ const lang = {
     inputFieldValueTips: '请输入值',
     inputDescValueTips: '请输入字段的描述',
     update: '修改',
+    paramName : '参数变量',
+    paramLevel: '参数层次',
+    paramValue: '参数值 ',
     form: {
         checkErr: '表单检查失败',
         userEmpty: '请填写用户名',
