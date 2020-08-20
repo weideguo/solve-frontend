@@ -26,6 +26,12 @@ export default {
       method: 'get'
     })
   },
+  getTreeInfo: function (name) {
+    return request({
+      url: `/target/tree?name=${name}`,
+      method: 'get'
+    })
+  },
 }
 
 

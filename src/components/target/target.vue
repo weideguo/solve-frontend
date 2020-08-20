@@ -22,14 +22,32 @@
       </Card>
     </Row>
 
-    <Modal v-model="openswitch" width="50%">          
-      <p slot="header">
-        <span>{{modelTitle}}</span>
-      </p>
+    <Modal v-model="openswitch" width="50%">    
+      <div slot="header">   
+        <Button shape="circle" icon="md-list" @click.native="getTreeNode"></Button>
+        <p style="display:inline"><span>{{modelTitle}}</span></p>
+      </div>
       <safe-form ref="myform" :labelwidth="100" :formdata="formItem" :dynamic="true" :formvalidate="formItemValidate" 
-        @primaryClick="formCommit" @secondClick="optionOperate" :primaryButtonName="$t('update')"
+        @primaryClick="formCommit" @secondClick="optionOperate" :primaryButtonName="isAdd? $t('confirm') : $t('update') "
         :secondCheck="!isAdd" :secondButtonName="isAdd? $t('cancel') : $t('copy') " :inputValueTips="$t('inputFieldValueTips')">
       </safe-form>
+      <div slot="footer"></div>
+    </Modal>
+
+    <Modal v-model="treeswitch" width="60%"> 
+      <div slot="header">   
+        <p>
+          <span>{{opentarget}}</span>
+          <span style="margin-left:30px;">{{ $t('paramName')  }} {{treeLevel}}</span>
+        </p>
+      </div>
+      <div>
+        <div style="background: #DCDCDC">
+          <div style="width:100px;display: inline-block">{{ $t('paramLevel')  }}</div>
+          <div style="width:100px;display: inline-block; margin-left:400px">{{ $t('paramValue')  }}</div>
+        </div>
+        <Tree ref="mytree" :data="targetDataTree" :render="renderContent" @on-select-change="showPath" @on-toggle-expand="showChildren" class="demo-tree-render"></Tree>
+      </div>
       <div slot="footer"></div>
     </Modal>
 
@@ -149,8 +167,11 @@
         filter: '',
         modelTitle: '',
         openswitch: false,
+        treeswitch: false,
         switchFormInfo: false,
         isAdd: true,
+        treeLevel: '{{}}',
+        targetDataTree: []
         // deleteConfirm: false,
         // delname: ''
       }
@@ -331,7 +352,66 @@
           .catch(error => {
             util.notice(this, error, 'error')
           })
-      }
+      },
+      showChildren(currentNode){
+        currentNode.children=[]
+        target.getTreeInfo(currentNode.value) 
+          .then(res => {
+            this.$set(currentNode, 'children', res.data['data']);
+          })
+          .catch(error => {
+            util.notice(this, error, 'error')
+          })
+      },
+      showPath(selectList,selectCurrent){
+        this.treeLevel=this.getParentOfSelect(this.targetDataTree)
+        this.treeLevel='{{'+this.treeLevel+'}}'
+      },
+      getParentOfSelect(data, ParentPath="") {
+        // 获取父节点到选中节点的路径
+        let matchPath=""
+        for(let i in data) {
+          let item=data[i]
+          let currentPath=item['title']
+          if(ParentPath){
+            currentPath=ParentPath+'.'+item['title']
+          }
+          // console.log(item['selected'],currentPath,ParentPath)
+          if(item['selected']) {
+             return currentPath
+          } else if(item['children']) {
+            matchPath=this.getParentOfSelect(item['children'], currentPath)
+            if(matchPath) {
+              return matchPath
+            }
+          } 
+        }
+        return ""
+      },
+      getTreeNode() {
+        this.treeswitch=true
+        this.treeLevel='{{}}'
+        console.log(this.opentarget)
+        target.getTreeInfo(this.opentarget) 
+          .then(res => {
+            this.targetDataTree=res.data['data']
+          })
+          .catch(error => {
+            util.notice(this, error, 'error')
+          })
+      },
+      renderContent (h, { root, node, data }) {
+        // 树的渲染函数
+        return h('span', {
+                            style: {
+                             display: 'inline-block',
+                             width: '100%'
+                            }
+                          }, [
+                            h('div', {style: {width: '400px',display: 'inline-block',}}, [data.title]),
+                            h('span', {style: {color: '#F00'}}, [data.value])
+                ]);
+      },
     },
     watch: {
       '$route': function () {
