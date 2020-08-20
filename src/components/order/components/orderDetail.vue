@@ -558,7 +558,9 @@
               if (this.pauseTarget) {
                 // 当前执行信息为 {stdout: "pausing"} 则显示断点执行的操作
                 let tmp_exedetail=res.data['exedetail']
-                if (tmp_exedetail['stdout'] === 'pausing' && Object.keys(tmp_exedetail).length === 1 ){
+                // 以此判断才能确保当前命令的暂停与否 exelist的pause只是说明是否启用断点
+                //if (tmp_exedetail['stdout'] === 'pausing' && Object.keys(tmp_exedetail).length === 1 ){
+                if (tmp_exedetail['stdout'] === 'pausing'){
                   this.pauseOpt=true
                 }
               } 
