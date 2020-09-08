@@ -669,7 +669,7 @@
           })
       },
       pauseRunAll() {
-        exec.pauseRun(this.pauseTarget, '-1')
+        exec.pauseRun(this.pauseTarget, '-1', this.workid, this.detailIndex)
           .then(res => {
             this.refreshCurrentPage()
             this.modalDetail = false

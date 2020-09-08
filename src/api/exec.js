@@ -72,9 +72,9 @@ export default {
       method: 'get',
     })
   },
-  pauseRun: function(targetid, type) {
+  pauseRun: function(targetid, type, workid='', currentLine=0) {
     return request({
-      url: `/pauseRun/?target_id=${targetid}&type=${type}`,
+      url: `/pauseRun/?target_id=${targetid}&type=${type}&workid=${workid}&current_line=${currentLine}`,
       method: 'get',
     })  
   } 

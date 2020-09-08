@@ -336,6 +336,10 @@
             .then(res => {
               this.openswitch = !this.openswitch
               this.sessionFull = res.data['session']
+              this.debugList = res.data['pause']
+              if (!(this.debugList instanceof Object)) {
+                this.debugList = [this.debugList]
+              }
               this.formItem = util.arry2dict(this.sessionFull)
               this.errFlag = false
             })
@@ -354,13 +358,16 @@
         if (this.errFlag) {
           this.$Message.error(this.$t('getPlaybookFailedTips') )
         } else {
+          if (!debug) {
+            debug = this.debugList
+          }
           this.openswitch = false
           this.$Message.info(this.$t('afterCommitTips'))
           // axios.post(`${this.baseurl}/execution/?filter=${this.openinfo['name']}`, this.sessionInfo)
-          exec.postExecution(this.openinfo['name'], this.sessionInfo, debug)
+          exec.postExecution(this.openinfo['name'], this.sessionInfo, String(debug))
             .then(res => {
               util.notice(this, `${this.openinfo['name_s']} `+this.$t('commitBegin'), 'info')
-              util.openPageEx(this, 'orderDetail', {workid: res.data['data']})
+              util.openPageEx(this, 'orderDetail', {'workid': res.data['data']})
             })
             .catch(error => {
               util.notice(this, error, 'error')
