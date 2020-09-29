@@ -6,8 +6,10 @@ import iView from 'view-design'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import axios from 'axios'
-// import 'iview/dist/styles/iview.css'
-import 'view-design/dist/styles/iview.css';
+// 原生样式
+// import 'view-design/dist/styles/iview.css';
+// 个性化样式
+import '../theme.less';
 import particles from 'particles.js/particles'
 // multi language
 import VueI18n from 'vue-i18n';
