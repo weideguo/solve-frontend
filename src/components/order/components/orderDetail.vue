@@ -107,7 +107,15 @@
     </Modal>
 
     <Modal v-model="modalSummary" scrollable width="55%">
-      <p slot="header">{{ $t('summaryTitle') }}</p>
+      <div slot="header">
+        <div style="float:left;margin-top:5px;width:300px;">{{ $t('summaryTitle') }}</div>
+        <div>
+          <i-switch size="large" true-color="#ff4949" false-color="#13ce66" @on-change="summaryFilter" >
+            <span slot="open">{{ $t('stderr') }}</span>
+            <span slot="close">{{ $t('stdout') }}</span>
+          </i-switch>
+        </div>
+      </div>
       <div>
         <Table border stripe :columns="columnsSummaryInfo" :data="summaryInfo" ></Table>
       </div>
@@ -165,7 +173,6 @@
 <script>
   import order from '@/api/order'
   import exec from '@/api/exec'
-  // import dura from '@/api/dura'
   import util from '@/libs/util'
   // import axios from 'axios'
   //
@@ -384,6 +391,7 @@
         runTitle: '',
         currentTarget: '',
         finishOnly: false,
+        stdoutSummary: true,
         newJobId:'',
         pauseOpt: false,
         selectVar: '',
@@ -628,6 +636,15 @@
           this.getCurrentPage()
         }
       },
+      summaryFilter () {
+        this.stdoutSummary = ! this.stdoutSummary
+        if (this.stdoutSummary) {
+          this.columnsSummaryInfo[1].key = 'last_stdout'
+        } else {
+          this.columnsSummaryInfo[1].key = 'last_stderr'
+        }
+        // console.log(this.columnsSummaryInfo) 
+      },
       getCurrentPage (exclude='') {
         if (this.modalList) {
           this.realQuickShow(this.currentTargetId)
@@ -691,8 +708,6 @@
     },
     destroyed() {
       // 销毁组件时调用
-      // 持久化对前端透明 前端不进行任何操作
-      // dura.dura(this.workid)
     },
     mounted () {
       this.getCurrentPage();
