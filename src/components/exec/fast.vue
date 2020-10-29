@@ -10,7 +10,7 @@
                 </Select>
               </FormItem>
             </Col>    
-            <Col span="20">    
+            <Col span="14">    
               <FormItem :label="$t('executeType')">
                 <i-switch v-model="formItem.parallel" size="large">
                   <span slot="open">{{ $t('parallel') }}</span>
@@ -18,6 +18,11 @@
                 </i-switch>
               </FormItem>
             </Col>
+            <Col span="6">
+              <FormItem>
+                <Input v-model="formItem.comment" :placeholder="$t('inputCommentTips')" clearable />
+              </FormItem>
+            </Col>   
             <Col span="1">    
               <FormItem>
                 <i-switch v-model="debugRun" size="large">
@@ -57,6 +62,7 @@
         formItem: {
                     spliter: '|',
                     parallel: true,
+                    comment: '',
                     exeinfo: '',
                     playbook: ''
                   },
