@@ -19,7 +19,7 @@
 </template>
 
 <script>
-  import VueI18n from 'vue-i18n'
+  // import VueI18n from 'vue-i18n'
 
   export default {
     name: 'Error401',

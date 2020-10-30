@@ -16,7 +16,7 @@
 <script>
   import axios from 'axios'
   import util from '@/libs/util'
-  import VueI18n from 'vue-i18n'
+  // import VueI18n from 'vue-i18n'
   import request from '@/api/request'
 
   export default {

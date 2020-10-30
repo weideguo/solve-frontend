@@ -95,7 +95,7 @@
   import util from '@/libs/util'
   import file from '@/api/file'
   import constrictForm from '@/components/common/constrictForm.vue'
-  import VueI18n from 'vue-i18n'
+  // import VueI18n from 'vue-i18n'
 
   export default {
     components: {

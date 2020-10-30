@@ -44,7 +44,7 @@
 
 <script>
 import util from '@/libs/util'
-import VueI18n from 'vue-i18n'
+// import VueI18n from 'vue-i18n'
 
 export default {
   name: 'safeForm',

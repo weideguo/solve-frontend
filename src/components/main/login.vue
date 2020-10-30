@@ -101,7 +101,7 @@
   import login from '@/api/login'
   import util from '@/libs/util'
   import config from '@/config/config'
-  import VueI18n from 'vue-i18n'
+  // import VueI18n from 'vue-i18n'
   //
   export default {
     name: 'login',

@@ -53,7 +53,7 @@
   // 
   import util from '@/libs/util'
   import exec from '@/api/exec'
-  import VueI18n from 'vue-i18n'
+  // import VueI18n from 'vue-i18n'
 
   export default {
     data () {
