@@ -16,7 +16,7 @@
         <Row style="clear:both">
           <!--外div稍微大一点以放置上传列表-->
           <div :style="{height: defaultHeight+100+'px'}">
-            <Col span="8" style="z-index: 100000;" >
+            <Col span="8" style="z-index: 1;">
               <div >
                 <file-list v-for="(item, i) in currentDirs" :key="item" :introText="item" listType="dir" @changedir="changedir">
                 </file-list>
