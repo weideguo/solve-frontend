@@ -7,7 +7,7 @@ let util = {}
 util.existSpace = function (s) {
   let r = s.slice(-1)
   let l = s.slice(0,1)
-  if (r===" " || l===" ") {
+  if (r===' ' || l===' ') {
     return true
   } else {
     return false
@@ -114,7 +114,7 @@ util.checkLogin = function (vm,error) {
     vm.$Notice.error({title: 'ERROR', desc: error})
     /*
     try {
-      let userinfo = JSON.parse(Base64.decode(sessionStorage.getItem('jwt').split('.')[1]+"==").split(" ")[0])
+      let userinfo = JSON.parse(Base64.decode(sessionStorage.getItem('jwt').split('.')[1]+'==').split(' ')[0])
       console.log(userinfo)
       if (userinfo['exp']*1000 < (new Date()).getTime()) {
         console.log(userinfo['exp'])
@@ -247,7 +247,7 @@ util.copy = function (vm, data) {
   myInput.value = data;
   document.body.appendChild(myInput);
   myInput.select();                               
-  document.execCommand("copy")
+  document.execCommand('copy')
   vm.$Message.info({'content':'path past success'})
   document.body.removeChild(myInput);
 }
@@ -304,6 +304,92 @@ util.parseUrlParams = function (location) {
   info.split('&').forEach((item,i) => {
     result[decodeURIComponent(item.split('=')[0])] = decodeURIComponent(item.split('=')[1])
   })
+  return result
+}
+
+//文件操作
+util.write = function (string, filename, filetype='text/plain') {
+  var blob;
+  if (typeof window.Blob == 'function') {
+    blob = new Blob([string], {type: filetype});
+
+  } else {
+    // 旧版本的支持
+    var BlobBuilder = window.BlobBuilder || window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder;
+    var bb = new BlobBuilder();
+    bb.append(string);
+    blob = bb.getBlob(filetype);
+
+  }
+  var URL = window.URL || window.webkitURL;
+  var bloburl = URL.createObjectURL(blob);
+  var anchor = document.createElement('a');
+  
+  if ('download' in anchor) {
+    // 添加隐藏元素触发下载
+    anchor.style.visibility = 'hidden';
+    anchor.href = bloburl;
+    anchor.download = filename;
+
+    document.body.appendChild(anchor);
+
+    var evt = document.createEvent('MouseEvents');
+    evt.initEvent('click', true, true);
+
+    anchor.dispatchEvent(evt);
+    document.body.removeChild(anchor);
+
+  } else if (navigator.msSaveBlob) {
+    navigator.msSaveBlob(blob, filename);
+  } else {
+    location.href = bloburl;
+  }
+}
+
+util.read = function (blobfile,accepttype=['text/plain']) {
+  // 异步读 
+  return new Promise(function(resolve, reject) {
+    let reader = new FileReader();
+    if (accepttype.indexOf(blobfile.type)>=0) {
+      reader.readAsText(blobfile);
+      reader.onload = function(e, rs) {
+        resolve(e.target.result);
+      };
+    }else{
+      reject(blobfile.type+' is not a validated type')
+    }
+  });
+}
+
+//序列化与反序列化
+util.formatDict = function (dict,padding='###') {
+  let result=''
+  for (let k in dict) {
+    result += padding+k+padding+'\n'+dict[k]+'\n\n'
+  }
+  return result.slice(0,-2)
+}
+
+util.parseString2Dict = function  (string,boolean_key=[],padding='###', ) {
+  let result = {}
+  let block_list = string.split('\n\n'+padding)
+  block_list[0] = block_list[0].slice(3)
+  console.log(block_list)
+  for (let i in block_list) {
+    //console.log(block_list[i])
+    let pair = block_list[i].split('###\n')
+    let k = pair[0]
+    let v =  pair[1]
+    if (boolean_key.indexOf(k)>=0) {
+      if (v === 'true' || v === '1') {
+        v= Boolean(1) 
+      }else{
+        v= Boolean(0)    
+      }
+    }
+    
+    result[k] = v
+  }
   return result
 }
 

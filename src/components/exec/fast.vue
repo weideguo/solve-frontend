@@ -42,6 +42,11 @@
         <FormItem>
             <Button type="primary" @click="commit">{{ $t('run') }}</Button>
             <Button style="margin-left: 8px" @click="reset">{{ $t('reset') }}</Button>
+            <Button style="margin-left: 8px" @click="save">{{ $t('save') }}</Button>
+            <div id="btn" class="ivu-btn ivu-btn-default" style="margin-left:8px; width: 60px; line-height: 2.2;" @click="readClick">
+              <span>{{ $t('read') }}</span>
+              <input ref='inputFile' style="display: none" type="file" id="uploadFile" @change="read" :name="$t('read')"/>
+            </div>
         </FormItem>
     </Form>
 
@@ -163,6 +168,30 @@
           callback(new Error(this.$t('playbookNotEmptyTips')))
         }
       },
+      save () {
+        let filename = 'fast_'+util.formatDate((new Date().getTime()) / 1000).replaceAll('-','').replaceAll(':','').replaceAll(' ','_')+'.txt'
+        util.write(util.formatDict(this.formItem), filename)
+        // console.log('save done')
+      },
+      read (e) {
+        let fileElement =document.getElementById('uploadFile')
+        let file = fileElement.files[0]
+        // console.log(file)
+        util.read(file,['text/plain','text/x-sh']).then(res => {
+          // console.log(res)
+          this.formItem = util.parseString2Dict(res,['parallel'])
+          // console.log(this.formItem)
+          // console.log( util.parseString2Dict(res,['parallel']) )
+          fileElement.value=""
+        }).catch(err => {
+          // console.log(err)
+          this.$Message.error(err)
+        })
+      },
+      readClick () {
+        // console.log("yes click")
+        this.$refs['inputFile'].click()
+      }
     },
     watch: {
       // '$route': function () {
@@ -171,7 +200,7 @@
     },
     mounted () {
       this.originFormItem = util.dictDeepCopy(this.formItem)
-      let fast_info = sessionStorage.getItem("fast_info") 
+      let fast_info = sessionStorage.getItem('fast_info') 
       if (fast_info != null) {
         this.formItem = JSON.parse(fast_info)
       }

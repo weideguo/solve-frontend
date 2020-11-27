@@ -157,6 +157,7 @@ const lang = {
     serial: '串行',
     parallel: '并行',
     config: '配置信息',
+    read: '读取',
     inputConfigTips: '请输入配置信息',
     changeTips: '请按照提示更改输入项',
     fastJobBegin: '开始执行快速任务',
