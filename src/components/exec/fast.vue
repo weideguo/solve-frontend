@@ -18,19 +18,19 @@
                 </i-switch>
               </FormItem>
             </Col>
-            <Col span="6">
+            <Col span="7">
               <FormItem>
                 <Input v-model="formItem.comment" :placeholder="$t('inputCommentTips')" clearable />
               </FormItem>
             </Col>   
-            <Col span="1">    
+            <!--Col span="1">    
               <FormItem>
                 <i-switch v-model="debugRun" size="large">
                   <span slot="open">debug</span>
                   <span slot="close"></span>
                 </i-switch>
               </FormItem>
-            </Col>
+            </Col-->
           </Row>
         </FormItem>
         <FormItem :label="$t('config')" prop="exeinfo">
@@ -49,6 +49,26 @@
             </div>
         </FormItem>
     </Form>
+
+    <Modal v-model="commitConfirm" width="30%" :closable="false">
+      <p style="color:#f60;">
+        <font size="5">
+        <Icon type="md-help-circle" size=30></Icon>
+        {{ $t('commitTips') }}
+        </font>
+      </p>
+      <div style="margin-top: 20px; margin-left: 20px">
+        <span style="color: #515a6e">{{ $t('debugRun') }} </span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <i-switch v-model="debugRun" size="large">
+          <span slot="open">debug</span>
+          <span slot="close"></span>
+        </i-switch>
+      </div>
+      <div slot="footer">
+        <Button type="text" @click="commitConfirm=false">{{ $t('cancel') }}</Button>
+        <Button type="primary" @click="realCommit" >{{ $t('commit') }}</Button>
+      </div>
+    </Modal>
 
   </Card>
 </template>
@@ -93,7 +113,7 @@
             }
           ],
         },
-        // commitConfirm: false,
+        commitConfirm: false,
         exeinfoDemo: this.$t('exeinfoDemo'),
         playbookDemo: this.$t('playbookDemo')
       }
@@ -111,10 +131,10 @@
         sessionStorage.setItem("fast_info", JSON.stringify(this.formItem))
         this.$refs['fastForm'].validate((valid) => {
             if (valid) {
-              // this.commitConfirm = true
-              this.$Modal.confirm({'title': this.$t('commitTips') ,'onOk': this.realCommit, 'okText': this.$t('commit'), 'cancelText': this.$t('cancel')})
+              this.commitConfirm = true
+              // this.$Modal.confirm({'title': this.$t('commitTips') ,'onOk': this.realCommit, 'okText': this.$t('commit'), 'cancelText': this.$t('cancel')})
             } else {
-              // this.commitConfirm = false
+              this.commitConfirm = false
               this.$Message.error(this.$t('changeTips'))
             }
         })
