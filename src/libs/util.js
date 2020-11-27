@@ -158,6 +158,7 @@ util.openPageEx = function (vm, name, query) {
   vm.$store.commit('setTagBreadBeforeOpen', name);
 }
 
+// 根据字符串以下划线分割构成树结构
 util.getUniq = function (rawlist, prefix) {
   let uniqlist = []
   rawlist.forEach((val, index) => {
@@ -169,7 +170,7 @@ util.getUniq = function (rawlist, prefix) {
       }
     }
   })
-  return uniqlist
+  return uniqlist.sort()
 }
 
 util.getTreeStruct = function (rawlist, selectedItem, childrenlist, parentNode) {
@@ -217,7 +218,9 @@ util.formateTreeData = function (rawlist, selectedItem) {
           }
   return util.getTreeStruct(rawlist, selectedItem, secondList, rootNode)
 }
+/////////////////////////
 
+// 广度优先实现获取状态为checked的叶子节点
 util.checkedLeaf = []
 
 util.getLeaf = function (parent, prefixTitle, nextNodes) {
@@ -241,6 +244,7 @@ util.getCheckedLeaf = function (treeData) {
   let checkedLeaf = util.getLeaf(p, p.title, treeData)
   return checkedLeaf
 }
+///////////////////////////
 
 util.copy = function (vm, data) {
   let myInput = document.createElement('input');
@@ -252,6 +256,7 @@ util.copy = function (vm, data) {
   document.body.removeChild(myInput);
 }
 
+// 由url下载文件
 util.download = function(vm, url, filename) {
   axios.defaults.headers.common['Authorization'] = sessionStorage.getItem('jwt')
   axios.get(url, {responseType: 'blob'})
@@ -361,7 +366,7 @@ util.read = function (blobfile,accepttype=['text/plain']) {
   });
 }
 
-//序列化与反序列化
+// 序列化与反序列化
 util.formatDict = function (dict,padding='###') {
   let result=''
   for (let k in dict) {
