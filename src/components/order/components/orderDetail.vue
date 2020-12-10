@@ -20,7 +20,10 @@
           </Poptip>
           <br>
           <br>
-          <Tooltip :content="$t('showPlaybook')" placement="bottom-start">
+          <Tooltip :content="$t('openNewWindow')" placement="bottom-start">
+            <Button type="primary" shape="circle" icon="md-albums" ghost @click.native="orderInfo()"></Button>
+          </Tooltip>
+          <Tooltip :content="$t('showPlaybook')" placement="bottom-start" style="margin-left: 20px">
             <Button type="primary" shape="circle" icon="md-book" ghost @click.native="playbookDetial()"></Button>
           </Tooltip>
           <Tooltip :content="$t('refresh')" placement="bottom" style="margin-left: 20px">
@@ -400,10 +403,16 @@
       }
     },
     methods: {
+      orderInfo () {
+        // let path = "/orderInfo?workid="+this.workid
+        let path = this.$router.resolve({ path: '/orderInfo', query: {  workid: this.workid } }).href
+        window.open(path, "_blank", "scrollbars=yes,resizable=1,modal=false,alwaysRaised=yes")
+      },
       playbookDetial () {
         // 使用新的非tab页面显示playbook
         // let path = "/?playbook="+this.playbook+"&title="+this.workid+"#/playbook"
-        let path = "/playbook?playbook="+this.playbook+"&title="+this.workid
+        // let path = "/playbook?playbook="+this.playbook+"&title="+this.workid
+        let path = this.$router.resolve({ path: '/playbook', query: {  playbook: this.playbook, title: this.workid } }).href
         window.open(path, "_blank", "scrollbars=yes,resizable=1,modal=false,alwaysRaised=yes")
       },
       abort (params) {

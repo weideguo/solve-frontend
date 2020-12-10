@@ -344,6 +344,18 @@ export const orderDetail = {
   ]
 }
 
+export const orderInfo = {
+  path: '/orderInfo',
+  name: 'orderInfo',
+  title: 'orderInfo',
+  meta: {
+    title: 'orderInfo'
+  },
+  component: resolve => {
+    require(['./components/order/components/orderDetail.vue'], resolve)
+  }
+}
+
 export const execDetail = {
   path: '/execution',
   name: 'execution',
@@ -371,6 +383,7 @@ export const MainRoute = [
   locking,
   ...appRouter,    // 将一个数组转为用逗号分隔的参数序列
   orderDetail,
+  orderInfo,
   execDetail,
   playbook,
   about,
