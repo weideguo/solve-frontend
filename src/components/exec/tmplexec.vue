@@ -141,21 +141,18 @@
             align: 'center',
             width: 150,
             sortable: true,
-            filters: [{label: 'all', value: 'all'}, {label: 'host', value: 'host'}, {label: 'server', value: 'server'}, {label: 'cluster', value: 'cluster'}, {label: 'container', value: 'container'}],
-            filterMethod (value, row) {
-              if (value === 'all') {
-                return true
-              } else {
-                return row.target_type === value
-              }
-            }
+            // filters: [{label: 'all', value: 'all'}],
+            filters: [], 
+            filterMethod (value, row) { return row.target_type === value }
           },
           {
             title: 'type',
             key: 'job_type',
             align: 'center',
             width: 100,
-            sortable: true
+            sortable: true,
+            filters: [], 
+            filterMethod (value, row) { return row.job_type === value }
           },
           {
             title: 'playbook',
@@ -276,6 +273,15 @@
                 item.select = res.data['data']
               }
             })
+            this.columns.forEach((item, i) => {
+              if(item.key === 'job_type') {     
+                item.filters = []
+                for ( let t of res.data['data'] ) { 
+                  item.filters.push({label: t, value: t}) 
+                }
+              }
+            })
+
           })
           .catch(error => {
             util.notice(this, error, 'error')
@@ -291,6 +297,14 @@
             this.formItemOrigin.forEach((item, i) => {
               if(item.key === 'target_type') {
                 item['select'] = res.data['data']
+              }
+            })
+            this.columns.forEach((item, i) => {
+              if(item.key === 'target_type') {   
+                item.filters = []
+                for ( let t of res.data['data'] ) { 
+                  item.filters.push({label: t, value: t}) 
+                }
               }
             })
           })
