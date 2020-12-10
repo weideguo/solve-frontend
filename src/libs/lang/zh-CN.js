@@ -201,6 +201,7 @@ const lang = {
     paramName : '参数变量',
     paramLevel: '参数层次',
     paramValue: '参数值 ',
+    openNewWindow: '新窗口查看',
     form: {
         checkErr: '表单检查失败',
         userEmpty: '请填写用户名',

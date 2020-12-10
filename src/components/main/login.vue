@@ -50,7 +50,7 @@
                 <Input v-model="formInline.user" placeholder="username" clearable></Input>
               </FormItem>
               <FormItem prop="password" style="width: 100%">
-                <Input type="password" v-model="formInline.password" placeholder="password" clearable></Input>
+                <Input type="password" v-model="formInline.password" placeholder="password" password clearable></Input>
               </FormItem>
               
               <FormItem prop="baseurl" style="width: 100%">
