@@ -43,6 +43,14 @@ export default {
       method: 'get'
     })
   },
+  download: function (workid,line,params={}) {
+    return request({
+      url: `/order/download?workid=${workid}&line=${line}`,
+      method: 'post',
+      data: params,
+      responseType: 'blob'
+    })
+  },
   setSelect: function (keyid,params) {
     return request({
       url: `/order/select?id=${keyid}`,

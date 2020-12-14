@@ -74,7 +74,7 @@
     <Modal v-model="modalDetail" scrollable width="55%">
       <p slot="header">{{detailTitle}}</p>
       <div>
-        <Table border stripe :columns="columnsDetailInfo" :data="dataDetailInfo" :show-header="false" :no-data-text="$t('noCommandInfo')"></Table>
+        <Table border stripe :columns="columnsDetailInfo" :data="dataDetailInfo" :show-header="false" :no-data-text="$t('noCommandInfo')" @on-selection-change=detailSelect></Table>
       </div>
       <div v-if="pauseOpt" slot="footer">
         <Tooltip :content="$t('pauseAbort')" placement="top">
@@ -103,8 +103,11 @@
         <Tooltip :content="$t('nextPage') " placement="top">
           <Button type="primary" shape="circle" icon="md-arrow-forward" ghost @click.native="showDetailNext"></Button>
         </Tooltip>
-        <Tooltip :content="$t('refresh')" placement="top" style="margin-right: 20px">
+        <Tooltip :content="$t('refresh')" placement="top">
           <Button type="primary" shape="circle" icon="md-refresh" ghost @click.native="refreshDetailInfo"></Button>
+        </Tooltip>
+        <Tooltip :content="$t('downloadColumn')" placement="top" style="margin-right: 20px">
+          <Button type="primary" shape="circle" icon="md-arrow-down" ghost @click.native="download"></Button>
         </Tooltip>
       </div>
     </Modal>
@@ -218,6 +221,11 @@
         detailTitle: '',
         dataDetailInfo: [],
         columnsDetailInfo: [
+          {
+            type: 'selection',
+            width: 60,
+            align: 'center'
+          },
           {
             key: 'key',
             align: 'center',
@@ -399,7 +407,8 @@
         pauseOpt: false,
         selectVar: '',
         selectValue: '',
-        selectList: []
+        selectList: [],
+        selection: []
       }
     },
     methods: {
@@ -713,6 +722,35 @@
           .catch(error => {
             util.notice(this, error, 'error')
           })
+      },
+      detailSelect(selection){
+        // console.log(selection)
+        this.selection=selection
+      },
+      download() {
+        this.selection_key=[]
+        for ( let i of this.selection ){ 
+          if(i.key){
+            this.selection_key.push(i.key)
+          }
+        }
+        if(this.selection_key.length){
+          // console.log(this.workid)
+          // console.log()
+          // console.log()
+          order.download(this.workid,this.detailIndex,this.selection_key)
+            .then(res => {
+              let blob = new Blob([res.data])
+              // let filename = '.csv'
+              let filename = 'order_'+util.formatDate((new Date().getTime()) / 1000).replaceAll('-','').replaceAll(':','').replaceAll(' ','_')+'.csv'
+              util.downloadBlob(blob,filename)
+            })
+            .catch(error => {
+              util.notice(this, error, 'error')
+            })
+        }else{
+          this.$Message.error(this.$t('emptySelectWarn'))
+        }
       }
     },
     destroyed() {
