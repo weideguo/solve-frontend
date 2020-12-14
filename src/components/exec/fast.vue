@@ -145,12 +145,15 @@
         if (this.debugRun) {
           debug=1
         }
+        this.commitConfirm = false
         exec.postFastExecution(this.formItem,debug)
           .then(res => {
             if (res.data['status'] > 0) {
               util.notice(this, this.$t('fastJobBegin'), 'info')
               // {"data":"job_2335ce026b4311ea8fd6000c295dd589","status":1}
-              util.openPageEx(this, 'orderDetail', {workid: res.data['data']})
+              // util.openPageEx(this, 'orderDetail', {workid: res.data['data']})
+              let path = this.$router.resolve({ path: '/orderInfo', query: {  workid: res.data['data'] } }).href
+              window.open(path, "_blank", "scrollbars=yes,resizable=1,modal=false,alwaysRaised=yes")
             } else {
               util.notice(this, res.data['msg'], 'error')
             }
