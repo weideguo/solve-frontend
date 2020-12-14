@@ -102,37 +102,46 @@ util.openPageEx = function (vm, name, query) {
   vm.$store.commit('setTagBreadBeforeOpen', name);
 }
 //////////////////////////////////////////////////////////////
-// 需要调用iview的函数
 
-// 由url下载文件
-util.download = function(vm, url, filename) {
-  axios.defaults.headers.common['Authorization'] = sessionStorage.getItem('jwt')
-  axios.get(url, {responseType: 'blob'})
-    .then(res => {
-      util.notice(vm, filename+' downloading...', 'fast')
-      let blob = new Blob([res.data])
-      let downloadElement = document.createElement('a');
-      let href = window.URL.createObjectURL(blob);       
-      downloadElement.href = href;
-      downloadElement.download = filename;        
-      document.body.appendChild(downloadElement);
-      downloadElement.click();                           
-      document.body.removeChild(downloadElement);        
-      window.URL.revokeObjectURL(href);
-    }).catch(error => {
-      util.notice(vm, error, 'error')
-    })
+util.downloadBlob = function(blob, filename) {
+  let downloadElement = document.createElement('a');
+  let href = window.URL.createObjectURL(blob);       
+  downloadElement.href = href;
+  downloadElement.download = filename;        
+  document.body.appendChild(downloadElement);
+  downloadElement.click();                           
+  document.body.removeChild(downloadElement);        
+  window.URL.revokeObjectURL(href);
 }
 
-// 复制数据到粘贴板
-util.copy = function (vm, data) {
+util.copyData = function (data) {
   let myInput = document.createElement('input');
   myInput.value = data;
   document.body.appendChild(myInput);
   myInput.select();                               
   document.execCommand('copy')
-  vm.$Message.info({'content':'path past success'})
   document.body.removeChild(myInput);
+}
+
+// 需要调用iview的函数
+
+// 由url下载文件
+// util.download = function(vm, url, filename) {
+//   axios.defaults.headers.common['Authorization'] = sessionStorage.getItem('jwt')
+//   axios.get(url, {responseType: 'blob'})
+//     .then(res => {
+//       util.notice(vm, filename+' downloading...', 'fast')
+//       let blob = new Blob([res.data])
+//       util.downloadBlob(blob,filename)
+//     }).catch(error => {
+//       util.notice(vm, error, 'error')
+//     })
+// }
+
+// 复制数据到粘贴板
+util.copy = function (vm, data) {
+  util.copyData(data)
+  vm.$Message.info({'content':'path past success'})
 }
 
 //////////////////////////////////////////////////////////

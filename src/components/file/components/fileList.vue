@@ -17,8 +17,7 @@ export default {
   name: 'fileList',
   props: {
     introText: String,
-    listType: String,
-    url: String,
+    listType: String
   },
   methods: {
     changedir () {
@@ -28,7 +27,8 @@ export default {
       this.$emit('copypath', this.introText) 
     },
     download () {
-      util.download(this, this.url + '/' + this.introText, this.introText)
+      //util.download(this, this.url + '/' + this.introText, this.introText)
+      this.$emit('download', this.introText) 
     }
   }
 };

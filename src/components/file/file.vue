@@ -20,7 +20,7 @@
               <div >
                 <file-list v-for="(item, i) in currentDirs" :key="item" :introText="item" listType="dir" @changedir="changedir">
                 </file-list>
-                <file-list v-for="(item, i) in currentFiles" :key="item" :introText="item" listType="file" @copypath="copypath" :url="downloadUrlRoot">
+                <file-list v-for="(item, i) in currentFiles" :key="item" :introText="item" listType="file" @copypath="copypath" @download="download">
                 </file-list>
               </div>
               <div style="height:100px">&ensp;</div>
@@ -88,9 +88,9 @@ export default {
     uploadUrl () {
       return this.baseurl + '/file/?path=' + this.currentPath
     },
-    downloadUrlRoot () {
-      return this.baseurl + '/file/download?file=' + this.currentPath
-    },
+    // downloadUrlRoot () {
+    //   return this.baseurl + '/file/download?file=' + this.currentPath
+    // },
   },
   methods: {
     // clearFiles () {
@@ -135,6 +135,16 @@ export default {
       fullpath = fullpath.replace('//','/')
       fullpath = fullpath.replace('/./','/')
       util.copy(this,fullpath)
+    },
+    download(filename) {
+      file.download(this.currentPath+'/'+filename)
+        .then(res => {
+          util.notice(this, filename+' downloading...', 'fast')
+          let blob = new Blob([res.data])
+          util.downloadBlob(blob,filename)
+        }).catch(error => {
+          util.notice(this, error, 'error')
+        })
     },
     gobackdir () {
       this.currentPath = this.currentPath

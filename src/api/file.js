@@ -18,5 +18,12 @@ export default {
       url: `/file/content?file=${file}`,
       method: 'get'
     })
+  },
+  download: function (file) {
+    return request({
+      url: `/file/download?file=${file}`,
+      method: 'get',
+      responseType: 'blob'
+    })
   }
 }
