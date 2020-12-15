@@ -735,14 +735,12 @@
           }
         }
         if(this.selection_key.length){
-          // console.log(this.workid)
-          // console.log()
-          // console.log()
           order.download(this.workid,this.detailIndex,this.selection_key)
             .then(res => {
               let blob = new Blob([res.data])
-              // let filename = '.csv'
-              let filename = 'order_'+util.formatDate((new Date().getTime()) / 1000).replaceAll('-','').replaceAll(':','').replaceAll(' ','_')+'.csv'
+              let filename = decodeURIComponent(res.headers['filename'])
+              // let filename = 'order_'+util.formatDate((new Date().getTime()) / 1000).replaceAll('-','').replaceAll(':','').replaceAll(' ','_')+'.csv'
+              console.log(filename)
               util.downloadBlob(blob,filename)
             })
             .catch(error => {
