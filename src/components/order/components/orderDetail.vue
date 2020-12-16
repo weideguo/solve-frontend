@@ -74,7 +74,8 @@
     <Modal v-model="modalDetail" scrollable width="55%">
       <p slot="header">{{detailTitle}}</p>
       <div>
-        <Table border stripe :columns="columnsDetailInfo" :data="dataDetailInfo" :show-header="false" :no-data-text="$t('noCommandInfo')" @on-selection-change=detailSelect></Table>
+        <Table border stripe :columns="columnsDetailInfo" :data="dataDetailInfo" :show-header="false" :no-data-text="$t('noCommandInfo')" @on-select=detailSelect @on-selection-change=detailChange></Table>
+        {{selectionKeyStr}}
       </div>
       <div v-if="pauseOpt" slot="footer">
         <Tooltip :content="$t('pauseAbort')" placement="top">
@@ -408,7 +409,8 @@
         selectVar: '',
         selectValue: '',
         selectList: [],
-        selection: []
+        selectionKey: [],
+        selectionKeyStr: ''
       }
     },
     methods: {
@@ -723,19 +725,33 @@
             util.notice(this, error, 'error')
           })
       },
-      detailSelect(selection){
-        // console.log(selection)
-        this.selection=selection
+      detailSelect(selection,row){
+        // 增加才触发
+        this.selectionKey.push(row.key)
       },
-      download() {
-        this.selection_key=[]
-        for ( let i of this.selection ){ 
-          if(i.key){
-            this.selection_key.push(i.key)
+      detailChange(selection){
+        // 增加删除都触发
+        let realSelectionKey=[]
+        for ( let k of selection ){ 
+          if(k.key){
+            realSelectionKey.push(k.key)
           }
         }
-        if(this.selection_key.length){
-          order.download(this.workid,this.detailIndex,this.selection_key)
+        // console.log(real_selection_key)
+        for(let i in this.selectionKey) {
+          if(realSelectionKey.indexOf(this.selectionKey[i]) < 0) {
+            this.selectionKey.splice(i,1)
+          }
+        }
+        console.log(this.selectionKey)
+        this.selectionKeyStr=''
+        for(let k of this.selectionKey){
+          this.selectionKeyStr += ' '+k
+        }
+      },
+      download() {
+        if(this.selectionKey.length){
+          order.download(this.workid,this.detailIndex,this.selectionKey)
             .then(res => {
               let blob = new Blob([res.data])
               let filename = decodeURIComponent(res.headers['filename'])
@@ -747,7 +763,7 @@
               util.notice(this, error, 'error')
             })
         }else{
-          this.$Message.error(this.$t('emptySelectWarn'))
+          this.$Message.error(this.$t('emptyFieldWarn'))
         }
       }
     },
