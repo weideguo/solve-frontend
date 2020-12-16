@@ -203,6 +203,7 @@ const lang = {
     paramValue: '参数值 ',
     openNewWindow: '新窗口查看',
     downloadColumn: '下载选中字段的值',
+    emptyFieldWarn: '至少需要选择一个字段',
     form: {
         checkErr: '表单检查失败',
         userEmpty: '请填写用户名',
