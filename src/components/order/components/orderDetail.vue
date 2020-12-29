@@ -569,6 +569,8 @@
         this.refreshShowDetail(logID)
       },
       refreshShowDetail (logID) {
+        this.selectionKey=[]
+        this.selectionKeyStr='' 
         // axios.get(`${this.baseurl}/order/exedetail?id=${logID}`)
         order.exedetail(logID)
           .then(res => {
