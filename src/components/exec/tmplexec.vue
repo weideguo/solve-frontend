@@ -314,6 +314,7 @@
       },
       commitFormInfo (){
         this.switchFormInfo = false
+        // console.log(this.jobType , this.jobTypeOld)
         if ( this.jobType != this.jobTypeOld) {
           // axios.post(`${this.baseurl}/config/?key=job_types&type=set`, this.job_type.split(','))
           // vconfig.postKey('job_types',this.job_type.split(','),'set')
@@ -335,10 +336,10 @@
           vconfig.postKey('target_types',this.targetType,'set')
             .then(res => {
               if (res.data['status'] >= 1) {
-                util.notice(this, 'target_types '+this.$t('modifySuccess'), 'success')
+                util.notice(this, 'target types '+this.$t('modifySuccess'), 'success')
                 this.getTargetTypes()
               } else {
-                util.notice(this, `target_types ${res.data['msg']}`, 'warning')
+                util.notice(this, `target types ${res.data['msg']}`, 'warning')
               }
             }).catch(error => {
               util.notice(this, error, 'error')
