@@ -120,7 +120,7 @@
                   this.$store.commit('sessionSet', ['project', project])
                   this.$store.commit('sessionSet', ['hasLogin', 1])
                   this.$store.commit('sessionSet', ['user', this.formInline.user])
-                  this.$store.commit('sessionSet', ['login_timestamp', (new Date().getTime()) / 1000])
+                  this.$store.commit('sessionSet', ['loginTimestamp', (new Date().getTime()) / 1000])
                   this.$router.push({
                     name: 'home_index'
                   })

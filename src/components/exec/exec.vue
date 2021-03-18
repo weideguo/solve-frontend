@@ -393,13 +393,13 @@
       getCurrentPage (vl) {
         this.filter = this.$route.name + ':*'
         if (!vl) {
-          vl = sessionStorage.getItem('exec_currentpage')
+          vl = sessionStorage.getItem('execCurrentpage')
         }
         if (!vl) {
           vl = 1
         }
         this.currentPage = parseInt(vl)
-        sessionStorage.setItem('exec_currentpage', vl);
+        sessionStorage.setItem('execCurrentpage', vl);
         // axios.get(`${this.baseurl}/executionInfo/get?filter=${this.filter}&page=${vl}&pagesize=${this.pagesize}&orderby=name`)
         exec.getExecutionInfo(this.filter,vl,this.pagesize,'name')
           .then(res => {

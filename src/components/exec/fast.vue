@@ -124,11 +124,11 @@
         // console.log(k)
       },
       reset () {
-        sessionStorage.removeItem("fast_info")
+        sessionStorage.removeItem("fastInfo")
         this.formItem = util.dictDeepCopy(this.originFormItem)
       },
       commit(){
-        sessionStorage.setItem("fast_info", JSON.stringify(this.formItem))
+        sessionStorage.setItem("fastInfo", JSON.stringify(this.formItem))
         this.$refs['fastForm'].validate((valid) => {
             if (valid) {
               this.commitConfirm = true
@@ -223,9 +223,9 @@
     },
     mounted () {
       this.originFormItem = util.dictDeepCopy(this.formItem)
-      let fast_info = sessionStorage.getItem('fast_info') 
-      if (fast_info != null) {
-        this.formItem = JSON.parse(fast_info)
+      let fastInfo = sessionStorage.getItem('fastInfo') 
+      if (fastInfo != null) {
+        this.formItem = JSON.parse(fastInfo)
       }
     },
     created () {

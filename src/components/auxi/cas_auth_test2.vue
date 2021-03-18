@@ -109,9 +109,9 @@
       // window.location.href= this.cas_url
       if ( window.location.search.length === 0 ) {
         this.service = window.location.href
-        localStorage.setItem('login_url',this.service)
+        localStorage.setItem('loginUrl',this.service)
       } else {
-        this.service=localStorage.getItem('login_url')
+        this.service=localStorage.getItem('loginUrl')
       }
       // 原始#后面的字符不会传输到后端
       this.service=this.service.replace('#','%23')

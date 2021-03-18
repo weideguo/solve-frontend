@@ -72,7 +72,7 @@
               this.$store.commit('sessionSet', ['locking', 0])
               sessionStorage.setItem('locking', '0')
               this.$router.push({
-                name: sessionStorage.getItem('last_page_name')
+                name: sessionStorage.getItem('lastPageName')
               })
             } else {
               util.notice(this, this.$t('passwordError'), 'warning')

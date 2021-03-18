@@ -35,13 +35,13 @@
       </p>
        <Form :label-width="80">
         <FormItem label="target_type">
-          <Select v-model="target_type" filterable multiple allow-create @on-create="putTargetType">
-            <Option v-for="item in target_type_tmp" :value="item" :key="item">{{ item }}</Option>
+          <Select v-model="targetType" filterable multiple allow-create @on-create="putTargetType">
+            <Option v-for="item in targetTypeTmp" :value="item" :key="item">{{ item }}</Option>
           </Select>
         </FormItem>
         <FormItem label="job_type">
-          <Select v-model="job_type" filterable multiple allow-create @on-create="putJobType">
-            <Option v-for="item in job_type_tmp" :value="item" :key="item">{{ item }}</Option>
+          <Select v-model="jobType" filterable multiple allow-create @on-create="putJobType">
+            <Option v-for="item in jobTypeTmp" :value="item" :key="item">{{ item }}</Option>
           </Select>
         </FormItem>
        </Form> 
@@ -72,8 +72,8 @@
         baseurl: this.$store.getters.sessionGet('baseurl'),
         modelTitle: '',
         switchFormInfo: false,
-        job_type: [],
-        target_type: [],
+        jobType: [],
+        targetType: [],
         openswitch: false,
         formItem: [],
         formItemOrigin: [
@@ -241,8 +241,8 @@
         currentPage: 1,
         pageSizeOpts: [10,20,40,80,100,200],
         filter: '',
-        job_type_tmp: [],
-        target_type_tmp: [],
+        jobTypeTmp: [],
+        targetTypeTmp: [],
         // deleteConfirm: false,
         // delname: ''
       }
@@ -250,24 +250,24 @@
     methods: {
       cancelFormInfo () {
         this.switchFormInfo = false
-        this.job_type = util.dictDeepCopy(this.job_type_old)
-        this.job_type_tmp = util.dictDeepCopy(this.job_type_old)
-        this.target_type = util.dictDeepCopy(this.target_type_old)
-        this.target_type_tmp = util.dictDeepCopy(this.target_type_old)
+        this.jobType = util.dictDeepCopy(this.jobTypeOld)
+        this.jobTypeTmp = util.dictDeepCopy(this.jobTypeOld)
+        this.targetType = util.dictDeepCopy(this.targetTypeOld)
+        this.targetTypeTmp = util.dictDeepCopy(this.targetTypeOld)
       },
       putJobType (val) {
-        this.job_type_tmp.push(val)
+        this.jobTypeTmp.push(val)
       },
       putTargetType (val) {
-        this.target_type_tmp.push(val)
+        this.targetTypeTmp.push(val)
       },
       getJobTypes () {
         // axios.get(`${this.baseurl}/config/?key=job_types`)
         vconfig.getKey('job_types')
           .then(res => {
-            this.job_type_old=util.dictDeepCopy(res.data['data'])
-            this.job_type_tmp=util.dictDeepCopy(res.data['data'])
-            this.job_type=util.dictDeepCopy(res.data['data'])
+            this.jobTypeOld=util.dictDeepCopy(res.data['data'])
+            this.jobTypeTmp=util.dictDeepCopy(res.data['data'])
+            this.jobType=util.dictDeepCopy(res.data['data'])
             this.formItemOrigin.forEach((item, i) => {
               if(item.key === 'job_type') {
                 item.select = res.data['data']
@@ -291,9 +291,9 @@
         // axios.get(`${this.baseurl}/config/?key=target_types`)
         vconfig.getKey('target_types')
           .then(res => {
-            this.target_type_old = util.dictDeepCopy(res.data['data'])
-            this.target_type_tmp = util.dictDeepCopy(res.data['data'])
-            this.target_type = util.dictDeepCopy(res.data['data'])
+            this.targetTypeOld = util.dictDeepCopy(res.data['data'])
+            this.targetTypeTmp = util.dictDeepCopy(res.data['data'])
+            this.targetType = util.dictDeepCopy(res.data['data'])
             this.formItemOrigin.forEach((item, i) => {
               if(item.key === 'target_type') {
                 item['select'] = res.data['data']
@@ -314,10 +314,10 @@
       },
       commitFormInfo (){
         this.switchFormInfo = false
-        if ( this.job_type != this.job_type_old) {
+        if ( this.jobType != this.jobTypeOld) {
           // axios.post(`${this.baseurl}/config/?key=job_types&type=set`, this.job_type.split(','))
           // vconfig.postKey('job_types',this.job_type.split(','),'set')
-          vconfig.postKey('job_types',this.job_type,'set')
+          vconfig.postKey('job_types',this.jobType,'set')
             .then(res => {
               if (res.data['status'] >= 1) {
                 util.notice(this, 'job_types '+this.$t('modifySuccess'), 'success')
@@ -329,10 +329,10 @@
               util.notice(this, error, 'error')
             })  
         }
-        if ( this.target_type != this.target_type_old) {
+        if ( this.targetType != this.targetTypeOld) {
           // axios.post(`${this.baseurl}/config/?key=target_types&type=set`, this.target_type.split(','))
           // vconfig.postKey('target_types',this.target_type.split(','),'set')
-          vconfig.postKey('target_types',this.target_type,'set')
+          vconfig.postKey('target_types',this.targetType,'set')
             .then(res => {
               if (res.data['status'] >= 1) {
                 util.notice(this, 'target_types '+this.$t('modifySuccess'), 'success')
@@ -390,13 +390,13 @@
       getCurrentPage (vl) {
         this.filter = this.$route.name + ':*'
         if (!vl) {
-          vl = sessionStorage.getItem('tmplexec_currentpage')
+          vl = sessionStorage.getItem('tmplexecCurrentpage')
         }
         if (!vl) {
           vl = 1
         }
         this.currentPage = parseInt(vl)
-        sessionStorage.setItem('tmplexec_currentpage', vl)
+        sessionStorage.setItem('tmplexecCurrentpage', vl)
         // axios.get(`${this.baseurl}/executionInfo/get?filter=${this.filter}&page=${vl}&pagesize=${this.pagesize}&orderby=name`)
         exec.getExecutionInfo(this.filter,vl,this.pagesize,'name')
           .then(res => {

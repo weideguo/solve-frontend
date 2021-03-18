@@ -170,7 +170,7 @@ export default {
             this.currentFiles = res.data['files']
             this.currentDirs = res.data['dirs']
             this.currentPath = path.replace('//','/')
-            sessionStorage.setItem('file_current_path',this.currentPath)
+            sessionStorage.setItem('fileCurrentPath',this.currentPath)
             this.fullCurrentPath = res.data['path']
             this.changeHeight = (this.currentFiles.length+this.currentDirs.length)*32
             // console.log(this.changeHeight)
@@ -183,7 +183,7 @@ export default {
     }
   },
   mounted () {
-    let p = sessionStorage.getItem('file_current_path')
+    let p = sessionStorage.getItem('fileCurrentPath')
     if ( p ){
       this.currentPath = p
     }

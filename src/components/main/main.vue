@@ -147,7 +147,7 @@
       },
       // 锁屏
       lockScreen () {
-        sessionStorage.setItem('last_page_name', this.$route.name)              // 本地存储锁屏之前打开的页面以便解锁后打开
+        sessionStorage.setItem('lastPageName', this.$route.name)              // 本地存储锁屏之前打开的页面以便解锁后打开
         this.$router.push({name: 'locking'})
       }
     },

@@ -182,7 +182,7 @@
                   this.$store.commit('sessionSet', ['project', project])
                   this.$store.commit('sessionSet', ['hasLogin', 1])
                   this.$store.commit('sessionSet', ['user', this.formInline.user])
-                  this.$store.commit('sessionSet', ['login_timestamp', (new Date().getTime()) / 1000])
+                  this.$store.commit('sessionSet', ['loginTimestamp', (new Date().getTime()) / 1000])
                   // this.$router.push({
                   //   name: 'home_index'
                   // })
@@ -231,7 +231,7 @@
               this.$store.commit('sessionSet', ['project', this.project])
               this.$store.commit('sessionSet', ['hasLogin', 1])
               this.$store.commit('sessionSet', ['user', res.data['user']])
-              this.$store.commit('sessionSet', ['login_timestamp', (new Date().getTime()) / 1000])
+              this.$store.commit('sessionSet', ['loginTimestamp', (new Date().getTime()) / 1000])
               this.$store.commit('sessionSet', ['cas', 1])
               // 使用push会导致url携带ticket,故而不用
               window.location = '/'
@@ -282,7 +282,7 @@
       }
       if ( window.location.search.length === 0 ) {
         this.service = window.location.href
-        this.service=this.service.replace('#','%23')
+        this.service = this.service.replace('#','%23')
         if (this.$store.getters.sessionGet('jwt')) {
           this.baseurl = localStorage.getItem('baseurl')
           if (this.$store.getters.sessionGet('cas')) {
@@ -292,12 +292,12 @@
             sessionStorage.clear()
           }
         }
-        localStorage.setItem('login_url',this.service)
+        localStorage.setItem('loginUrl',this.service)
         localStorage.removeItem('project')
         localStorage.removeItem('baseurl')
       } else {
-        this.service = localStorage.getItem('login_url')
-        this.service=this.service.replace('#','%23')
+        this.service = localStorage.getItem('loginUrl')
+        this.service = this.service.replace('#','%23')
         this.project = localStorage.getItem('project')
         this.baseurl = localStorage.getItem('baseurl')
         if (this.ticket) {

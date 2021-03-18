@@ -268,13 +268,13 @@
         this.formDynamic = []
         this.filter = this.$route.name;
         if (!vl) {
-          vl = sessionStorage.getItem(`${this.filter}_currentpage`)
+          vl = sessionStorage.getItem(`${this.filter}Currentpage`)
         }
         if (!vl) {
           vl = 1
         }
         this.currentPage = parseInt(vl)
-        sessionStorage.setItem(`${this.filter}_currentpage`, vl)
+        sessionStorage.setItem(`${this.filter}Currentpage`, vl)
         this.search(vl)
       },
       delTarget (t) {

@@ -77,8 +77,7 @@ export default {
       myheader: {
         'Authorization': sessionStorage.getItem('jwt')
       },
-      baseurl: this.$store.getters.sessionGet('baseurl'),
-      cache_date_str: ''
+      baseurl: this.$store.getters.sessionGet('baseurl')
     }
   },
   methods: {

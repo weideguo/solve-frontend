@@ -673,9 +673,9 @@
         }
         this.workid = this.$route.query['workid']
         if (this.workid) {
-          sessionStorage.setItem('order_list_workid', this.workid)
+          sessionStorage.setItem('orderListWorkid', this.workid)
         } else {
-          this.workid = sessionStorage.getItem('order_list_workid');
+          this.workid = sessionStorage.getItem('orderListWorkid');
         }
         // axios.get(`${this.baseurl}/order/detail?workid=${this.workid}&exclude=${exclude}`)
         order.detail(this.workid,exclude)

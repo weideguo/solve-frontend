@@ -79,7 +79,7 @@
           target: 0,
           realhost: 0
         },
-        time: util.formatDate(sessionStorage.getItem('login_timestamp')),
+        time: util.formatDate(sessionStorage.getItem('loginTimestamp')),
         username: sessionStorage.getItem('user')
       }
     },

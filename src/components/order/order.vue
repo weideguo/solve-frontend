@@ -141,13 +141,13 @@
       },
       getCurrentPage (vl) {
         if (!vl) {
-          vl = sessionStorage.getItem('order_currentpage')
+          vl = sessionStorage.getItem('orderCurrentpage')
         }
         if (!vl) {
           vl = 1
         }
         this.currentPage = parseInt(vl)
-        sessionStorage.setItem('order_currentpage', vl);
+        sessionStorage.setItem('orderCurrentpage', vl);
         // axios.get(`${this.baseurl}/order/?page=${vl}&pagesize=${this.pagesize}`)
         // axios.get(`${this.baseurl}/order/?page=${vl}&pagesize=${this.pagesize}`)
         order.getOrder(vl,this.pagesize)
