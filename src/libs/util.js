@@ -229,6 +229,19 @@ util.dictKeys = function (dict) {
   return keys
 },
 
+// 获取上一级目录 /a/b/c -> /a/b
+util.getPrePath = function (currentPath){
+  let y=currentPath.split('/')
+  currentPath=''
+  let d=y.slice(0,-1)
+  d.forEach((a,b) => {
+    currentPath=currentPath+'/'+a
+    }
+  )
+  currentPath = currentPath.substring(1)
+  return currentPath
+}
+
 // 序列化与反序列化
 util.formatDict = function (dict,padding='###') {
   let result=''

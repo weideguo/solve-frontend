@@ -149,14 +149,7 @@ export default {
     gobackdir () {
       this.currentPath = this.currentPath
       if (this.currentPath != '/' && this.currentPath != '') {
-        let y=this.currentPath.split('/')
-        this.currentPath=''
-        let d=y.slice(0,-1)
-        d.forEach((a,b) => {
-          this.currentPath=this.currentPath+'/'+a
-          }
-        )
-        this.currentPath = this.currentPath.substring(1)
+        this.currentPath = util.getPrePath(this.currentPath)
       } else {
         util.notice(this, this.$t('noPreDirTips'), 'info')
       }
@@ -164,6 +157,7 @@ export default {
     },
     getFileInfo (path){
       // axios.get(`${this.baseurl}/file/list?path=${path}`)
+      // let prePath = path
       file.getFileList(path)
         .then(res => {
           if (res.data['status'] > 0) {
@@ -178,6 +172,7 @@ export default {
             util.notice(this, res.data['msg'], 'error')
           }
         }).catch(error => {
+          // this.currentPath = prePath
           util.notice(this, error, 'error')
         });
     }
