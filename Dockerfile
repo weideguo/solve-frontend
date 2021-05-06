@@ -3,7 +3,7 @@
 
 # Base images 
 FROM node:10.13
-LABEL maintainer="wdg(https://github.com/zouzhicun)"
+LABEL maintainer="wdg(https://github.com/weideguo)"
 
 ENV BACKEND_HOST=127.0.0.1
 ENV BACKEND_PORT=8000
