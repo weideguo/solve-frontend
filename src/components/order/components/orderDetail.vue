@@ -303,7 +303,8 @@
              width: 300,
              render: (h, params) => {
               let b = ''
-              if ( [ 'executing','pausing','waiting select'].indexOf(params.row.exe_status) >= 0 ) {
+              // if ( [ 'executing','pausing','waiting select'].indexOf(params.row.exe_status) >= 0 ) {
+              if ( params.row.finish==0 ) {
                 b = h('div', [
                   h('Button', {
                     props: {
