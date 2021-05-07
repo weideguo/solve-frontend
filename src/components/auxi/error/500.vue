@@ -1,4 +1,4 @@
-<style lang="less">
+<style lang="css">
   @import './500.css';
 </style>
 

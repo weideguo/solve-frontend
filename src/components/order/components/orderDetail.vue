@@ -1,4 +1,4 @@
-<style lang="less">
+<style lang="css">
   .top {
     padding: 0px;
     background: #2D8CF0;
