@@ -28,7 +28,7 @@ export const page401 = {
 
 export const page500 = {
   path: '/500',
-  name: 'error_500x',
+  name: 'error_500',
   title: '500',
   meta: {
     title: '500-serverError'
