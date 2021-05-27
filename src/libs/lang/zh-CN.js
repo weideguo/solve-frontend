@@ -225,7 +225,8 @@ const lang = {
                   '[{{_1}}]                                                           \n'+
                   'echo {{_2}}                                                        \n'+
                   'echo {{_3}}                                                          ',
-
+    backToHome: '返回首页',
+    backToPre: '返回上一页'
 }
 
 export default lang;

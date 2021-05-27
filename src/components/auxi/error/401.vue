@@ -29,7 +29,7 @@
       },
       goHome () {
         this.$router.push({
-          name: 'home_index'
+          'path': '/'
         })
       }
     }

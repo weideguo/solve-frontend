@@ -95,6 +95,18 @@ export const locking = {
   }
 }
 
+export const orderInfo = {
+  path: '/orderInfo',
+  name: 'orderInfo',
+  title: 'orderInfo',
+  meta: {
+    title: 'orderInfo'
+  },
+  component: resolve => {
+    require(['./components/order/components/orderDetail.vue'], resolve)
+  }
+}
+
 export const appRouter = [
   {
     path: '/order',
@@ -121,7 +133,6 @@ export const appRouter = [
   {
     path: '/host',
     icon: 'md-laptop',
-    name: 'ohost',
     title: 'hostManage',
     redirect: '/',
     component: Main,
@@ -259,7 +270,6 @@ export const appRouter = [
   {
     path: '/file',
     icon: 'md-briefcase',
-    name: 'ofile',
     title: 'fileManage',
     redirect: '/',
     component: Main,
@@ -282,7 +292,7 @@ export const appRouter = [
     path: '/user',
     icon: 'md-people',
     name: 'user',
-    title: 'manage',
+    title: 'userManage',
     redirect: '/user/userlist',
     component: Main,
     children: [
@@ -304,7 +314,7 @@ export const appRouter = [
 
 export const home = {
   path: '/',
-  name: 'home',
+  name: 'main',
   title: 'mainPage',
   redirect: '/home',
   component: Main,
@@ -315,7 +325,7 @@ export const home = {
       meta: {
         title: 'mainPage'
       },
-      name: 'mainPage',
+      name: 'home',
       component: resolve => {
         require(['./components/home/home.vue'], resolve)
       }
@@ -325,9 +335,6 @@ export const home = {
 
 export const orderDetail = {
   path: '/order',
-  name: 'order',
-  title: 'order',
-  redirect: '/order/orderDetail',
   component: Main,
   children: [
     {
@@ -344,23 +351,8 @@ export const orderDetail = {
   ]
 }
 
-export const orderInfo = {
-  path: '/orderInfo',
-  name: 'orderInfo',
-  title: 'orderInfo',
-  meta: {
-    title: 'orderInfo'
-  },
-  component: resolve => {
-    require(['./components/order/components/orderDetail.vue'], resolve)
-  }
-}
-
 export const execDetail = {
   path: '/execution',
-  name: 'execution',
-  title: 'jobExecute',
-  // redirect: '/',
   component: Main,
   children: [
     {
