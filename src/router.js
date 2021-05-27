@@ -106,7 +106,7 @@ export const appRouter = [
     children: [
       {
         path: 'order',
-        name: 'orderInfo',
+        name: 'myOrder',
         title: 'myOrder',
         icon: 'md-cart',
         meta: {
@@ -315,7 +315,7 @@ export const home = {
       meta: {
         title: 'mainPage'
       },
-      name: 'home_index',
+      name: 'mainPage',
       component: resolve => {
         require(['./components/home/home.vue'], resolve)
       }
