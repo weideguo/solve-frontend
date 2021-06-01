@@ -192,7 +192,9 @@
         }
       },
       save () {
-        let filename = 'fast_'+util.formatDate((new Date().getTime()) / 1000).replaceAll('-','').replaceAll(':','').replaceAll(' ','_')+'.txt'
+        // let filename = 'fast_'+util.formatDate((new Date().getTime()) / 1000).replaceAll('-','').replaceAll(':','').replaceAll(' ','_')+'.txt'
+        // 有些浏览器不支持replaceAll
+        let filename = 'fast_'+util.formatDate((new Date().getTime()) / 1000).replace(new RegExp('-','g'),'').replace(new RegExp(':','g'),'').replace(new RegExp(' ','g'),'_')+'.txt'
         util.write(util.formatDict(this.formItem), filename)
         // console.log('save done')
       },
