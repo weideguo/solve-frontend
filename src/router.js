@@ -305,17 +305,17 @@ export const appRouter = [
 export const home = {
   path: '/',
   name: 'home',
-  title: 'mainPage',
-  redirect: '/home',
+  title: 'home',
+  redirect: '/mainPage',
   component: Main,
   children: [
     {
-      path: 'home',
+      path: 'mainPage',
       title: 'mainPage',
       meta: {
         title: 'mainPage'
       },
-      name: 'home_index',
+      name: 'mainPage',
       component: resolve => {
         require(['./components/home/home.vue'], resolve)
       }

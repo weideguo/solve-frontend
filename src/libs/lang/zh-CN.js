@@ -1,6 +1,7 @@
 const lang = {
     title: '简单命令分发系统',
     loginTips: '使用chrome获得最佳体验',
+    home: '首页',
     mainPage: '首页',
     login: '登陆',
     myOrder: '我的工单',

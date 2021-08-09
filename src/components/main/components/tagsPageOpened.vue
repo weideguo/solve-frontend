@@ -10,7 +10,7 @@
     <div style="float:left">
       <transition-group name="taglist-moving-animation">
         <Tag type="dot" v-for="item in pageTagsList" :key="item.name" :name="item.name" @on-close="closePage"
-             @click.native="linkTo(item.name)" :closable="item.name==='home_index'?false:true"
+             @click.native="linkTo(item.name)" :closable="item.name==='mainPage'?false:true"
              :color="item.children?(item.children[0].name===currentPageName?'primary':'default'):(item.name===currentPageName?'primary':'default')">
           {{ $t(item.title) }}
         </Tag>
@@ -76,7 +76,6 @@
         if (type === 'clearAll') {
           this.$store.commit('clearAllTags')
           this.$router.push({
-            // name: 'home_index'
             name: this.$store.state.pageOpenedList[0].name
           })
         } else {
