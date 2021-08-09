@@ -314,15 +314,9 @@ export const appRouter = [
 
 export const home = {
   path: '/',
-<<<<<<< HEAD
   name: 'home',
   title: 'home',
   redirect: '/mainPage',
-=======
-  name: 'main',
-  title: 'mainPage',
-  redirect: '/home',
->>>>>>> 4ca2f4720b9e2c1071730c0c0c321c8564befb96
   component: Main,
   children: [
     {
@@ -331,11 +325,7 @@ export const home = {
       meta: {
         title: 'mainPage'
       },
-<<<<<<< HEAD
       name: 'mainPage',
-=======
-      name: 'home',
->>>>>>> 4ca2f4720b9e2c1071730c0c0c321c8564befb96
       component: resolve => {
         require(['./components/home/home.vue'], resolve)
       }
