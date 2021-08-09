@@ -29,7 +29,7 @@
     name: 'version',
     data () {
       return {
-        title: 'solve 0.4.x',
+        title: 'solve 0.14.x',
         word: [
           'SOLVE - Simple cOmmand deLiver serVEr',
           '开始于20181109',

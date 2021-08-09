@@ -28,7 +28,7 @@ export const page401 = {
 
 export const page500 = {
   path: '/500',
-  name: 'error_500x',
+  name: 'error_500',
   title: '500',
   meta: {
     title: '500-serverError'
@@ -95,6 +95,18 @@ export const locking = {
   }
 }
 
+export const orderInfo = {
+  path: '/orderInfo',
+  name: 'orderInfo',
+  title: 'orderInfo',
+  meta: {
+    title: 'orderInfo'
+  },
+  component: resolve => {
+    require(['./components/order/components/orderDetail.vue'], resolve)
+  }
+}
+
 export const appRouter = [
   {
     path: '/order',
@@ -106,7 +118,7 @@ export const appRouter = [
     children: [
       {
         path: 'order',
-        name: 'orderInfo',
+        name: 'myOrder',
         title: 'myOrder',
         icon: 'md-cart',
         meta: {
@@ -121,7 +133,6 @@ export const appRouter = [
   {
     path: '/host',
     icon: 'md-laptop',
-    name: 'ohost',
     title: 'hostManage',
     redirect: '/',
     component: Main,
@@ -259,7 +270,6 @@ export const appRouter = [
   {
     path: '/file',
     icon: 'md-briefcase',
-    name: 'ofile',
     title: 'fileManage',
     redirect: '/',
     component: Main,
@@ -282,7 +292,7 @@ export const appRouter = [
     path: '/user',
     icon: 'md-people',
     name: 'user',
-    title: 'manage',
+    title: 'userManage',
     redirect: '/user/userlist',
     component: Main,
     children: [
@@ -304,9 +314,15 @@ export const appRouter = [
 
 export const home = {
   path: '/',
+<<<<<<< HEAD
   name: 'home',
   title: 'home',
   redirect: '/mainPage',
+=======
+  name: 'main',
+  title: 'mainPage',
+  redirect: '/home',
+>>>>>>> 4ca2f4720b9e2c1071730c0c0c321c8564befb96
   component: Main,
   children: [
     {
@@ -315,7 +331,11 @@ export const home = {
       meta: {
         title: 'mainPage'
       },
+<<<<<<< HEAD
       name: 'mainPage',
+=======
+      name: 'home',
+>>>>>>> 4ca2f4720b9e2c1071730c0c0c321c8564befb96
       component: resolve => {
         require(['./components/home/home.vue'], resolve)
       }
@@ -325,9 +345,6 @@ export const home = {
 
 export const orderDetail = {
   path: '/order',
-  name: 'order',
-  title: 'order',
-  redirect: '/order/orderDetail',
   component: Main,
   children: [
     {
@@ -344,23 +361,8 @@ export const orderDetail = {
   ]
 }
 
-export const orderInfo = {
-  path: '/orderInfo',
-  name: 'orderInfo',
-  title: 'orderInfo',
-  meta: {
-    title: 'orderInfo'
-  },
-  component: resolve => {
-    require(['./components/order/components/orderDetail.vue'], resolve)
-  }
-}
-
 export const execDetail = {
   path: '/execution',
-  name: 'execution',
-  title: 'jobExecute',
-  // redirect: '/',
   component: Main,
   children: [
     {
