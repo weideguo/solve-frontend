@@ -18,7 +18,7 @@
           </Col>
         </Row>
         <br>
-        <Page :total="pageNumber" @on-change="getCurrentPage" :page-size="pageSize" :current="currentPage" show-elevator show-total></Page>
+        <Page :total="pageNumber" @on-change="getCurrentPage" :page-size="pageSize" :current="currentPage" @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
       </Card>
     </Row>
 
@@ -164,6 +164,7 @@
         pageSize: 16,
         pageNumber: 1,
         currentPage: 1,
+        pageSizeOpts: [10,20,40,80,100,200],
         filter: '',
         modelTitle: '',
         openswitch: false,
@@ -263,6 +264,10 @@
           }).catch(error => {
             util.notice(this, error, 'error')
           })
+      },
+      getCurrentPageNew (pagesize) {
+        this.pagesize=pagesize
+        this.getCurrentPage(1)
       },
       getCurrentPage (vl) {
         this.formDynamic = []
