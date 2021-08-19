@@ -191,7 +191,8 @@ util.dict2arry = function (dict, ktag='key', vtag='value',sort=[]) {
   let arr = [];
   let i = 0;
   sort.forEach((item,j) => {
-     if (typeof(dict[item]) != 'undefined') { 
+     // if (typeof(dict[item]) != 'undefined') { 
+     if (item in dict) { 
         arr[i] = {}
         arr[i][ktag] = item
         arr[i][vtag] = dict[item];
@@ -199,12 +200,17 @@ util.dict2arry = function (dict, ktag='key', vtag='value',sort=[]) {
         i = i + 1
      }
   })
+  let keys =[]
   for (let k in dict) {
+    keys.push(k)
+  }
+  keys.sort()
+  keys.forEach((k,j)=>{
     arr[i] = {}
     arr[i][ktag] = k
     arr[i][vtag] = dict[k];
     i = i + 1
-  }
+  })
   return arr
 }
 
