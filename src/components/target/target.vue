@@ -400,6 +400,7 @@
         target.getTreeInfo(this.opentarget) 
           .then(res => {
             this.targetDataTree=res.data['data']
+            this.targetDataTree=this.targetDataTree.sort(util.func_sort('title'))
           })
           .catch(error => {
             util.notice(this, error, 'error')

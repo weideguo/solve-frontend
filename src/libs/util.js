@@ -233,7 +233,19 @@ util.dictKeys = function (dict) {
     keys.push(k)
   }
   return keys
-},
+}
+
+util.func_sort = function(key){
+  return function(a, b){
+    if (a[key] < b[key]){
+      return -1
+    }else if (a[key] > b[key]){
+      return 1
+    } else {
+      return 0
+    }
+  }
+}
 
 // 获取上一级目录 /a/b/c -> /a/b
 util.getPrePath = function (currentPath){
