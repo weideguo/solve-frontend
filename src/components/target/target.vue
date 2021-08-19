@@ -362,7 +362,7 @@
         currentNode.children=[]
         target.getTreeInfo(currentNode.value) 
           .then(res => {
-            this.$set(currentNode, 'children', res.data['data']);
+            this.$set(currentNode, 'children', res.data['data'].sort(util.func_sort('title')))
           })
           .catch(error => {
             util.notice(this, error, 'error')
