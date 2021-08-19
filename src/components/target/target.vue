@@ -18,7 +18,7 @@
           </Col>
         </Row>
         <br>
-        <Page :total="pageNumber" @on-change="getCurrentPage" :page-size="pageSize" :current="currentPage" @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
+        <Page :total="pageNumber" @on-change="getCurrentPage" :page-size="pagesize" :current="currentPage" @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
       </Card>
     </Row>
 
@@ -161,7 +161,7 @@
           }
         ],
         tableData: [],
-        pageSize: 16,
+        pagesize: 16,
         pageNumber: 1,
         currentPage: 1,
         pageSizeOpts: [10,20,40,80,100,200],
@@ -186,8 +186,8 @@
           searchWord = this.$route.name + '*'
         }
         searchWord = encodeURIComponent(searchWord)
-        // axios.get(`${this.baseurl}/target/get?filter=${searchWord}&page=${vl}&pagesize=${this.pageSize}`)
-        target.getTarget(searchWord,vl,this.pageSize)
+        // axios.get(`${this.baseurl}/target/get?filter=${searchWord}&page=${vl}&pagesize=${this.pagesize}`)
+        target.getTarget(searchWord,vl,this.pagesize)
           .then(res => {
             this.tableData = res.data['data']
             this.tableData.forEach((item) => {
