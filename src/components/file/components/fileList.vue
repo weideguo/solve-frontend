@@ -5,8 +5,8 @@
       <Button type="text" @click="changedir">{{introText}}</Button>
     </div>
     <div v-else>
-      <!--<a href="#" @onclick="download()"><Icon type="md-document" /></a>-->
-      <Button type="text" @click="download" icon="md-document"></Button>
+      <Button type="text" @click="download"><Icon type="md-document" /></Button>
+      <!--<Button type="text" @click="download" icon="md-document"></Button>-->
       <Button type="text" @click="copypath">{{introText}}</Button>
     </div>
 </template>
