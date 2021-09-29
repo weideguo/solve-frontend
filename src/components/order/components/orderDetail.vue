@@ -198,7 +198,8 @@
           {
             key: 'target',
             align: 'center',
-            width: 300,
+            width: 440,
+            resizable: true,
             sortable: true
           },
           {
@@ -216,7 +217,7 @@
           {
             align: 'center',
             key: 'log_id',
-            width: 300
+            minWidth: 300
           }
         ],
         detailTitle: '',
@@ -256,27 +257,28 @@
             title: this.$t('executeTarget'),
             key: 'target',
             sortable: true,
-            minWidth: 150
+            resizable: true,
+            width: 440
           },
           {
             title: this.$t('currentStatus'),
             key: 'exe_status',
             align: 'center',
             sortable: true,
-            width: 150
+            width: 130
           },
           {
             title: this.$t('exeRownum'),
             key: 'exe_rownum',
             align: 'center',
             sortable: true,
-            width: 150
+            width: 130
           },
           {
             title: this.$t('rownum'),
             key: 'playbook_rownum',
             align: 'center',
-            width: 150
+            width: 130
           },
           {
             title: this.$t('beginDate'),
@@ -294,13 +296,13 @@
             title: this.$t('endure'),
             key: 'endure',
             sortable: true,
-            width: 200
+            width: 130
           },
           {
              title: this.$t('action'),
              key: 'action',
              align: 'center',
-             width: 300,
+             minWidth: 300,
              render: (h, params) => {
               let b = ''
               // if ( [ 'executing','pausing','waiting select'].indexOf(params.row.exe_status) >= 0 ) {
