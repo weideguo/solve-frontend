@@ -24,7 +24,7 @@
           <b>{{openinfo.name_s}}-{{ $t('sessionParamsSetting') }}</b>
           <br><br>
         </div>
-        <constrict-form ref="varsForm" :formdata="sessionFull" :nullInfo="$t('noSessionNeed')" :buttonTooltip="$t('savaSessionTips')" @buttonOperation="saveSession"></constrict-form>
+        <constrict-form ref="varsForm" :formdata="sessionFull" :nullInfo="$t('noSessionNeed')" :buttonTooltip="$t('saveSessionTips')" @buttonOperation="saveSession"></constrict-form>
       </div>
       
       <div v-else-if="current === 1">

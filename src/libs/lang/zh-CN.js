@@ -33,7 +33,7 @@ const lang = {
     jobID: '工单编号',
     run : '执行',
     setting : '设置',
-    sessionTips : '如果更改，需要预先提交',
+    sessionTips : '更改须提交，当前执行对象生效',
     commitDate : '提交时间',
     committer : '提交人',
     jobDesc : '工单说明',
@@ -125,7 +125,8 @@ const lang = {
     executeList: '可执行列表',
     sessionParamsSetting: 'session参数设置',
     noSessionNeed: '没有需要设置的session参数',
-    savaSessionTips: '只是保存session，可选',
+    saveSessionTips: '只是保存session，可选',
+    saveSession: 'session保存',
     confirmRun: '确认执行',
     paramsSetting: '参数设置',
     previousStep: '上一步',
@@ -227,7 +228,12 @@ const lang = {
                   'echo {{_2}}                                                        \n'+
                   'echo {{_3}}                                                          ',
     backToHome: '返回首页',
-    backToPre: '返回上一页'
+    backToPre: '返回上一页',
+    setGolbalVars: 'global设置',
+    setGolbalVarsTitle: '设置global参数',
+    setGlobalVarsTips: '设置global参数只影响当前执行对象',
+    inputGlobalVarsTips: '请输入global参数的值',
+    globalVarsSaveSuccess: 'global参数修改成功',
 }
 
 export default lang;

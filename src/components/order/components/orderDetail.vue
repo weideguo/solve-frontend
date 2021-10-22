@@ -147,7 +147,12 @@
             <Input v-model="item.value"></Input>
           </FormItem>
           <Tooltip :content="$t('sessionTips')" placement="left" style="float:right;margin-right:0px">
-            <Button size="large" @click.native="setRerunSession" >{{ $t('setting') }}</Button>
+            <Button size="large" @click.native="setRerunSession" >{{ $t('saveSession') }}</Button>
+          </Tooltip>
+
+          <Divider>global</Divider>
+          <Tooltip :content="$t('setGlobalVarsTips')" placement="left" style="float:right;margin-right:0px">
+            <Button size="large" @click.native="modalGolbalVars=true" >{{ $t('setGolbalVars') }}</Button>
           </Tooltip>
 
           <Divider v-if="checkChangable.length > 0">changable</Divider>
@@ -174,6 +179,16 @@
       </div>-->
     </Modal>
 
+    <Modal v-model="modalGolbalVars" scrollable width="55%" >
+      <p slot="header">
+        <span>{{ $t('setGolbalVarsTitle') }}</span>
+      </p>
+      <safe-form ref="formGolbalVars" :labelwidth="100" :dynamicData="globalVars" :dynamic="true" :inputValueTips="$t('inputGlobalVarsTips')"
+        @primaryClick="globalVarsCommit" @secondClick="modalGolbalVars=false" >
+      </safe-form>
+      <div slot="footer"></div>
+    </Modal>
+
   </div>
 </template>
 
@@ -182,9 +197,13 @@
   import exec from '@/api/exec'
   import util from '@/libs/util'
   // import axios from 'axios'
+  import safeForm from '@/components/common/safeForm.vue'
   //
   export default {
-    name: 'orderList',
+    name: 'orderDetail',
+    components: {
+      safeForm
+    },
     data () {
       return {
         baseurl: this.$store.getters.sessionGet('baseurl'),
@@ -193,6 +212,7 @@
         modalDetail: false,
         modalSummary: false,
         modalSelect: false,
+        modalGolbalVars: false,
         summaryInfo: [],
         columnsSummaryInfo: [
           {
@@ -403,6 +423,7 @@
         checkSession: [],
         checkReadonly: [],
         checkChangable: [],
+        globalVars: {},
         runTitle: '',
         currentTarget: '',
         finishOnly: false,
@@ -413,7 +434,8 @@
         selectValue: '',
         selectList: [],
         selectionKey: [],
-        selectionKeyStr: ''
+        selectionKeyStr: '',
+        targetId: ''
       }
     },
     methods: {
@@ -460,12 +482,14 @@
         this.getRerunInfo(params, params['target_id'])
         this.newJobId=''
       },
-      getRerunInfo (params, target_id) {
+      getRerunInfo (params, targetId) {
         this.checkSession = this.checkReadonly = this.checkChangable = []
+        this.globalVars = {}
         this.modalRerun = true
         this.selectParams = params
+        this.targetId = targetId
         // axios.get(`${this.baseurl}/execution/rerun_info?work_id=${this.workid}&target=${this.selectParams['target']}&target_id=${target_id}`)
-        exec.getRerunInfo(this.workid,this.selectParams['target'],target_id)
+        exec.getRerunInfo(this.workid,this.selectParams['target'],targetId)
           .then(res => {
             if (this.begin_line === 0) {
               res.data['data']['changable']['begin_line'] = 0
@@ -473,6 +497,7 @@
             this.checkSession = util.dict2arry(res.data['data']['session'], 'key', 'value')
             this.checkReadonly = util.dict2arry(res.data['data']['readonly'], 'key', 'value')
             this.checkChangable = util.dict2arry(res.data['data']['changable'], 'key', 'value')
+            this.globalVars = res.data['data']['global']
           })
           .catch(error => {
             util.notice(this, error, 'error')
@@ -770,7 +795,22 @@
         }else{
           this.$Message.error(this.$t('emptyFieldWarn'))
         }
-      }
+      },
+      globalVarsCommit(data) {
+        this.globalVars=data
+        exec.postGolbalVars(this.targetId,data)
+          .then(res => {
+            if (res.data['status']>=1) {
+              util.notice(this, this.$t('globalVarsSaveSuccess'), 'info')
+              console.log(res.data)
+            } else {
+              util.notice(this, res.data['msg'], 'error')
+            }
+          })
+          .catch(error => {
+            util.notice(this, error, 'error')
+          })
+      },
     },
     destroyed() {
       // 销毁组件时调用

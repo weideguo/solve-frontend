@@ -46,6 +46,13 @@ export default {
       method: 'get',
     })
   },
+  postGolbalVars: function (targetId,data) {
+    return request({
+      url: `/global/?target_id=${targetId}`,
+      method: 'post',
+      data: data
+    })
+  },
   postExecution: function (filter,params,debug=0) {
     return request({
       url: `/execution/?filter=${filter}&debug=${debug}`,
