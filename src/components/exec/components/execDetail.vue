@@ -121,8 +121,9 @@
         // console.log(this.info)
         // console.log(this.playbook)
         let name = this.info['name'].split('exec:')[1]
-        let path = "/?playbook="+this.playbook+"&title="+name+"#/playbook"
-        // console.log(path)
+        // let path = "/playbook?playbook="+this.playbook+"&title="+name
+        let path = this.$router.resolve({ path: '/playbook', query: {  playbook: this.playbook, title: name } }).href
+        console.log(path)
         window.open(path, "_blank", "scrollbars=yes,resizable=1,modal=false,alwaysRaised=yes")
       },
       commit () {
