@@ -7,6 +7,11 @@
             <Button type="info" icon="md-list" @click.native="switchFormInfo=true" ></Button>
           </Tooltip>
           <Button type="info" icon="md-add" @click.native="targetinfoAdd()">{{filter}}</Button>
+          
+          <Tooltip :content="$t('showCascade')"  placement="bottom-start">
+            <Button type="info" icon="md-more" @click.native="showCascade()" ></Button>
+          </Tooltip>
+
           <div style="float:right;margin-right: 0px">
             <Input v-model="searchWord" @on-search="search()" search enter-button :placeholder="$t('searchTips')" style="width: 350px"/>
           </div>
@@ -33,6 +38,19 @@
       </safe-form>
       <div slot="footer"></div>
     </Modal>
+
+    <Modal v-model="cascadeSwitch" width="60%"> 
+      <div slot="header">   
+        <p>
+          <span> {{ $t('selectedPath') }}: {{cascadePath}} </span>
+        </p>
+      </div>
+      <div>
+        <Tree :data="cascadeTreeData" @on-select-change="showCascadePath" ref="casCadeTree"></Tree>
+      </div>
+      <div slot="footer"></div>
+    </Modal>
+
 
     <Modal v-model="treeswitch" width="60%"> 
       <div slot="header">   
@@ -172,7 +190,10 @@
         switchFormInfo: false,
         isAdd: true,
         treeLevel: '{{}}',
-        targetDataTree: []
+        targetDataTree: [],
+        cascadeTreeData: [],
+        cascadeSwitch: false,
+        cascadePath: '',
         // deleteConfirm: false,
         // delname: ''
       }
@@ -226,6 +247,23 @@
         this.isAdd = true
         this.formItem = this.formItemOrigin
         this.modelTitle = this.filter+' '+this.$t('addInfo') 
+      },
+      showCascade () {
+        this.cascadePath = ''
+        this.cascadeTreeData = []
+        target.getNameList(`${this.$route.name}*`)
+          .then(res => {
+            this.cascadeTreeData = []
+            this.cascadeTreeData.push(util.formateTreeData(res.data['data'], []));
+          })
+          .catch(error => {
+            util.notice(this, error, 'error');
+          })
+        this.cascadeSwitch = true
+      },
+      showCascadePath(){
+        this.cascadePath = util.getPathOfSelect(this.cascadeTreeData, '_')
+        this.cascadePath = this.cascadePath.slice(2)
       },
       formCommit (data) {
         if (!this.isAdd) {
@@ -369,29 +407,9 @@
           })
       },
       showPath(selectList,selectCurrent){
-        this.treeLevel=this.getParentOfSelect(this.targetDataTree)
+        // this.treeLevel=this.getParentOfSelect(this.targetDataTree,'.')
+        this.treeLevel=util.getPathOfSelect(this.targetDataTree,'.')
         this.treeLevel='{{'+this.treeLevel+'}}'
-      },
-      getParentOfSelect(data, ParentPath="") {
-        // 获取父节点到选中节点的路径
-        let matchPath=""
-        for(let i in data) {
-          let item=data[i]
-          let currentPath=item['title']
-          if(ParentPath){
-            currentPath=ParentPath+'.'+item['title']
-          }
-          // console.log(item['selected'],currentPath,ParentPath)
-          if(item['selected']) {
-             return currentPath
-          } else if(item['children']) {
-            matchPath=this.getParentOfSelect(item['children'], currentPath)
-            if(matchPath) {
-              return matchPath
-            }
-          } 
-        }
-        return ""
       },
       getTreeNode() {
         this.treeswitch=true

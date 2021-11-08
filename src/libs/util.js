@@ -390,6 +390,27 @@ util.getCheckedLeaf = function (treeData) {
   let checkedLeaf = util.getLeaf(p, p.title, treeData)
   return checkedLeaf
 }
+
+// 获取父节点到选中节点的路径
+util.getPathOfSelect = function (data, spliter, ParentPath='') {
+  let matchPath=""
+  for(let i in data) {
+    let item=data[i]
+    let currentPath=item['title']
+    if(ParentPath){
+      currentPath=ParentPath+spliter+item['title']
+    }
+    if(item['selected']) {
+       return currentPath
+    } else if(item['children']) {
+      matchPath=util.getPathOfSelect(item['children'], spliter, currentPath)
+      if(matchPath) {
+        return matchPath
+      }
+    } 
+  }
+  return ""
+}
 ///////////////////////////
 
 //文件操作

@@ -185,6 +185,8 @@ const lang = {
     notCloseConnectTips: 'ip不存在，不能关闭连接',
     notCreateConnectTips: 'ip不存在，不能建立连接',
     modifyFiled: '修改字段信息',
+    showCascade: '级联展示',
+    selectedPath: '选中的路径',
     inputTargetNameTips: '请输入执行对象名',
     info: '信息',
     nameUniqueTips: '新增name必须与现有的不同',
