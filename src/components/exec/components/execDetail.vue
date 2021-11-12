@@ -21,7 +21,7 @@
 
           <FormItem v-for="(item, i) in formItem" :key="i" :label="item.key" required>
             <Input v-if="item.key === 'target'" v-model="item.value" @click.native="clusterAdd()"></Input>
-            <Select v-else-if="item.key === 'tmpl'" v-model="item.value">
+            <Select v-else-if="item.key === 'tmpl'" v-model="item.value" filterable>
               <Option v-for="i in tmplList" :value="i" :key="i">{{ i }}</Option>
             </Select>
             <Input v-else v-model="item.value" clearable></Input>

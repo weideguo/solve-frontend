@@ -169,7 +169,7 @@
     <Modal v-model="modalSelect" @on-ok="setSelect" scrollable width="55%" >
       <p slot="header">{{ $t('selectTitle') }}  {{selectVar}}</p>
       <div>
-      <Select v-model="selectValue" :placeholder="$t('selectTips')" multiple>
+      <Select v-model="selectValue" :placeholder="$t('selectTips')" multiple filterable>
           <Option v-for="j in selectList" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
       </Select>
       </div>

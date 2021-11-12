@@ -4,10 +4,10 @@
     <div v-else>
       
       <FormItem v-for="k in formKey" :prop="k" :key="k" :label="k">
-        <Select v-if="formType[k] === 'select'" v-model="formItem[k]" :placeholder="formComment[k]" clearable>
+        <Select v-if="formType[k] === 'select'" v-model="formItem[k]" :placeholder="formComment[k]" filterable clearable>
           <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
         </Select>
-        <Select v-else-if="formType[k] === 'multiselect'" v-model="formItem[k]" :placeholder="formComment[k]" multiple>
+        <Select v-else-if="formType[k] === 'multiselect'" v-model="formItem[k]" :placeholder="formComment[k]" filterable multiple>
           <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
         </Select>
         <Select v-else-if="formType[k] === 'dynamicselect'" v-model="formItem[k]" :placeholder="formComment[k]" multiple filterable allow-create @on-create="pushItem(k)">
