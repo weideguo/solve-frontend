@@ -2,7 +2,7 @@
   <Form ref="safeform" :label-width="labelwidth" :model="formValue"  :rules="formvalidate">
     
       <FormItem v-for="i in formKey" :prop="i" :label="formLabel[i]" :key="i">
-        <Select v-if="typeof(formSelect[i]) === 'object'" v-model="formValue[i]" :placeholder="formComment[i]" clearable>
+        <Select v-if="typeof(formSelect[i]) === 'object'" v-model="formValue[i]" :placeholder="formComment[i]" clearable filterable>
           <Option v-for="j in formSelect[i]" :value="j" :key="j">{{ j }}</Option>
         </Select>
         <Input v-else v-model="formValue[i]" :placeholder="formComment[i]" clearable></Input>
