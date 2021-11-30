@@ -85,22 +85,22 @@
               trigger: 'blur'
             },
             {
-              validator: util.validatorGenerator(),
+              validator: util.validatorGenerator('^\\d+$',this.$t('portMustBeNum')),
               trigger: 'blur'
             },
           ],
           passwd: [
             {
-              required: true,
-              message: this.$t('inputHostPasswordTips'),
-              trigger: 'blur'
-            },
-            {
-              validator: util.validatorGenerator(),
+              validator: util.validatorGenerator('^$|^[^\\s]$|^[^\\s].*[^\\s]$',this.$t('emptyOrNoSpaceLeftRight')),
               trigger: 'blur'
             },
           ],
-          proxy: []
+          proxy: [
+            {
+              validator: util.validatorGenerator('^$|^[^\\s]$|^[^\\s].*[^\\s]$',this.$t('emptyOrNoSpaceLeftRight')),
+              trigger: 'blur'
+            },
+          ]
         }, 
         formItem: [],
         opentarget: '',

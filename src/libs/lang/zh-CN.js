@@ -236,6 +236,8 @@ const lang = {
     setGlobalVarsTips: '设置global参数只影响当前执行对象',
     inputGlobalVarsTips: '请输入global参数的值',
     globalVarsSaveSuccess: 'global参数修改成功',
+    portMustBeNum: '端口号应该为数字',
+    emptyOrNoSpaceLeftRight: '为空或者左右不为空格',
 }
 
 export default lang;

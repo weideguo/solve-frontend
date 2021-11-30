@@ -5,7 +5,7 @@ import { Base64 } from 'js-base64'
 let util = {}
 
 // iview方法二次封装
-util.validatorGenerator = function(constrict) {
+util.validatorGenerator = function(constrict,msg='') {
   return function(rule, value, callback) {
     // console.log(value, rule, constrict)
     if ( value instanceof Date){
@@ -14,7 +14,10 @@ util.validatorGenerator = function(constrict) {
     }else if ((typeof constrict) === 'string') {
       let reg = new RegExp(constrict)
       if (value.search(reg) < 0) {
-        callback(new Error('RegExp: '+constrict))
+        if (msg==''){
+          msg='RegExp: '+constrict
+        }
+        callback(new Error(msg))
       } else {
         callback()
       }
