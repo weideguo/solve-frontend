@@ -128,7 +128,8 @@
               this.getCurrentPage();
               util.notice(this, `${params.row['work_id']} `+this.$t('deleteSuccess'), 'success')
             } else {
-              util.notice(this, this.$t('deleteFailed'), 'error')
+              // util.notice(this, this.$t('deleteFailed'), 'error')
+              util.notice(this, res.data['msg'], 'error')
             }
           })
           .catch(error => {

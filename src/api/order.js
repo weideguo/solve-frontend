@@ -9,8 +9,8 @@ export default {
   },
   delOrder: function (workid) {
     return request({
-      url: `/order/del?workid=${workid}`,
-      method: 'get'
+      url: `/order/?workid=${workid}`,
+      method: 'delete'
     })
   },
   abort: function (targetid) {

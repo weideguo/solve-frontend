@@ -268,10 +268,14 @@
         //   })
         user.putUserinfo({'username': this.editForm.username,'new': this.editForm.pass})
           .then(res => {
+            if (this, res.data['status'] === 1) {
             util.notice(this, res.data['data'], 'success')
-            this.editModal = false
-            this.saveLoading = false
-            this.$refs['editForm'].resetFields()
+              this.editModal = false
+              this.saveLoading = false
+              this.$refs['editForm'].resetFields()
+            } else {
+              util.notice(this, res.data['msg'], 'error')
+            }
           })
           .catch(error => {
             util.notice(this, error, 'error')
@@ -287,11 +291,15 @@
           // axios.delete(this.baseurl + '/userinfo/' + this.username)
           user.deleteUserinfo(this.username)
             .then(res => {
-              util.notice(this, res.data['data'], 'success')
-              this.deluserModal = false
-              this.confirmuser = ''
-              this.currentPage = 1
-              this.refreshuser()
+              if (this, res.data['status'] === 1) {
+                util.notice(this, res.data['data'], 'success')
+                this.deluserModal = false
+                this.confirmuser = ''
+                this.currentPage = 1
+                this.refreshuser()
+              } else {
+                util.notice(this, res.data['msg'], 'error')
+              }
             })
             .catch(error => {
               util.notice(this, error, 'error')
