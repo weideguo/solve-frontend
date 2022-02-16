@@ -2,7 +2,7 @@
 # Version 1.0
 
 # Base images 
-FROM node:10.13
+FROM node:16.14
 LABEL maintainer="wdg(https://github.com/weideguo)"
 
 ARG REGISTRY="https://registry.npmjs.org/"
