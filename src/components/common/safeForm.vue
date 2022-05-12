@@ -1,5 +1,5 @@
 <template>
-  <Form ref="safeform" :label-width="labelwidth" :model="formValue"  :rules="formvalidate">
+  <Form ref="safeform" :label-width="realLabelwidth" :model="formValue"  :rules="formvalidate">
     
       <FormItem v-for="i in formKey" :prop="i" :label="formLabel[i]" :key="i">
         <Select v-if="typeof(formSelect[i]) === 'object'" v-model="formValue[i]" :placeholder="formComment[i]" clearable filterable>
@@ -103,6 +103,7 @@ export default {
   },
   data () {
     return {
+      realLabelwidth: 0,
       formValue: {},
       formSelect: {},
       formComment: {},
@@ -195,7 +196,14 @@ export default {
         this.formValue = util.arry2dict(this.formdata, 'key', 'value')
         this.formSelect = util.arry2dict(this.formdata, 'key', 'select')
         this.formComment = util.arry2dict(this.formdata, 'key', 'comment')
-        this.formLabel = util.arry2dict(this.formdata, 'key', 'label')     
+        this.formLabel = util.arry2dict(this.formdata, 'key', 'label')
+        // 根据表单label的字符串弹性设置表单label长度，每个字符占8px
+        this.realLabelwidth = this.labelwidth
+        util.dictKeys(this.formValue).forEach((item,i) => {
+            if (this.realLabelwidth < item.length*8) {
+                this.realLabelwidth = item.length*8
+            }
+        })
       },
       deep: true
     },

@@ -1,5 +1,5 @@
 <template>
-  <Form :ref="formRef" :label-width="labelwidth" :model="formItem" :rules="formValidate">
+  <Form :ref="formRef" :label-width="realLabelwidth" :model="formItem" :rules="formValidate">
     <p v-if="JSON.stringify(formItem) === '{}'" style="text-align: center">{{nullInfo}}</p>
     <div v-else>
       
@@ -68,6 +68,7 @@ export default {
   },
   data () {
     return {
+      realLabelwidth: 0,
       formItem: {},
       formComment: {},
       formType: {},
@@ -136,7 +137,14 @@ export default {
       this.formComment = util.arry2dict(formdataCopy,'key','comment')
       this.formType = util.arry2dict(formdataCopy,'key','type')
       this.formConstrict = util.arry2dict(formdataCopy,'key','constrict')
-      this.formKey = util.dictKeys(this.formItem)         
+      this.formKey = util.dictKeys(this.formItem) 
+      // 根据表单label的字符串弹性设置表单label长度，每个字符占8px
+      this.realLabelwidth = this.labelwidth
+      this.formKey.forEach((item,i) => {
+          if (this.realLabelwidth < item.length*8) {
+              this.realLabelwidth = item.length*8
+          }
+      })
     },
     checkValidate() {
       // console.log(this.formItem)
