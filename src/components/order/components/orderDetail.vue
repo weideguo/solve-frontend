@@ -67,6 +67,9 @@
     <Drawer v-model="modalList" :mask-closable="false" :mask="false" scrollable draggable width="410px">
       <p style="font-weight:800;font-size:18px">{{currentTarget}}</p>
       <br/>
+      <Select :placeholder="$t('selectRunTarget')" @on-change="refreshDataDetail" clearable>
+        <Option v-for="item in runTargetIdList" :value="item" :key="item">{{ item }}</Option>
+      </Select>
       <Table stripe :columns="columnsDetail" :data="dataDetail" @on-row-click="showDetail" :show-header="false"></Table>
     </Drawer>
 
@@ -435,7 +438,8 @@
         selectList: [],
         selectionKey: [],
         selectionKeyStr: '',
-        targetId: ''
+        targetId: '',
+        runTargetIdList: []
       }
     },
     methods: {
@@ -561,6 +565,16 @@
         if (this.modalList) {
           this.currentTarget = params['target']
           this.currentTargetId = params['target_id']
+          // 子任务所有的执行对象（因为子任务可能执行失败从而多次运行，需要按照时间由最新开始排）
+          this.runTargetIdList = []
+          console.log(this.workid,this.currentTarget,this.currentTargetId)
+          order.runTargetList(this.workid, this.currentTarget)
+            .then(res => {
+              this.runTargetIdList = res.data['data']
+            })
+            .catch(error => {
+              util.notice(this, error, 'error')
+            })
           // axios.get(`${this.baseurl}/order/exelist?id=${params['target_id']}`)
           this.realQuickShow(params['target_id'])
         } else {
@@ -810,6 +824,13 @@
           .catch(error => {
             util.notice(this, error, 'error')
           })
+      },
+      refreshDataDetail(targetId) {
+        // 
+        if (targetId == undefined) {
+          targetId = this.runTargetIdList[0]
+        }
+        this.realQuickShow(targetId)
       },
     },
     destroyed() {

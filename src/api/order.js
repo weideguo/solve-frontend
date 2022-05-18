@@ -43,6 +43,12 @@ export default {
       method: 'get'
     })
   },
+  runTargetList: function (workid,targetName) {
+    return request({
+      url: `/order/run_target_list?workid=${workid}&target_name=${targetName}`,
+      method: 'get'
+    })
+  },
   download: function (workid,line,params={}) {
     return request({
       url: `/order/download?workid=${workid}&line=${line}`,
