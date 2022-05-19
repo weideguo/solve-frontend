@@ -5,13 +5,13 @@
       
       <FormItem v-for="k in formKey" :prop="k" :key="k" :label="k">
         <Select v-if="formType[k] === 'select'" v-model="formItem[k]" :placeholder="formComment[k]" filterable clearable>
-          <Option v-for="j in formConstrict[k]" :value="JSON.stringify(j)" :key="JSON.stringify(j)">{{ j }}</Option>
+          <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
         </Select>
         <Select v-else-if="formType[k] === 'multiselect'" v-model="formItem[k]" :placeholder="formComment[k]" filterable multiple>
-          <Option v-for="j in formConstrict[k]" :value="JSON.stringify(j)" :key="JSON.stringify(j)">{{ j }}</Option>
+          <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
         </Select>
         <Select v-else-if="formType[k] === 'dynamicselect'" v-model="formItem[k]" :placeholder="formComment[k]" multiple filterable allow-create @on-create="pushItem(k)">
-          <Option v-for="j in formConstrict[k]" :value="JSON.stringify(j)" :key="JSON.stringify(j)">{{ j }}</Option>
+          <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
         </Select>
         <div v-else-if="formType[k] === 'upload'" >
           <Input v-model="formItem[k]" type="text" :placeholder="formComment[k]" clearable style="width: 80%"></Input>
