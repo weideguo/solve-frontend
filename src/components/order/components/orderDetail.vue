@@ -456,6 +456,7 @@
         window.open(path, "_blank", "scrollbars=yes,resizable=1,modal=false,alwaysRaised=yes")
       },
       abort (params) {
+        util.notice(this, this.$t('abortTips'), 'info')
         // axios.get(`${this.baseurl}/order/abort?target_id=${params['target_id']}`)
         order.abort(params['target_id'])
           .then(res => {
