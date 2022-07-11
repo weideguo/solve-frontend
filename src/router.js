@@ -113,16 +113,16 @@ export const appRouter = [
     icon: 'md-cart',
     name: 'order',
     title: 'order',
-    redirect: '/order/order',
+    redirect: '/order/orderList',
     component: Main,
     children: [
       {
-        path: 'order',
-        name: 'myOrder',
-        title: 'myOrder',
+        path: 'orderList',
+        name: 'orderList',
+        title: 'orderList',
         icon: 'md-cart',
         meta: {
-          title: 'myOrder'
+          title: 'orderList'
         },
         component: resolve => {
           require(['./components/order/order.vue'], resolve)
@@ -134,7 +134,7 @@ export const appRouter = [
     path: '/host',
     icon: 'md-laptop',
     title: 'hostManage',
-    redirect: '/',
+    redirect: '/host/realhost',
     component: Main,
     children: [
       {
@@ -225,7 +225,7 @@ export const appRouter = [
     path: '/execution',
     icon: 'md-cog',
     name: 'execution',
-    title: 'jobExecute',
+    title: 'execution',
     redirect: '/',
     component: Main,
     children: [
@@ -271,7 +271,7 @@ export const appRouter = [
     path: '/file',
     icon: 'md-briefcase',
     title: 'fileManage',
-    redirect: '/',
+    redirect: '/file/file',
     component: Main,
     children: [
       {
@@ -335,6 +335,7 @@ export const home = {
 
 export const orderDetail = {
   path: '/order',
+  title: 'order',
   component: Main,
   children: [
     {
@@ -353,6 +354,7 @@ export const orderDetail = {
 
 export const execDetail = {
   path: '/execution',
+  title: 'execution',
   component: Main,
   children: [
     {
