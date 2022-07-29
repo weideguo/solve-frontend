@@ -33,7 +33,7 @@
         <p style="display:inline"><span>{{modelTitle}}</span></p>
       </div>
       <safe-form ref="myform" :labelwidth="100" :formdata="formItem" :dynamic="true" :formvalidate="formItemValidate" 
-        @primaryClick="formCommit" @secondClick="optionOperate" :primaryButtonName="isAdd? $t('confirm') : $t('update') "
+        @primaryClick="formCommit" @secondClick="optionOperate" :primaryButtonName="isAdd? $t('add') : $t('update') "
         :secondCheck="!isAdd" :secondButtonName="isAdd? $t('cancel') : $t('copy') " :inputValueTips="$t('inputFieldValueTips')">
       </safe-form>
       <div slot="footer"></div>

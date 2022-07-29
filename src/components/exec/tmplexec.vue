@@ -23,7 +23,9 @@
       <p slot="header">
         <span>{{modelTitle}}</span>
       </p>
-      <safe-form ref="mytest" :labelwidth="100" :formdata="formItem" :formvalidate="formItemValidate" @primaryClick="formSubmit" @secondClick="openswitch = false"></safe-form>
+      <safe-form ref="mytest" :labelwidth="100" :formdata="formItem" :formvalidate="formItemValidate" @primaryClick="formSubmit" @secondClick="openswitch = false"
+        :primaryButtonName="isAdd? $t('add') : $t('update') ">
+      </safe-form>
       <div slot="footer">
       </div>
 

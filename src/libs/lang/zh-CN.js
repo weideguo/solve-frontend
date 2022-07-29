@@ -210,6 +210,7 @@ const lang = {
     openNewWindow: '新窗口查看',
     downloadColumn: '下载选中字段的值',
     emptyFieldWarn: '至少需要选择一个字段',
+    add: '添加',
     form: {
         checkErr: '表单检查失败',
         userEmpty: '请填写用户名',
