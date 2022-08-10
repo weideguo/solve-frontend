@@ -67,7 +67,7 @@
           <Table border stripe :columns="columnsInfo" :data="tmplInfo" :show-header="false" :no-data-text="$t('templateInfoFailed')"></Table>
         </TabPane>
         <TabPane label="playbook" name="playbook">
-          <Input v-model="playbookContent" type="textarea" :autosize="{minRows: 10,maxRows: 20}" placeholder="playbook is null" readonly />
+          <Input v-model="playbookContent" type="textarea" :autosize="{minRows: 10,maxRows: 20}" placeholder="playbook is loading" readonly />
         </TabPane>
       </Tabs>
       <div slot="footer"></div>
@@ -298,6 +298,7 @@
           this.showContent = []
         }
         this.tmplInfo = []
+        this.playbookContent = ''
         // axios.get(`${this.baseurl}/executionInfo/get?filter=${params['tmpl']}`)
         exec.getExecutionInfo(`${params['tmpl']}`)
           .then(res => {
