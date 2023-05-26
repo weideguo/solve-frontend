@@ -4,6 +4,6 @@
 # export BACKEND_PORT=8000
 #
 cd /data/solve-frontend
-if [ "X${BACKEND_NAME}X" = "XX" ]; then BACKEND_NAME=test;fi
+BACKEND_NAME=${BACKEND_NAME:-test}
 sed -i "s|config.baseurl.*|config.baseurl = [['${BACKEND_NAME}', 'http://${BACKEND_HOST}:${BACKEND_PORT}/api/v1']]|g" src/config/config.js
 npm run start
