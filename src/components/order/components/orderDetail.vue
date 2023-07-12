@@ -139,7 +139,7 @@
     <Modal v-model="modalRerun" scrollable width="55%" >
       <p slot="header">{{runTitle}}</p>
       <div>
-        <Form :label-width="100">
+        <Form :label-width="realLabelwidth">
           <Divider>readonly</Divider>
           <FormItem v-for="(item, i) in checkReadonly" :key="item.key" v-bind:label="item.key">
             <Input v-model="item.value" readonly></Input>
@@ -439,7 +439,8 @@
         selectionKey: [],
         selectionKeyStr: '',
         targetId: '',
-        runTargetIdList: []
+        runTargetIdList: [],
+        realLabelwidth: 100
       }
     },
     methods: {
@@ -503,6 +504,12 @@
             this.checkReadonly = util.dict2arry(res.data['data']['readonly'], 'key', 'value')
             this.checkChangable = util.dict2arry(res.data['data']['changable'], 'key', 'value')
             this.globalVars = res.data['data']['global']
+            
+            util.dictKeys(res.data['data']['session']).forEach((item,i) => {
+                if (this.realLabelwidth < item.length*8) {
+                    this.realLabelwidth = item.length*8
+                }
+            })
           })
           .catch(error => {
             util.notice(this, error, 'error')
