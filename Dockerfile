@@ -13,6 +13,7 @@ ENV BACKEND_HOST=127.0.0.1
 ENV BACKEND_PORT=8000
 #ENV LC_ALL=en_US.UTF-8
 
+RUN rm /etc/localtime && ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 RUN mkdir -p /data/solve-frontend
 #ADD  ./.npmrc    ~
 ADD  ./  /data/solve-frontend/
