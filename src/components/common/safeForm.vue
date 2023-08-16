@@ -115,12 +115,17 @@ export default {
     primaryClick (name) {
       if (this.formdata.length != 0){
         this.$refs[name].validate((valid) => {
-          if (valid) {
-            this.$Message.success(this.$t('commitBegin'))
-            this.$emit('primaryClick', this.allValue)
-            this.handleReset(name)
+          let spaceStr = util.isDictNoSpace(this.allValue)
+          if (spaceStr != '') {
+            this.$Message.error(this.$t('form.checkErr')+" :["+spaceStr+"]")
           } else {
-            this.$Message.error(this.$t('form.checkErr'))
+            if (valid) {
+                this.$Message.success(this.$t('commitBegin'))
+                this.$emit('primaryClick', this.allValue)
+                this.handleReset(name)
+            } else {
+                this.$Message.error(this.$t('form.checkErr'))
+            }              
           }
         })
       } else {

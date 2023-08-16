@@ -240,7 +240,7 @@ const lang = {
     inputGlobalVarsTips: '请输入global参数的值',
     globalVarsSaveSuccess: 'global参数修改成功',
     portMustBeNum: '端口号应该为数字',
-    emptyOrNoSpaceLeftRight: '为空或者左右不为空格',
+    emptyOrNoSpaceLeftRight: '为空或者左右不应为空格',
     selectRunTarget:'请选择哪次运行，默认为最新的重新运行的结果',
 }
 

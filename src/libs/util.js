@@ -148,6 +148,18 @@ util.copy = function (vm, data) {
 }
 
 //////////////////////////////////////////////////////////
+util.isDictNoSpace = function (dict) {
+  for (let k in dict) {
+      if ( util.existSpace(k)) {
+          return k
+      }
+      let v = dict[k]
+      if ( util.existSpace(v)) {
+          return v
+      }
+  }
+  return ''
+}
 
 util.existSpace = function (s) {
   let r = s.slice(-1)
