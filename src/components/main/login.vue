@@ -88,7 +88,7 @@
 
 
         <p style="margin-left: 25%;">
-          2018-2022 © Powerd By <a href="/about">wdg</a> {{ $t('loginTips') }}
+          2018-2023 © Powerd By <a href="/about">wdg</a> {{ $t('loginTips') }}
         </p>
 
       </Card>
