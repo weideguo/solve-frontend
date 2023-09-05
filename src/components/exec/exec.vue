@@ -15,10 +15,43 @@
         <Page :total="pageNumber" @on-change="getCurrentPage" :current="currentPage" :page-size="pagesize"  @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
       </Card>
     </Row>
+    
+    <Modal v-model="openswitchAdd"  width="800"  :title="$t('executeSubTarget')">
+      <Row>
+        <Card>
+          <div>
+          <Tree :data="subTargetTreeData" ref="subTargetTree" show-checkbox></Tree>
+          </div>
+        </Card>
+      </Row>
+      <div slot="footer">
+        <Button type="primary" @click="subTargetSelect"> {{ $t('confirm') }} </Button>
+      </div>
+    </Modal>
+
 
     <Modal v-model="openswitch" @on-cancel="current = 0" scrollable :mask-closable="false" width="50%">
 
       <div v-if="current === 0">
+        <div>
+          <Icon type="md-pin"></Icon>
+          <b>{{openinfo.name_s}}-{{ $t('executeTarget') }}</b>
+          <br><br>
+        </div>
+
+        <Form v-if="showTargets.length === 0" :label-width="100">
+
+          <FormItem v-for="(item, i) in targetConstict" :key="i" :label="item.field" required>
+            
+            <Input v-model="item.value" :placeholder="item.comment" @click.native="subTargetAdd(item)" clearable></Input>
+          </FormItem>
+          
+        </Form>
+
+        <p v-else v-for="item in showTargets" :key="item">{{item}}</p>
+      </div>
+
+      <div v-else-if="current === 1">
         <div>
           <Icon type="md-pin"></Icon>
           <b>{{openinfo.name_s}}-{{ $t('sessionParamsSetting') }}</b>
@@ -27,7 +60,7 @@
         <constrict-form ref="varsForm" :formdata="sessionFull" :nullInfo="$t('noSessionNeed')" :buttonTooltip="$t('saveSessionTips')" @buttonOperation="saveSession"></constrict-form>
       </div>
       
-      <div v-else-if="current === 1">
+      <div v-else-if="current === 2">
         <div>
           <Icon type="md-pin"></Icon>
           <b>{{openinfo.name_s}}-{{ $t('confirmRun') }}</b>
@@ -38,16 +71,17 @@
       
       <br>
       <Steps :current="current">
+          <Step :title="$t('executeTarget')"></Step>
           <Step :title="$t('paramsSetting')"></Step>
           <Step :title="$t('confirmRun')"></Step>
       </Steps>
       
       <div slot="footer">
         <Button v-if="current != 0" @click="previous">{{ $t('previousStep') }}</Button>
-        <Button v-if="current === 0" type="primary" @click="next">{{ $t('nextStep') }}</Button>
-        <Button v-if="current === 1" type="primary" @click="commit">{{ $t('run') }}</Button>
-        <Button v-if="current === 1" type="info" @click="debugRun">{{ $t('debugRun') }}</Button>
-        <!--Button v-if="current === 1 && debugAble" type="info" @click="debugRun">{{ $t('debugRun') }}</Button-->
+        <Button v-if="current != 2" type="primary" @click="next">{{ $t('nextStep') }}</Button>
+        <Button v-if="current === 2" type="primary" @click="commit">{{ $t('run') }}</Button>
+        <Button v-if="current === 2" type="info" @click="debugRun">{{ $t('debugRun') }}</Button>
+        <!--Button v-if="current === 2 && debugAble" type="info" @click="debugRun">{{ $t('debugRun') }}</Button-->
       </div>
     </Modal>
 
@@ -59,8 +93,8 @@
       <Tabs value="target">
         <TabPane :label="$t('executeTarget')" name="target">
           <div>
-            <p v-if="showContent.length === 0" align="center">{{ $t('executeTargetEmpty') }}</p>
-            <p v-else v-for="item in showContent" :key="item">{{item}}</p>
+            <p v-if="showTargets.length === 0" align="center">{{ $t('executeTargetEmpty') }}</p>
+            <p v-else v-for="item in showTargets" :key="item">{{item}}</p>
           </div>
         </TabPane>
         <TabPane :label="$t('templateDetail')" name="tmpl">
@@ -73,18 +107,6 @@
       <div slot="footer"></div>
     </Modal>
 
-    <!--Modal v-model="deleteConfirm" width="50%" :closable="false">
-      <p style="color:#f60;margin-left:5%">
-        <font size="5">
-        <Icon type="ios-help-circle"></Icon>
-        {{ $t('confirmDelete') }} {{delname}}
-        </font>
-      </p>
-      <div slot="footer">
-        <Button type="text" @click="deleteConfirm=false">{{ $t('cancel') }}</Button>
-        <Button type="error" @click="realDelTarget" >{{ $t('delete') }}</Button>
-      </div>
-    </Modal-->
   </div>
 </template>
 
@@ -94,6 +116,7 @@
   import exec from '@/api/exec'
   import util from '@/libs/util'
   import file from '@/api/file'
+  import target from '@/api/target'
   import constrictForm from '@/components/common/constrictForm.vue'
   // import VueI18n from 'vue-i18n'
 
@@ -107,7 +130,7 @@
         current: 0,
         openshow: false,
         showTitle: '',
-        showContent: [],
+        showTargets: [],
         openswitch: false,
         formItem: {},
         formComment: {},
@@ -234,7 +257,13 @@
         filter: '',
         sessionFull: [],
         sessionInfo: [],
-        debugAble: false
+        debugAble: false,
+        targetConstict: [],
+        execExtraInfo: {},
+        openswitchAdd: false,
+        subTargetTreeData: [],
+        targetInfoOld: '',
+        shouldTagetCommit: true,
         // deleteConfirm: false,
         // delname: ''
       }
@@ -247,11 +276,45 @@
       },
       next () {
         if (this.current === 0) {
+          if (this.targetConstict.length && ! this.showTargets.length ) {
+            // 如果需要构造对象，第一个tab点击下一步时，先保存对象
+            let targetInfo = {}
+            this.targetConstict.forEach((k,i) =>{
+              targetInfo[k['field']] = k['value']
+            })
+            
+            if ( this.shouldTagetCommit || this.targetInfoOld != JSON.stringify(targetInfo) ) {
+              this.targetInfoOld = JSON.stringify(targetInfo)
+              this.targetName = 'container_auto_'+util.formatDate((new Date().getTime()) / 1000).replace(new RegExp('-','g'),'').replace(new RegExp(':','g'),'').replace(new RegExp(' ','g'),'_')
+                                +'_'+Math.round(Math.random()*10000)
+              targetInfo['name'] = this.targetName
+              target.addTarget(targetInfo)
+                .then(res => {
+                  if (res.data['status'] < 1) {
+                      util.notice(this, `${res.data['msg']}`, 'warning')
+                  } else {
+                    this.shouldTagetCommit = false
+                    this.current += 1
+                    this.execExtraInfo = {'number':1 ,'target': this.targetName}
+                  }
+                }).catch(error => {
+                  util.notice(this, error, 'error')
+                })
+              
+            } else {
+              this.current += 1
+            }
+          } else {
+            this.targetName = ''
+            this.execExtraInfo = {}
+            this.current += 1
+          }
+        } else if (this.current === 1) {
           if (this.errFlag) {
             this.$Message.error(this.$t('getPlaybookFailedTips'))
           } else if (JSON.stringify(this.formItem) === '{}') {
             this.current += 1
-            this.summary()
+            this.summary(this.execExtraInfo)
           } else {
             this.sessionInfo = this.$refs['varsForm'].getFormItem()
             // this.sessionInfo = this.$refs['varsForm'].formItem
@@ -260,11 +323,13 @@
             })
             if (this.$refs['varsForm'].checkValidate()) {
               this.current += 1
-              this.summary()
+              this.summary(this.execExtraInfo)
             } else {
               this.$Message.error(this.$t('form.checkErr'))
             }
           }
+        } else {
+          this.current += 1
         }
       },
       saveSession (data) {
@@ -280,8 +345,11 @@
           })
         
       },
-      summary () {
+      summary (extraInfo) {
         let rowinfo = util.dictDeepCopy(this.openinfo)
+        for (let k in extraInfo) {
+          rowinfo[k] = extraInfo[k]
+        }
         try{
           delete rowinfo._index
           delete rowinfo._rowKey
@@ -292,10 +360,9 @@
       quickShow (params, index) {
         this.openshow = !this.openshow;
         this.showTitle = params['name'].split('exec:')[1]
+        this.showTargets = []
         if (params['target'] != '') {
-          this.showContent = params['target'].split(',')
-        } else {
-          this.showContent = []
+          this.showTargets = params['target'].split(',')
         }
         this.tmplInfo = []
         this.playbookContent = ''
@@ -324,36 +391,71 @@
           })
       },
       execJob (params) {
-        if (parseInt(params.row['number'])){
-          if ((parseInt(params.row['number'])) === 1) {
-            this.debugAble = true
-          } else {
-            this.debugAble = false
-          }
-          this.openinfo = params.row
-          this.openinfo_s = params.row['name_s']
-          // axios.get(`${this.baseurl}/session/extend?filter=${params.row['name']}`)
-          exec.getSession(`${params.row['name']}`)
-            .then(res => {
+        this.showTargets = []
+        if (params.row['target'] != '') {
+          this.showTargets = params.row['target'].split(',')
+        }
+        
+        this.openinfo = params.row
+        this.openinfo_s = params.row['name_s']
+        // axios.get(`${this.baseurl}/session/extend?filter=${params.row['name']}`)
+        exec.getSession(`${params.row['name']}`)
+          .then(res => {
+            // this.openswitch = !this.openswitch
+            this.sessionFull = res.data['session']
+            this.debugList = res.data['pause']
+            this.targetConstict = res.data['target_constrict']
+            if (!(this.debugList instanceof Object)) {
+              this.debugList = [this.debugList]
+            }
+            this.formItem = util.arry2dict(this.sessionFull)
+            this.errFlag = false
+
+            if ( ! this.targetConstict.length && ! parseInt(params.row['number']) ) {
+              this.$Message.error(this.$t('getExecuteTargetTips'))
+            } else {
               this.openswitch = !this.openswitch
-              this.sessionFull = res.data['session']
-              this.debugList = res.data['pause']
-              if (!(this.debugList instanceof Object)) {
-                this.debugList = [this.debugList]
-              }
-              this.formItem = util.arry2dict(this.sessionFull)
-              this.errFlag = false
+              this.shouldTagetCommit = true
+            }
+
+          })
+          .catch(error => {
+            this.errFlag = true
+            this.formItem = {}
+            this.formKey = []
+            // util.notice(this, '获取session参数失败，请检查playbook是否正确！', 'error')
+            this.$Message.error(this.$t('getSessionFailedTips'))
+          })
+
+      },
+      subTargetAdd (targetConstict) {
+        // 根据传入的constrict 显示选择树
+        this.activeTargetConstict = targetConstict
+        this.targetType = targetConstict['constrict']
+        if (this.targetType != '') {
+          this.openswitchAdd = true
+          let selectedItem = []
+          target.getNameList(`${this.targetType}`)
+            .then(res => {
+              this.subTargetTreeData = []
+              this.subTargetTreeData.push(util.formateTreeData(res.data['data'], selectedItem));
             })
             .catch(error => {
-              this.errFlag = true
-              this.formItem = {}
-              this.formKey = []
-              // util.notice(this, '获取session参数失败，请检查playbook是否正确！', 'error')
-              this.$Message.error(this.$t('getSessionFailedTips'))
+              util.notice(this, error, 'error');
             })
         } else {
-          this.$Message.error(this.$t('getExecuteTargetTips'))
-        } 
+          this.$Message.error(this.$t('setTemplateTips'))
+        }
+      },
+      subTargetSelect () {
+        let checkedleaf = util.getCheckedLeaf(this.subTargetTreeData)
+        // console.log(this.activeTargetConstict)
+        if (checkedleaf.length === 1) {
+          this.openswitchAdd = false
+          this.activeTargetConstict.value = checkedleaf[0]
+        } else {
+          this.$Message.error(this.$t('onlyOneOndeSelectTips'))
+        }
       },
       realCommit (debug=0) {
         if (this.errFlag) {
@@ -364,8 +466,9 @@
           }
           this.openswitch = false
           this.$Message.info(this.$t('afterCommitTips'))
+
           // axios.post(`${this.baseurl}/execution/?filter=${this.openinfo['name']}`, this.sessionInfo)
-          exec.postExecution(this.openinfo['name'], this.sessionInfo, String(debug))
+          exec.postExecution(this.openinfo['name'], this.sessionInfo, String(debug), this.targetName)
             .then(res => {
               util.notice(this, `${this.openinfo['name_s']} `+this.$t('commitBegin'), 'info')
               util.openPageEx(this, 'orderDetail', {'workid': res.data['data']})

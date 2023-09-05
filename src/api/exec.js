@@ -53,9 +53,9 @@ export default {
       data: data
     })
   },
-  postExecution: function (filter,params,debug=0) {
+  postExecution: function (filter,params,debug=0,target='') {
     return request({
-      url: `/execution/?filter=${filter}&debug=${debug}`,
+      url: `/execution/?filter=${filter}&debug=${debug}&target=${target}`,
       method: 'post',
       data: params
     })

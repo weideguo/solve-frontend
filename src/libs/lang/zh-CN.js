@@ -6,6 +6,7 @@ const lang = {
     login: '登陆',
     hostManage: '主机管理',
     executeTarget: '执行对象',
+    executeSubTarget: '子执行对象',
     jobExecute: '任务执行',
     execution: '任务执行',
     execute: '执行任务',
@@ -242,6 +243,7 @@ const lang = {
     portMustBeNum: '端口号应该为数字',
     emptyOrNoSpaceLeftRight: '为空或者左右不应为空格',
     selectRunTarget:'请选择哪次运行，默认为最新的重新运行的结果',
+    onlyOneOndeSelectTips: '需要且只能选择一个节点',
 }
 
 export default lang;
