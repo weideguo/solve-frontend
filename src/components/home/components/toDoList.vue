@@ -13,12 +13,12 @@
     <div v-for="(item, index) in toDoList" v-if="item.title != ''"  :key="item.title">
       <Col span="2">
         <Row type="flex" justify="center" align="middle">
-          <Checkbox></Checkbox>
+          <Checkbox v-model="item.status"></Checkbox>
         </Row>
       </Col>
       <Col span="22">
         <Row type="flex" justify="start" align="middle">
-          <p  @dblclick="delTodo(item.title)" >{{ item.title }}</p>
+          <p  @dblclick="delTodo(item)" >{{ item.title }}</p>
         </Row>
       </Col>
     </div>
@@ -51,10 +51,10 @@ export default {
   methods: {
     getTodo () {
       this.toDoList = [{'title': ''}];  // 如果为空 从零添加会导致首次渲染异常
-      let x = JSON.parse(localStorage.getItem('todolist'))
-      if (x) {
-        x.forEach((val, index) => {
-          this.toDoList.push({'title': val})
+      let todos = JSON.parse(localStorage.getItem('todolist'))
+      if (todos) {
+        todos.forEach((title, index) => {
+          this.toDoList.push({'title': title, 'status':false})
         })
       }
       // this.$router.push({name: 'myhome'})
@@ -76,15 +76,17 @@ export default {
         this.$Message.error(this.$t('inputNotNull'))
       }
     },
-    delTodo (val) {
+    delTodo (item) {
       let todolist = []
-      JSON.parse(localStorage.getItem('todolist')).forEach((valx, index) => {
-        if (valx !== val) {
-          todolist.push(valx)
-        }
+      if (item.status) {
+        JSON.parse(localStorage.getItem('todolist')).forEach((title, index) => {
+          if (title !== item.title) {
+            todolist.push(title)
+          }
         })
-      localStorage.setItem('todolist', JSON.stringify(todolist));
-      this.getTodo();
+        localStorage.setItem('todolist', JSON.stringify(todolist));
+        this.getTodo();
+      }
     }
   },
   mounted () {
