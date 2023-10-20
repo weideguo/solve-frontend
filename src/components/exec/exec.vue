@@ -159,7 +159,7 @@
           {
             title: 'name',
             key: 'name_s',
-            tooltip: true,
+            // tooltip: true,
             width: 300,
             sortable: true
           },
