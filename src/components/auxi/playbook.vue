@@ -10,9 +10,12 @@
         
       </div>
     </div>
-    <div style="position: relative;margin-left: 5%;margin-top: 2%;width:90%;font-size:20px">
+    <div style="margin-left: 5%;margin-top: 1%;">
+      <i-switch v-model="isWrap" @on-change="reHighlight()" />
+    </div>
+    <div style="position: relative;margin-top: 1%;font-size:20px">
       <div>
-        <pre class="line-numbers"><code class="language-bash">{{content}}</code></pre> 
+        <pre class="line-numbers" :style="{'white-space':isWrap?'pre-wrap':'pre'}"><code class="language-bash">{{content}}</code></pre> 
       </div>
     </div>
   </div>
@@ -26,19 +29,29 @@
   import 'prismjs/plugins/line-numbers/prism-line-numbers.css'
 
   // 加载后立即渲染 数据之后才获取 因此导出出错 不用该方法引入
-  // import Prism from 'prismjs'
-  // import PrismLineNumber from 'prismjs/plugins/line-numbers/prism-line-numbers.js'
+  import Prism from 'prismjs'
+  import PrismBash from 'prismjs/components/prism-bash.js'
+  import PrismLineNumber from 'prismjs/plugins/line-numbers/prism-line-numbers.js'
 
   export default {
     name: 'playbook',
-    // components: {
-    //   Prism
-    // },
+    //components: {
+    //  Prism
+    //},
     data () {
       return {
         title: '',
         playbook: '',
         content: '',
+        isWrap: true,
+      }
+    },
+    methods: {
+      reHighlight() {
+        //this.isWrap = ! this.isWrap
+        setTimeout(function() {
+          Prism.highlightAll()
+        }, 10)
       }
     },
     mounted () {
@@ -53,14 +66,10 @@
           if (res.data['status'] > 0) {
             // console.log(res.data)
             this.content = res.data['content']
-
-            // 不使用import实现在加载数据后再高亮渲染
-            // const Prism = require('prismjs')
-            require('prismjs')
-            // 需要引入对应语言的模块 默认只加载markup, css, clike, javascript, 其他语言需要单独加载
-            require('prismjs/components/prism-bash.js')
-            // 显示行号
-            require('prismjs/plugins/line-numbers/prism-line-numbers.js')
+            setTimeout(function() {
+              // 必须延迟以确保css先加载
+              Prism.highlightAll()
+            }, 10)
           } else {
             util.notice(this, res.data['msg'], 'error')
           }
