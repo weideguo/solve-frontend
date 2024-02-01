@@ -5,6 +5,14 @@
       <Icon type="md-checkbox-outline"></Icon>
       {{ $t('todoTitle') }}
     </p>
+    <a type="text" slot="extra" @click.prevent="todoUp()">
+      <Icon type="md-arrow-up"></Icon>
+    </a>
+    <a type="text" slot="extra">&nbsp; &nbsp;</a>
+    <a type="text" slot="extra" @click.prevent="todoDown()">
+      <Icon type="md-arrow-down"></Icon>
+    </a>
+    <a type="text" slot="extra">&nbsp; &nbsp;</a>
     <a type="text" slot="extra" @click.prevent="showAddNewTodo=!showAddNewTodo">
       <Icon type="md-add"></Icon>
     </a>
@@ -87,7 +95,44 @@ export default {
         localStorage.setItem('todolist', JSON.stringify(todolist));
         this.getTodo();
       }
-    }
+    },
+    todoUp () {
+        this.todoMove(false) 
+    },
+    todoDown () {
+        this.todoMove(true) 
+    },
+    todoMove (isDown) {
+        // isDown=true 实现反向操作
+        let oldTodolist = JSON.parse(localStorage.getItem('todolist'))
+        let todolistShow = this.toDoList
+        if (isDown) { 
+            oldTodolist = oldTodolist.reverse() 
+            todolistShow = todolistShow.reverse() 
+        }
+        let newTodolist = []
+        oldTodolist.forEach((title, index) => {
+            let isMatch = false
+            todolistShow.forEach((item, i) => {
+                if (title === item.title &&  item.status) {
+                    let preTitle = newTodolist[newTodolist.length-1]
+                    newTodolist = newTodolist.slice(0,-1)
+                    newTodolist.push(title)
+                    if (preTitle != undefined) {
+                        newTodolist.push(preTitle)
+                    }
+                    isMatch  = true
+                }
+            })
+            if (!isMatch) {
+                newTodolist.push(title)
+            }
+            
+        })
+        if (isDown) { newTodolist = newTodolist.reverse() }
+        localStorage.setItem('todolist', JSON.stringify(newTodolist))
+        this.getTodo()
+    },
   },
   mounted () {
     this.getTodo()
