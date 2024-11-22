@@ -132,7 +132,10 @@
           this.$Message.error('name'+this.$t('shouldNoSpaceLR'))
         } else if (this.info['name'] === 'exec:') {
           this.$Message.error('name'+this.$t('shouldNotEmpty'))
-        } else if (this.info['target'].indexOf(this.target_type) != 0 && this.info['target'] != '') {
+        //} else if (this.info['target'].indexOf(this.target_type) != 0 && this.info['target'] != '') {
+        } else if (this.info['target'] != '' && this.info['target'].search(new RegExp(this.target_type.replaceAll('.','\\.').replaceAll('*','.*').replaceAll('?','.'))) != 0 ) {
+          // this.target_type 为redis的通配符格式，因此需要转换后才能使用正则
+          // * ? []
           this.$Message.error(this.$t('templateNotMatchTips'))
         } else {
           if (this.info['target']) {
