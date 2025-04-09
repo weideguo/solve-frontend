@@ -75,7 +75,7 @@
       vertify () {
         axios.get(`${this.baseurl}/cas/serviceValidate?ticket=${this.ticket}&service=${this.service}`)
           .then(res => {
-            this.jwt = 'JWT '+res.data['token']
+            this.jwt = 'Bearer '+res.data['token']
           })
           .catch(error => {
             // util.notice(this, error, 'error');

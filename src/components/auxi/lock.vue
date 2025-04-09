@@ -68,7 +68,7 @@
         login.login(baseurl, {'username': sessionStorage.getItem('user'),'password': this.password})
           .then(res => {
             if (res.data['token']) {
-              this.$store.commit('storeSet', ['jwt', `JWT ${res.data['token']}`])
+              this.$store.commit('storeSet', ['jwt', `Bearer ${res.data['token']}`])
               this.$store.commit('sessionSet', ['locking', 0])
               sessionStorage.setItem('locking', '0')
               this.$router.push({

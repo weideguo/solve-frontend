@@ -83,7 +83,7 @@
       verify () {
         axios.get(`${this.baseurl}/cas/serviceValidate?ticket=${this.ticket}&service=${this.service}`)
           .then(res => {
-            this.jwt = 'JWT '+res.data['token']
+            this.jwt = 'Bearer '+res.data['token']
           })
           .catch(error => {
             // util.notice(this, error, 'error');
@@ -110,7 +110,7 @@
         let pgtUrl='https://192.168.59.132:9000/api/v1/cas/callback'
         axios.get(`${this.baseurl}/cas/serviceValidate?ticket=${this.ticket}&service=${this.service}&pgtUrl=${pgtUrl}`)
           .then(res => {
-            this.jwt = 'JWT '+res.data['token']
+            this.jwt = 'Bearer '+res.data['token']
             console.log(res.data)
           })
           .catch(error => {

@@ -114,7 +114,7 @@
             login.login(baseurl, {'username': this.formInline.user, 'password': this.formInline.password})
               .then(res => {
                 if (res.data['token']) {
-                  this.$store.commit('sessionSet', ['jwt', `JWT ${res.data['token']}`])
+                  this.$store.commit('sessionSet', ['jwt', `Bearer ${res.data['token']}`])
                   // this.$store.commit('storeSet', ['jwt', `JWT ${res.data['token']}`])    // 用state存储右击刷新会清空 所以不用
                   this.$store.commit('sessionSet', ['baseurl', baseurl])
                   this.$store.commit('sessionSet', ['project', project])
