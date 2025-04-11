@@ -19,7 +19,7 @@
     <div id="login-form">
       <Card>
         <div style='margin-left: 30%'>
-        <img src="static/icon.png" style="max-width:50%">
+        <img src="/favicon.ico" style="max-width:50%">
         <br>
       </div>
         <Tabs>
@@ -138,7 +138,7 @@
       }
     },
     mounted () {
-      window.particlesJS.load('band', '/static/particlesjs-config.json')
+      window.particlesJS.load('band', '/particlesjs-config.json')
       sessionStorage.clear()
       document.onkeydown = (e) => {
         if(e.keyCode == 13 && this.$route.name === 'login') {

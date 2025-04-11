@@ -6,13 +6,13 @@
           <Tooltip :content="$t('modifyFiled')"  placement="bottom-start">
             <Button type="info" icon="md-list" @click.native="switchFormInfo=true" ></Button>
           </Tooltip>
-          <Button type="info" icon="md-add" @click.native="targetinfoAdd()">{{filter}}</Button>
+          <Button type="info" icon="md-add" @click.native="targetinfoAdd()" style="margin-left: 0.2vw">{{filter}}</Button>
           
-          <Tooltip :content="$t('showCascade')"  placement="bottom-start">
+          <Tooltip :content="$t('showCascade')"  placement="bottom-start" style="margin-left: 0.2vw">
             <Button type="info" icon="md-more" @click.native="showCascade()" ></Button>
           </Tooltip>
 
-          <div style="float:right;margin-right: 0px">
+          <div style="float:right;margin-right: 0vw">
             <Input v-model="searchWord" @on-search="search()" search enter-button :placeholder="$t('searchTips')" style="width: 350px"/>
           </div>
         </div>

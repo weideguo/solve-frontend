@@ -26,9 +26,7 @@ RUN chmod 755 docker-entrypoint.sh
 RUN cp docker-entrypoint.sh /usr/local/bin/
 
 RUN npm set registry ${REGISTRY}
-RUN npm install -g webpack
-RUN npm install -g webpack-cli
-RUN npm install -g vue-cli
+RUN npm install -g @vue/cli
 RUN npm install
 
 #ENTRYPOINT ["docker-entrypoint.sh"]

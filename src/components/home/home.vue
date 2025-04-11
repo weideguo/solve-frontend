@@ -96,7 +96,6 @@
     },
     mounted () {
       this.getHomeinfo()
-      // window.particlesJS.load('home', '/static/particlesjs-config.json') // 控制不了canvas高度
     }
   }
 </script>

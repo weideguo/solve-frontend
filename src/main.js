@@ -7,9 +7,9 @@ import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 // import axios from 'axios'
 // 原生样式
-// import 'view-design/dist/styles/iview.css';
-// 个性化样式
-import '../theme.less';
+import 'view-design/dist/styles/iview.css';
+// 个性化样式，使用则存在报错？
+//import '../theme.less';
 import particles from 'particles.js/particles'
 // multi language
 import VueI18n from 'vue-i18n';
@@ -24,6 +24,15 @@ import { MainRoute } from './router'
 import App from './App.vue'
 import store from './store'
 import config from './config/config'
+
+
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => {
+    if (err.name !== 'NavigationDuplicated') {throw err;}
+    // 重复导航错误时不抛出错误
+  });
+};
 
 Vue.config.productionTip = false
 Vue.use(particles)

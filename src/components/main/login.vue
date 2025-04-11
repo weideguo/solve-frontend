@@ -36,11 +36,6 @@
     </div>
     <div id="login-form">
       <Card>
-        <!--
-        <div style='margin-left: 30%'>
-        <img src="/static/favicon.ico" style="max-width:50%">
-        <br>
-        </div>-->
         <Tabs ref="formX" >
           <!--TabPane label="简单命令分发系统" name="simple"-->
           <TabPane :label="title" name="simple">
@@ -270,7 +265,7 @@
       },
     },
     mounted () {
-      window.particlesJS.load('band', '/static/particlesjs-config.json')
+      window.particlesJS.load('band', '/particlesjs-config.json')
       document.onkeydown = (e) => {
         if(e.keyCode == 13 && this.$route.name === 'login') {
             if(this.$refs['formX'].activeKey === 'simple'){

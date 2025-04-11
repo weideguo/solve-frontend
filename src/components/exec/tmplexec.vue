@@ -6,7 +6,7 @@
           <Tooltip :content="$t('modifySelectedInfo')" placement="bottom-start">
             <Button type="info" icon="md-list" @click.native="switchFormInfo=true" ></Button>
           </Tooltip>
-          <Button type="info" icon="md-add" @click.native="targetinfoAdd()" >{{ $t('addTemplate') }}</Button>
+          <Button type="info" icon="md-add" @click.native="targetinfoAdd()" style="margin-left: 0.2vw">{{ $t('addTemplate') }}</Button>
         </div>
         
         <Row>

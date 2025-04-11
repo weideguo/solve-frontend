@@ -51,7 +51,7 @@
       }
     },
     mounted () {
-      window.particlesJS.load('band', '/static/particlesjs-config.json')
+      window.particlesJS.load('band', '/particlesjs-config.json')
     }
   }
 </script>

@@ -4,7 +4,7 @@
       <div slot="title" style="padding-bottom: 30px;">
         <div style="float:left">
           <Button  type="info" @click="createDirFlag = true">{{ $t('createDir') }}</Button>
-          <Button  type="success" @click="gobackdir">{{ $t('preDir') }}</Button>
+          <Button  type="success" @click="gobackdir" style="margin-left: 0.2vw">{{ $t('preDir') }}</Button>
         </div>
         <div style="float:left;padding:5px">
           <p v-if="currentPath === ''" > | /</p>
