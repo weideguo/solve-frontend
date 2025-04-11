@@ -5,7 +5,7 @@ import Vue from 'vue'
 import iView from 'view-design'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
-import axios from 'axios'
+// import axios from 'axios'
 // 原生样式
 // import 'view-design/dist/styles/iview.css';
 // 个性化样式
@@ -31,7 +31,7 @@ Vue.use(Vuex)
 Vue.use(VueI18n)
 Vue.use(iView)
 Vue.use(VueRouter)
-Vue.prototype.$http = axios
+// Vue.prototype.$http = axios
 /* eslint-disable no-new */
 const RouterConfig = {
   // 去除前端路由中的#

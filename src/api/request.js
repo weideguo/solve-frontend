@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import axios from 'axios'
 import util from '@/libs/util'
 
@@ -27,5 +28,8 @@ request.interceptors.response.use(
     //     return Promise.reject(error)
     // }
 )
+
+Vue.prototype.$http = request;
+// 挂到原型后可以通过这种方式发起请求 this.$http.get('/url');
 
 export default request

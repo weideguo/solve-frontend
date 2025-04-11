@@ -1,6 +1,4 @@
 import axios from 'axios'
-import { Base64 } from 'js-base64'
-// import VueI18n from 'vue-i18n'
 
 let util = {}
 
@@ -59,22 +57,6 @@ util.checkLogin = function (vm,error) {
     }
   } else {
     vm.$Notice.error({title: 'ERROR', desc: error})
-    /*
-    try {
-      let userinfo = JSON.parse(Base64.decode(sessionStorage.getItem('jwt').split('.')[1]+'==').split(' ')[0])
-      console.log(userinfo)
-      if (userinfo['exp']*1000 < (new Date()).getTime()) {
-        console.log(userinfo['exp'])
-        vm.$Message.error('登陆已经过期，请重新登陆')
-        util.openPage(vm,'login')
-      } else {
-        vm.$Notice.error({title: 'ERROR', desc: error})
-      }
-    } catch (err) {
-      vm.$Message.error('解析jwt失败，请重新登陆')
-      util.openPage(vm,'login')
-    }
-    */
   }
 }
 
@@ -126,20 +108,6 @@ util.copyData = function (data) {
   document.body.removeChild(myInput);
 }
 
-// 需要调用iview的函数
-
-// 由url下载文件
-// util.download = function(vm, url, filename) {
-//   axios.defaults.headers.common['Authorization'] = sessionStorage.getItem('jwt')
-//   axios.get(url, {responseType: 'blob'})
-//     .then(res => {
-//       util.notice(vm, filename+' downloading...', 'fast')
-//       let blob = new Blob([res.data])
-//       util.downloadBlob(blob,filename)
-//     }).catch(error => {
-//       util.notice(vm, error, 'error')
-//     })
-// }
 
 // 复制数据到粘贴板
 util.copy = function (vm, data) {

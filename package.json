@@ -14,24 +14,22 @@
     "build": "node build/build.js"
   },
   "dependencies": {
-    "ajv": "^6.10.0",
-    "axios": "^0.18.0",
+    "axios": "^0.30.0",
     "countup": "^1.8.2",
     "echarts": "^4.2.1",
     "particles.js": "^2.0.0",
     "prismjs": "^1.19.0",
     "sass-loader": "^7.1.0",
     "view-design": "^4.2.0",
-    "vue": "^2.5.2",
-    "vue-i18n": "^8.18.2",
-    "vue-router": "^3.0.1",
-    "vuex": "^3.1.1",
-    "vuex-i18n": "^1.13.1"
+    "vue": "^2.7.16",
+    "vue-i18n": "^8.28.2",
+    "vue-router": "^3.6.5",
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@vue/test-utils": "^1.0.4",
     "autoprefixer": "^7.1.2",
-    "babel-core": "^6.22.1",
+    "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.1",
     "babel-helper-vue-jsx-merge-props": "^2.0.3",
     "babel-jest": "^21.0.2",
@@ -80,14 +78,14 @@
     "shelljs": "^0.7.6",
     "uglifyjs-webpack-plugin": "^1.1.1",
     "url-loader": "^0.5.8",
-    "vue-jest": "^1.0.2",
+    "vue-jest": "^1.4.0",
     "vue-loader": "^14.2.4",
     "vue-style-loader": "^3.1.2",
-    "vue-template-compiler": "^2.5.2",
-    "webpack": "^3.6.0",
+    "vue-template-compiler": "^2.7.16",
+    "webpack": "^3.12.0",
     "webpack-bundle-analyzer": "^2.9.0",
-    "webpack-dev-server": "^2.9.1",
-    "webpack-merge": "^4.1.0"
+    "webpack-dev-server": "^2.11.5",
+    "webpack-merge": "^4.2.2"
   },
   "engines": {
     "node": ">= 6.0.0",
