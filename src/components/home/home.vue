@@ -1,26 +1,26 @@
 <template>
   <div id="home">
-    <Row style="padding-left:2px;padding-right:2px;">
+    <Row style="padding-left:2px;">
       <Col span="16">
         <Row>
           <Col span="6">
-            <infor-card id-name="1" :end-val="count.order" iconType="md-cart" color="#f25e43" :intro-text="$t('orderNum')"></infor-card>
+            <info-card id-name="1" :end-val="count.order" iconType="md-cart" color="#f25e43" :intro-text="$t('orderNum')"></info-card>
           </Col>
           <Col span="6" style="padding-left:5px">
-            <infor-card id-name="4" :end-val="count.realhost" iconType="md-laptop" color="#2d8cf0" :intro-text="$t('hostNum')"></infor-card>
+            <info-card id-name="4" :end-val="count.realhost" iconType="md-laptop" color="#2d8cf0" :intro-text="$t('hostNum')"></info-card>
           </Col>
           <Col span="6" style="padding-left:5px">
-            <infor-card id-name="2" :end-val="count.target" iconType="md-globe" color="#ffd572" :intro-text="$t('executeTargetNum')"></infor-card>
+            <info-card id-name="2" :end-val="count.target" iconType="md-globe" color="#ffd572" :intro-text="$t('executeTargetNum')"></info-card>
           </Col>
           <Col span="6" style="padding-left:5px">
-            <infor-card id-name="3" :end-val="count.exec" iconType="md-flower" color="#64d572" :intro-text="$t('executeNum')"></infor-card>
+            <info-card id-name="3" :end-val="count.exec" iconType="md-flower" color="#64d572" :intro-text="$t('executeNum')"></info-card>
           </Col>
         </Row>
 
-        <Row style="margin-top:20px">
+        <Row style="margin-top:2vh">
           <Col span="24">
             <Card>
-              <div style="height: 700px;">
+              <div style="height: 70vh;">
                 <data-chart></data-chart>
               </div>
             </Card>
@@ -30,8 +30,8 @@
 
 
       <Col span="8" style="padding-left:5px">
-        <Row>
-          <Card style="height: 100px">
+        <Row >
+          <Card style="height: 100px; width: 100%">
             <Row style="margin-top: 20px">
               <Col span="8">
                 <b>{{ $t('loginDate') }}</b>
@@ -43,13 +43,11 @@
           </Card>
         </Row>
 
-        <Row style="margin-top:20px">
-          <!--to-do-list :content="toDoList"  @delTodo="delTodo"></to-do-list-->
-          <to-do-list cardHeight="735px"></to-do-list>
+        <Row style="margin-top:2vh;">
+          <to-do-list cardHeight="74vh"></to-do-list>
         </Row>
 
       </Col>
-
     </Row>
   </div>
 </template>
@@ -60,14 +58,14 @@
   import util from '@/libs/util'
   import config from '@/config/config'
   import toDoList from './components/toDoList.vue'
-  import inforCard from './components/inforCard.vue'
+  import infoCard from './components/infoCard.vue'
   import dataChart from './components/dataChart.vue'
   
 
   export default {
     components: {
       toDoList,
-      inforCard,
+      infoCard,
       dataChart
     },
     data () {

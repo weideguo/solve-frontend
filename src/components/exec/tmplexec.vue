@@ -245,6 +245,7 @@
         filter: '',
         jobTypeTmp: [],
         targetTypeTmp: [],
+        isAdd: true,
         // deleteConfirm: false,
         // delname: ''
       }

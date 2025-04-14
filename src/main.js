@@ -29,8 +29,11 @@ import config from './config/config'
 const originalPush = VueRouter.prototype.push;
 VueRouter.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => {
-    if (err.name !== 'NavigationDuplicated') {throw err;}
-    // 重复导航错误时不抛出错误
+    if (!['NavigationDuplicated','NavigationCancelled','Error'].includes(err.name)) {
+      console.log(err.name);
+      throw err;
+    }
+    // 导航错误时不抛出错误
   });
 };
 

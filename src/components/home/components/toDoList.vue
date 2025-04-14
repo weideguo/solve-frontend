@@ -1,5 +1,5 @@
 <template>
-  <Card :style="{height: cardHeight}">
+  <Card :style="{height: cardHeight}" style="width:100%">
 
     <p slot="title">
       <Icon type="md-checkbox-outline"></Icon>
@@ -19,16 +19,18 @@
 
     <!--使用:key可以实现在列表变动时 对应列表元素的状态可以保存-->
     <div v-for="(item, index) in toDoList" v-if="item.title != ''"  :key="item.title">
-      <Col span="2">
-        <Row type="flex" justify="center" align="middle">
-          <Checkbox v-model="item.status"></Checkbox>
-        </Row>
-      </Col>
-      <Col span="22">
-        <Row type="flex" justify="start" align="middle">
-          <p  @dblclick="delTodo(item)" >{{ item.title }}</p>
-        </Row>
-      </Col>
+      <Row>
+        <Col span="2">
+          <Row type="flex" justify="center" align="middle">
+            <Checkbox v-model="item.status"></Checkbox>
+          </Row>
+        </Col>
+        <Col span="22">
+          <Row type="flex" justify="start" align="middle">
+            <p  @dblclick="delTodo(item)" >{{ item.title }}</p>
+          </Row>
+        </Col>
+      </Row>
     </div>
     <Modal v-model="showAddNewTodo" :title="$t('addTodoTitle')" @on-ok="addTodo">
       <Row type="flex" justify="center">
