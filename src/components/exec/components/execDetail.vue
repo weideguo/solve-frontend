@@ -1,55 +1,41 @@
 <template>
   <div>
-    <Row>
-      <Card>
-        <div slot="title">
-          <p>{{title}}</p>
-          <br><br>
-          <Tooltip :content="$t('showPlaybook')" placement="bottom-start">
-            <Button type="primary" shape="circle" icon="md-book" ghost @click.native="playbookDetial()"></Button>
-          </Tooltip>
-          <Tooltip :content="$t('save')" placement="bottom" style="margin-left: 20px">
-            <Button type="primary" shape="circle" icon="md-cloud-upload" ghost @click.native="commit()"></Button>
-          </Tooltip>
-        </div>
-
-
-        <Form :label-width="100">
-          <FormItem label="target_type" required>
-              <Input v-model="target_type" disabled></Input> 
-          </FormItem>
-
-          <FormItem v-for="(item, i) in formItem" :key="i" :label="item.key" required>
-            <Input v-if="item.key === 'target'" v-model="item.value" @click.native="clusterAdd()"></Input>
-            <Select v-else-if="item.key === 'tmpl'" v-model="item.value" filterable>
-              <Option v-for="i in tmplList" :value="i" :key="i">{{ i }}</Option>
-            </Select>
-            <Input v-else v-model="item.value" clearable></Input>
-            
-          </FormItem>
+    <Card style="width: 100%">
+      <div slot="title">
+        <p>{{title}}</p>
+        <br><br>
+        <Tooltip :content="$t('showPlaybook')" placement="bottom-start">
+          <Button type="primary" shape="circle" icon="md-book" ghost @click.native="playbookDetial()"></Button>
+        </Tooltip>
+        <Tooltip :content="$t('save')" placement="bottom" style="margin-left: 20px">
+          <Button type="primary" shape="circle" icon="md-cloud-upload" ghost @click.native="commit()"></Button>
+        </Tooltip>
+      </div>
+      <Form :label-width="100">
+        <FormItem label="target_type" required>
+            <Input v-model="target_type" disabled></Input> 
+        </FormItem>
+        <FormItem v-for="(item, i) in formItem" :key="i" :label="item.key" required>
+          <Input v-if="item.key === 'target'" v-model="item.value" @click.native="clusterAdd()"></Input>
+          <Select v-else-if="item.key === 'tmpl'" v-model="item.value" filterable>
+            <Option v-for="i in tmplList" :value="i" :key="i">{{ i }}</Option>
+          </Select>
+          <Input v-else v-model="item.value" clearable></Input>
           
-        </Form>
-
-        <Button type="primary" style="margin-left: 50%" @click.native="commit()">{{ $t('save') }}</Button>
-
-      </Card>
-    </Row>
+        </FormItem>
+        
+      </Form>
+      <Button type="primary" style="margin-left: 50%" @click.native="commit()">{{ $t('save') }}</Button>
+    </Card>
 
     <Modal v-model="openswitchAdd" @on-ok="commitinfoAdd" :ok-text="$t('confirm')" width="800"  :title="$t('executeTarget')">
-      <Row>
-        <Card>
-          <div>
-          <Tree :data="treeData" show-checkbox ref="mytree"></Tree>
-          </div>
-        </Card>
-      </Row>
+      <Card style="width: 100%">
+        <Tree :data="treeData" show-checkbox ref="mytree"></Tree>
+        
+      </Card>
     </Modal>
-
-
-
+    
   </div>
-
-
 </template>
 
 <script>

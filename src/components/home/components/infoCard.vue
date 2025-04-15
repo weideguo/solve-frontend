@@ -1,6 +1,6 @@
 <template>
   <Card :padding="0">
-    <div style="height: 100px;">
+    <div style="height: 10vh;">
       <Row style="height: 100%;">
         <Col span="8" style="height: 100%;" :style="{backgroundColor: color, color: 'white'}">
           <Row style="height: 100%;" type="flex" align="middle" justify="center">
@@ -8,9 +8,9 @@
           </Row>
         </Col>
         <Col span="16" style="height: 100%;">
-          <Row type="flex" align="middle" justify="center" style="height: 100%;">
+          <Row style="height: 100%;" type="flex" align="middle" justify="center">
             <count-up  :id-name="idName" :end-val="endVal" :color="color" :countSize="countSize" :countWeight="countWeight">
-              <p style="font-size: 12px;font-weight: 500;color: #C8C8C8;" slot="intro">{{ introText }}</p>
+              <p style="font-size: 1vh;color: #C8C8C8;" slot="intro">{{ introText }}</p>
             </count-up>
           </Row>
         </Col>
@@ -35,7 +35,7 @@ export default {
     introText: String,
     countSize: {
       type: String,
-      default: '30px'
+      default: '3vh'
     },
     countWeight: {
       type: Number,

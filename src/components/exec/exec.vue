@@ -1,29 +1,17 @@
 <template>
   <div>
-    <Row>
-      <Card>
-        <!--p slot="title">
-          <Icon type="md-flower"></Icon>
-          {{ $t('executeList') }}
-        </p-->
-        <Row>
-          <Col span="24">
-            <Table border stripe :columns="columns" :data="tableData" size="small" @on-row-dblclick="quickShow"></Table>
-          </Col>
-        </Row>
-        <br>
-        <Page :total="pageNumber" @on-change="getCurrentPage" :current="currentPage" :page-size="pagesize"  @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
-      </Card>
-    </Row>
+    <Card>
+      <Table border stripe :columns="columns" :data="tableData" size="small" @on-row-dblclick="quickShow"></Table>
+      <br>
+      <Page :total="pageNumber" @on-change="getCurrentPage" :current="currentPage" :page-size="pagesize"  @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
+    </Card>
+    
     
     <Modal v-model="openswitchAdd"  width="800"  :title="$t('executeSubTarget')">
-      <Row>
-        <Card>
-          <div>
-          <Tree :data="subTargetTreeData" ref="subTargetTree" show-checkbox></Tree>
-          </div>
-        </Card>
-      </Row>
+      <Card style="width: 100%">
+        <Tree :data="subTargetTreeData" ref="subTargetTree" show-checkbox></Tree>
+      </Card>
+      
       <div slot="footer">
         <Button type="primary" @click="subTargetSelect"> {{ $t('confirm') }} </Button>
       </div>

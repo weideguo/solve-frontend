@@ -70,7 +70,7 @@ export default {
           });
       })
       .catch(error => {
-        util.err_notice(error)
+        util.notice(this, error, 'error')
       })
     });
   }

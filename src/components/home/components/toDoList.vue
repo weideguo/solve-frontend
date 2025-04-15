@@ -21,21 +21,15 @@
     <div v-for="(item, index) in toDoList" v-if="item.title != ''"  :key="item.title">
       <Row>
         <Col span="2">
-          <Row type="flex" justify="center" align="middle">
-            <Checkbox v-model="item.status"></Checkbox>
-          </Row>
+          <Checkbox v-model="item.status"></Checkbox>
         </Col>
         <Col span="22">
-          <Row type="flex" justify="start" align="middle">
-            <p  @dblclick="delTodo(item)" >{{ item.title }}</p>
-          </Row>
+          <p  @dblclick="delTodo(item)" >{{ item.title }}</p>
         </Col>
       </Row>
     </div>
     <Modal v-model="showAddNewTodo" :title="$t('addTodoTitle')" @on-ok="addTodo">
-      <Row type="flex" justify="center">
-        <Input v-model="newToDoItemValue" icon="md-checkbox-outline" :placeholder="$t('inputTips')" style="width: 100%" clearable/>
-      </Row>
+      <Input v-model="newToDoItemValue" icon="md-checkbox-outline" :placeholder="$t('inputTips')" style="width: 100%" clearable/>
     </Modal>
   </Card>
 </template>

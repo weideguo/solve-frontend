@@ -244,6 +244,8 @@ const lang = {
     emptyOrNoSpaceLeftRight: '为空或者左右不应为空格',
     selectRunTarget:'请选择哪次运行，默认为最新的重新运行的结果',
     onlyOneOndeSelectTips: '需要且只能选择一个节点',
+    msg401Tips: '尚未登录认证',
+    msg500Tips: '服务器错误',
 }
 
 export default lang;

@@ -1,31 +1,24 @@
 <template>
   <div>
-    <Row>
-      <Card>
-        <div slot="title" style="height: 32px">
-          <Tooltip :content="$t('modifyFiled')"  placement="bottom-start">
-            <Button type="info" icon="md-list" @click.native="switchFormInfo=true" ></Button>
-          </Tooltip>
-          <Button type="info" icon="md-add" @click.native="targetinfoAdd()" style="margin-left: 0.2vw">{{filter}}</Button>
-          
-          <Tooltip :content="$t('showCascade')"  placement="bottom-start" style="margin-left: 0.2vw">
-            <Button type="info" icon="md-more" @click.native="showCascade()" ></Button>
-          </Tooltip>
-
-          <div style="float:right;margin-right: 0vw">
-            <Input v-model="searchWord" @on-search="search()" search enter-button :placeholder="$t('searchTips')" style="width: 350px"/>
-          </div>
-        </div>
+    <Card style="width: 100%">
+      <div slot="title" style="height: 32px">
+        <Tooltip :content="$t('modifyFiled')"  placement="bottom-start">
+          <Button type="info" icon="md-list" @click.native="switchFormInfo=true" ></Button>
+        </Tooltip>
+        <Button type="info" icon="md-add" @click.native="targetinfoAdd()" style="margin-left: 0.2vw">{{filter}}</Button>
         
-        <Row>
-          <Col span="24">
-            <Table border stripe :columns="columns" :data="tableData" size="small" @on-row-dblclick="targetinfoDetail"></Table>
-          </Col>
-        </Row>
-        <br>
-        <Page :total="pageNumber" @on-change="getCurrentPage" :page-size="pagesize" :current="currentPage" @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
-      </Card>
-    </Row>
+        <Tooltip :content="$t('showCascade')"  placement="bottom-start" style="margin-left: 0.2vw">
+          <Button type="info" icon="md-more" @click.native="showCascade()" ></Button>
+        </Tooltip>
+        <div style="float:right;margin-right: 0vw">
+          <Input v-model="searchWord" @on-search="search()" search enter-button :placeholder="$t('searchTips')" style="width: 350px"/>
+        </div>
+      </div>
+      
+      <Table border stripe :columns="columns" :data="tableData" size="small" @on-row-dblclick="targetinfoDetail"></Table>
+      <br>
+      <Page :total="pageNumber" @on-change="getCurrentPage" :page-size="pagesize" :current="currentPage" @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
+    </Card>
 
     <Modal v-model="openswitch" width="50%">    
       <div slot="header">   

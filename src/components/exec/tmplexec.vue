@@ -1,23 +1,17 @@
 <template>
   <div>
-    <Row>
-      <Card>
-        <div slot="title">
-          <Tooltip :content="$t('modifySelectedInfo')" placement="bottom-start">
-            <Button type="info" icon="md-list" @click.native="switchFormInfo=true" ></Button>
-          </Tooltip>
-          <Button type="info" icon="md-add" @click.native="targetinfoAdd()" style="margin-left: 0.2vw">{{ $t('addTemplate') }}</Button>
-        </div>
-        
-        <Row>
-          <Col span="24">
-            <Table border :columns="columns" :data="tableData" @on-row-dblclick="targetinfoDetail" stripe size="small"></Table>
-          </Col>
-        </Row>
-        <br>
-        <Page :total="pageNumber" @on-change="getCurrentPage" :current="currentPage" :page-size="pagesize" @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
-      </Card>
-    </Row>
+    <Card style="width: 100%">
+      <div slot="title">
+        <Tooltip :content="$t('modifySelectedInfo')" placement="bottom-start">
+          <Button type="info" icon="md-list" @click.native="switchFormInfo=true" ></Button>
+        </Tooltip>
+        <Button type="info" icon="md-add" @click.native="targetinfoAdd()" style="margin-left: 0.2vw">{{ $t('addTemplate') }}</Button>
+      </div>
+      
+      <Table border :columns="columns" :data="tableData" @on-row-dblclick="targetinfoDetail" stripe size="small"></Table>
+      <br>
+      <Page :total="pageNumber" @on-change="getCurrentPage" :current="currentPage" :page-size="pagesize" @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
+    </Card>
     
     <Modal v-model="openswitch" width="800">
       <p slot="header">

@@ -1,16 +1,10 @@
 <template>
   <div>
-    <Row>
-      <Card>
-        <Row>
-          <Col span="24">
-            <Table border :columns="columns" :data="tableData" stripe @on-row-dblclick="orderDetail" size="small"></Table>
-          </Col>
-        </Row>
-        <br>
-        <Page :total="pageNumber" @on-change="getCurrentPage" @on-page-size-change="getCurrentPageNew" :current="currentPage" :page-size="pagesize" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
-      </Card>
-    </Row>
+    <Card>
+      <Table border :columns="columns" :data="tableData" stripe @on-row-dblclick="orderDetail" size="small"></Table>
+      <br>
+      <Page :total="pageNumber" @on-change="getCurrentPage" @on-page-size-change="getCurrentPageNew" :current="currentPage" :page-size="pagesize" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
+    </Card>
   </div>
 </template>
 <script>

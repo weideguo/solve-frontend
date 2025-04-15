@@ -1,44 +1,41 @@
 <template>
   <Form ref="safeform" :label-width="realLabelwidth" :model="formValue"  :rules="formvalidate">
-    
-      <FormItem v-for="i in formKey" :prop="i" :label="formLabel[i]" :key="i">
-        <Select v-if="typeof(formSelect[i]) === 'object'" v-model="formValue[i]" :placeholder="formComment[i]" clearable filterable>
-          <Option v-for="j in formSelect[i]" :value="j" :key="j">{{ j }}</Option>
-        </Select>
-        <Input v-else v-model="formValue[i]" :placeholder="formComment[i]" clearable></Input>
-      </FormItem> 
-
-      <div v-if="dynamic">
+    <FormItem v-for="i in formKey" :prop="i" :label="formLabel[i]" :key="i">
+      <Select v-if="typeof(formSelect[i]) === 'object'" v-model="formValue[i]" :placeholder="formComment[i]" clearable filterable>
+        <Option v-for="j in formSelect[i]" :value="j" :key="j">{{ j }}</Option>
+      </Select>
+      <Input v-else v-model="formValue[i]" :placeholder="formComment[i]" clearable></Input>
+    </FormItem> 
+    <div v-if="dynamic">
       <FormItem v-for="(item, index) in formDynamic" :key="index">  
-          <Row>
-            <Col span="5">
+        <Row>
+          <Col span="5">
             <Input type="text" v-model="item.key" :placeholder="_inputFieldTips"></Input>
-            </Col>
-            <Col span="13" offset="1">
+          </Col>
+          <Col span="13" offset="1">
             <Input type="text" v-model="item.value" :placeholder="_inputValueTips"></Input>
-            </Col>
-            <Col span="4" offset="1">
+          </Col>
+          <Col span="4" offset="1">
             <!---->
             <Button type="dashed" @click="handleRemove(index)">{{ $t('delete') }}</Button>
-            </Col>
-          </Row>
-        </FormItem>
+          </Col>
+        </Row>
+      </FormItem>
       <Row>
         <Col span="12">
-        <Button type="dashed" long @click="handleAdd" >{{ $t('addField') }}</Button>
+          <Button type="dashed" long @click="handleAdd" >{{ $t('addField') }}</Button>
         </Col>
         <Col span="12">
-        <Button type="dashed" long @click="handleReset('safeform')" >{{ $t('reset') }}</Button>
+          <Button type="dashed" long @click="handleReset('safeform')" >{{ $t('reset') }}</Button>
         </Col>
       </Row>
+    </div>
+    <div :style="{height: buttonDivHeight}"> 
+      <div :style="{'float': 'right', 'margin-top': buttonMarginTop}"> 
+        <Button style="margin-right: 5px" @click="secondClick('safeform')">{{_secondButtonName}}</Button>
+        <Button type="primary" @click="primaryClick('safeform')">{{_primaryButtonName}}</Button>
       </div>
-      <div :style="{height: buttonDivHeight}"> 
-        <div :style="{'float': 'right', 'margin-top': buttonMarginTop}"> 
-          <Button style="margin-right: 5px" @click="secondClick('safeform')">{{_secondButtonName}}</Button>
-          <Button type="primary" @click="primaryClick('safeform')">{{_primaryButtonName}}</Button>
-        </div>
-      </div>
-    </Form>
+    </div>
   </Form>
 </template>
 

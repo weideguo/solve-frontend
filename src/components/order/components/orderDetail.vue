@@ -12,48 +12,42 @@
 </style>
 <template>
   <div>
-    <Row>
-      <Card>
-        <div slot="title">
-          <Poptip transfer :content="playbook" trigger="hover" placement="bottom-start">
-            <p>{{ this.workid }}</p>
-          </Poptip>
-          <br>
-          <br>
-          <Tooltip :content="$t('openNewWindow')" placement="bottom-start">
-            <Button type="primary" shape="circle" icon="md-albums" ghost @click.native="orderInfo()"></Button>
-          </Tooltip>
-          <Tooltip :content="$t('showPlaybook')" placement="bottom-start" style="margin-left: 20px">
-            <Button type="primary" shape="circle" icon="md-book" ghost @click.native="playbookDetial()"></Button>
-          </Tooltip>
-          <Tooltip :content="$t('refresh')" placement="bottom" style="margin-left: 20px">
-            <Button type="primary" shape="circle" icon="md-refresh" ghost @click.native="refreshCurrentPage()"></Button>
-          </Tooltip>
-          <Tooltip :content="$t('summary')" placement="bottom" style="margin-left: 20px">
-            <Button type="primary" shape="circle" icon="md-bookmarks" ghost @click.native="summary()"></Button>
-          </Tooltip>
-          <i-switch size="large" @on-change="finishFilter" style="margin-left: 50px">
-            <span slot="open">{{ $t('filter') }}</span>
-            <span slot="close">{{ $t('all') }}</span>
-          </i-switch>
-
-          <Tooltip disabled style="float:right;margin-right: 50px">
-            <b>
-            {{ $t('executing') }} <font color="#EEB422"> {{sum['executing']}} </font>
-            {{ $t('exeFailed') }} <font color="#FF0000"> {{sum['fail']}} </font>
-            {{ $t('exeSuccess') }} <font color="#228B22"> {{sum['done']}} </font>
-            {{ $t('currentNum') }} <font color="#0000FF">{{targetAmount}}</font>
-            {{ $t('allNum') }} <font color="#0000FF">{{sum['all']}}</font>
-            </b>
-          </Tooltip>
-        </div>
-        <Row>
-          <Col span="24">
-            <Table border stripe :columns="tabcolumns" :data="TableDataNew" @on-row-dblclick="quickShow"></Table>
-          </Col>
-        </Row>
-      </Card>
-    </Row>
+    <Card style="width: 100%">
+      <div slot="title">
+        <Poptip transfer :content="playbook" trigger="hover" placement="bottom-start">
+          <p>{{ this.workid }}</p>
+        </Poptip>
+        <br>
+        <br>
+        <Tooltip :content="$t('openNewWindow')" placement="bottom-start">
+          <Button type="primary" shape="circle" icon="md-albums" ghost @click.native="orderInfo()"></Button>
+        </Tooltip>
+        <Tooltip :content="$t('showPlaybook')" placement="bottom-start" style="margin-left: 20px">
+          <Button type="primary" shape="circle" icon="md-book" ghost @click.native="playbookDetial()"></Button>
+        </Tooltip>
+        <Tooltip :content="$t('refresh')" placement="bottom" style="margin-left: 20px">
+          <Button type="primary" shape="circle" icon="md-refresh" ghost @click.native="refreshCurrentPage()"></Button>
+        </Tooltip>
+        <Tooltip :content="$t('summary')" placement="bottom" style="margin-left: 20px">
+          <Button type="primary" shape="circle" icon="md-bookmarks" ghost @click.native="summary()"></Button>
+        </Tooltip>
+        <i-switch size="large" @on-change="finishFilter" style="margin-left: 50px">
+          <span slot="open">{{ $t('filter') }}</span>
+          <span slot="close">{{ $t('all') }}</span>
+        </i-switch>
+        <Tooltip disabled style="float:right;margin-right: 50px">
+          <b>
+          {{ $t('executing') }} <font color="#EEB422"> {{sum['executing']}} </font>
+          {{ $t('exeFailed') }} <font color="#FF0000"> {{sum['fail']}} </font>
+          {{ $t('exeSuccess') }} <font color="#228B22"> {{sum['done']}} </font>
+          {{ $t('currentNum') }} <font color="#0000FF">{{targetAmount}}</font>
+          {{ $t('allNum') }} <font color="#0000FF">{{sum['all']}}</font>
+          </b>
+        </Tooltip>
+      </div>
+      <Table border stripe :columns="tabcolumns" :data="TableDataNew" @on-row-dblclick="quickShow"></Table>
+        
+    </Card>
 
     <BackTop :height="100" :bottom="200">
       <div class="top">
