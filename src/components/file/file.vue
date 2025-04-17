@@ -14,32 +14,29 @@
       
       <br/>
 
-      <Card>
-        <!--外div稍微大一点以放置上传列表-->
-        <div :style="{height: defaultHeight+100+'px'}" style="clear:both">       
-          <Row>
-            <div style="z-index: 1;">
-              <file-list v-for="(item, i) in currentDirs" :key="item" :introText="item" listType="dir" @changedir="changedir">
-              </file-list>
-              <file-list v-for="(item, i) in currentFiles" :key="item" :introText="item" listType="file" @copypath="copypath" @download="download">
-              </file-list>
-              <!--div style="height:10vh">&ensp;</div-->
-            </div>
-            
-            <div style="position:absolute;width: 98%">
-              <Upload multiple type="drag" :action="uploadUrl" :headers='myheader' :on-success="refresh" ref="upload"> 
-                <div :style="{height: (defaultHeight > changeHeight ? defaultHeight : changeHeight)+'px'}">
-                  <div style="margin-left: 30%" :style="{paddingTop: (defaultHeight > changeHeight ? defaultHeight/2 : changeHeight/2)+'px'}">
-                    <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
-                    <p>{{ $t('uploadTips') }}</p>
-                  </div>
+      <!--外div稍微大一点以放置上传列表-->
+      <div :style="{height: (defaultHeight > changeHeight ? defaultHeight : changeHeight)+100+'px'}" style="clear:both">       
+        <Row>
+          <div style="z-index: 1;">
+            <file-list v-for="(item, i) in currentDirs" :key="item" :introText="item" listType="dir" @changedir="changedir">
+            </file-list>
+            <file-list v-for="(item, i) in currentFiles" :key="item" :introText="item" listType="file" @copypath="copypath" @download="download">
+            </file-list>
+            <!--div style="height:10vh">&ensp;</div-->
+          </div>
+          
+          <div style="position:absolute;width: 98%">
+            <Upload multiple type="drag" :action="uploadUrl" :headers='myheader' :on-success="refresh" ref="upload"> 
+              <div :style="{height: (defaultHeight > changeHeight ? defaultHeight : changeHeight)+'px'}">
+                <div style="margin-left: 30%" :style="{paddingTop: (defaultHeight > changeHeight ? defaultHeight/2 : changeHeight/2)+'px'}">
+                  <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+                  <p>{{ $t('uploadTips') }}</p>
                 </div>
-              </Upload>        
-            </div>
-          </Row>
-        </div>
-      </Card>
-
+              </div>
+            </Upload>        
+          </div>
+        </Row>
+      </div>
       
       <Modal v-model="createDirFlag" width="50%" :closable="false">
         <div>

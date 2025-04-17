@@ -37,7 +37,7 @@
           </div>
           
   
-          <div style="float: right;margin-top: 20px">
+          <div style="float: right;margin-top: 20px;margin-right: 10px">
             <!--div style="float:left;margin-right:600px">
               <span style="font-weight:800;font-size:18px">{{project}}</span>
             </div-->
