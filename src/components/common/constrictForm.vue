@@ -5,13 +5,48 @@
       
       <FormItem v-for="k in formKey" :prop="k" :key="k" :label="k">
         <Select v-if="formType[k] === 'select'" v-model="formItem[k]" :placeholder="formComment[k]" filterable clearable>
-          <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
+          <template v-if="Array.isArray(formConstrict[k][0])">
+            <Option v-for="j in formConstrict[k]" :value="j[0]" :label="j[0]" :key="JSON.stringify(j[0])">   
+              <span>{{ j[0] }}</span>
+              <span style="float:right;color:#ccc">{{ j[1] }}</span>
+            </Option>
+          </template>
+          <template v-else>
+            <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
+          </template>
         </Select>
         <Select v-else-if="formType[k] === 'multiselect'" v-model="formItem[k]" :placeholder="formComment[k]" filterable multiple>
-          <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
+          <template v-if="Array.isArray(formConstrict[k][0])">
+            <Option v-for="j in formConstrict[k]" :value="j[0]" :label="j[0]" :key="JSON.stringify(j[0])">   
+              <span>{{ j[0] }}</span>
+              <span style="float:right;margin-right:3%;color:#ccc">{{ j[1] }}</span>
+            </Option>
+          </template>
+          <template v-else>
+            <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
+          </template>
         </Select>
-        <Select v-else-if="formType[k] === 'dynamicselect'" v-model="formItem[k]" :placeholder="formComment[k]" multiple filterable allow-create @on-create="pushItem(k)">
-          <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
+        <Select v-else-if="formType[k] === 'dynamicselect'" v-model="formItem[k]" :placeholder="formComment[k]" filterable clearable allow-create @on-open-change="openChange(k)" @on-create="pushItem">
+          <template v-if="Array.isArray(formConstrict[k][0])">
+            <Option v-for="j in formConstrict[k]" :value="j[0]" :label="j[0]" :key="JSON.stringify(j[0])">   
+              <span>{{ j[0] }}</span>
+              <span style="float:right;color:#ccc">{{ j[1] }}</span>
+            </Option>
+          </template>
+          <template v-else>
+            <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
+          </template>
+        </Select>
+        <Select v-else-if="formType[k] === 'dynamicmultiselect'" v-model="formItem[k]" :placeholder="formComment[k]" multiple filterable allow-create  @on-open-change="openChange(k)" @on-create="pushItem">
+          <template v-if="Array.isArray(formConstrict[k][0])">
+            <Option v-for="j in formConstrict[k]" :value="j[0]" :label="j[0]" :key="JSON.stringify(j[0])">   
+              <span>{{ j[0] }}</span>
+              <span style="float:right;margin-right:3%;color:#ccc">{{ j[1] }}</span>
+            </Option>
+          </template>
+          <template v-else>
+            <Option v-for="j in formConstrict[k]" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
+          </template>
         </Select>
         <div v-else-if="formType[k] === 'upload'" >
           <Input v-model="formItem[k]" type="text" :placeholder="formComment[k]" clearable style="width: 80%"></Input>
@@ -78,13 +113,19 @@ export default {
       myheader: {
         'Authorization': sessionStorage.getItem('jwt')
       },
-      baseurl: this.$store.getters.sessionGet('baseurl')
+      baseurl: this.$store.getters.sessionGet('baseurl'),
+      currentKey: "",    // 当前触发的key名
     }
   },
   methods: {
-    pushItem(k) {
-      return function(val) {
-        this.formConstrict[k].push(val)
+    openChange(k) {
+      this.currentKey = k
+    },
+    pushItem(val) {
+      if ( this.formConstrict[this.currentKey] != undefined && Array.isArray(this.formConstrict[this.currentKey][0])) {
+        this.formConstrict[this.currentKey].push([val,this.$t('new')])
+      } else {
+        this.formConstrict[this.currentKey].push(val)
       }
     },
     uploadSuccess (formItem,k) {
@@ -102,11 +143,11 @@ export default {
       let formdataCopy = util.dictDeepCopy(this.formdata)
       // 
       formdataCopy.forEach((item,i) => {
-        if ( (item['type'] === 'multiselect' || item['type'] === 'dynamicselect') && ( (typeof item['value']) != 'object') ){
+        if ( ( ['multiselect','dynamicmultiselect'].includes(item['type']) ) && ( (typeof item['value']) != 'object') ){
           // 列表在后端存储时以两个空格分隔
           // item['value'] = item['value'].split('  ')  
           // 后端存储时以字符串转换，因而从后端获取时应该先进行转换
-          try{
+          try {
             // "\"aaa\" \"bbb\""  ===> "[\"aaa\",\"bbb\"]" ===> ["aaa","bbb"]
             item['value'] = JSON.parse("["+item['value'].replace(new RegExp("\" \"","gm"),"\",\"")+"]")
           } catch(err) {
@@ -115,14 +156,51 @@ export default {
             console.log(item)
             item['value'] = []
           }
-          item['constrict']=util.listCombine(item['constrict'],item['value'])
           // console.log(item['constrict'])
         }
-        if ( ((typeof item['constrict']) === 'object') && item['constrict'][0] ) {
+        if ( ['dynamicselect','dynamicmultiselect'].includes(item['type']) ) {
+          // 动态选择要在 constrict 中添加不存在的value
+          // console.log(item['constrict'])
+          // console.log(item['value'])
+          if ( item['constrict'] == undefined ) {
+            item['constrict'] = []  
+          } 
+
+          let tmpItemValues = item['value']
+          if ( !Array.isArray(item['value']) ) {
+            // "aaa" -> ["aaa"]
+            tmpItemValues = []
+            tmpItemValues.push(item['value'])
+          } 
+          if ( Array.isArray(item['constrict'][0])) {
+            // constrict = [["111","说明1"],["222","说明2"]]
+            //
+            let tmpItemConstrict = []
+            item['constrict'].forEach((constrictItem,i) => {
+              tmpItemConstrict.push(constrictItem[0])
+            })
+
+            tmpItemValues.forEach((valueItem,i) => {
+              if ( !tmpItemConstrict.includes(valueItem) ) {
+                item['constrict'].push([valueItem,this.$t('new')])
+              }
+            })
+
+          } else {
+            // constrict = ["111","222"]
+            item['constrict'] = util.listCombine(item['constrict'],tmpItemValues)
+          }
+
+        }
+        if ( Array.isArray(item["constrict"]) ) {
           // [] 数字的值转成字符串
           let x=[]
-          item['constrict'].forEach((item,i) => {
-            x.push(String(item))
+          item['constrict'].forEach((constrictItem,i) => {
+            if(Number.isFinite(constrictItem)){
+              x.push(String(constrictItem))
+            } else {
+              x.push(constrictItem)
+            }
           })
           item['constrict'] = x
         }
@@ -140,9 +218,9 @@ export default {
       this.formKey = util.dictKeys(this.formItem) 
       // 根据表单label的字符串弹性设置表单label长度，每个字符占8px
       this.realLabelwidth = this.labelwidth
-      this.formKey.forEach((item,i) => {
-          if (this.realLabelwidth < item.length*8) {
-              this.realLabelwidth = item.length*8
+      this.formKey.forEach((keyItem,i) => {
+          if (this.realLabelwidth < keyItem.length*8) {
+              this.realLabelwidth = keyItem.length*8
           }
       })
     },
