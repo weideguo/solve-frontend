@@ -92,9 +92,11 @@ export default {
         let endVal = res.val;
         this.unit = res.unit;
         let demo = {};
-        this.demo = demo = new CountUp(this.idName, this.startVal, endVal, this.decimals, this.duration, this.options);
-        if (!demo.error) {
-          demo.start();
+        if (document.getElementById(this.idName)) {
+          this.demo = demo = new CountUp(this.idName, this.startVal, endVal, this.decimals, this.duration, this.options);
+          if (!demo.error) {
+            demo.start();
+          }
         }
       }, this.delay);
     });
