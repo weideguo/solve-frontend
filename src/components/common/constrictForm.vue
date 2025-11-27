@@ -139,11 +139,45 @@ export default {
       // this.$emit('buttonOperation', this.formItem)
       this.$emit('buttonOperation', this.getFormItem())
     },
+    addDynamicValue (itemValue,itemConstrict) {
+      // 在 constrict 中添加不存在的value
+      // console.log(item['constrict'])
+      // console.log(item['value'])
+      if ( itemValue == undefined ) {
+        itemValue = []  
+      } 
+
+      let tmpItemValues = itemValue
+      if ( !Array.isArray(itemValue) ) {
+        // "aaa" -> ["aaa"]
+        tmpItemValues = []
+        tmpItemValues.push(itemValue)
+      } 
+      if ( Array.isArray(itemConstrict[0])) {
+        // constrict = [["111","说明1"],["222","说明2"]]
+        //
+        let tmpItemConstrict = []
+        itemConstrict.forEach((constrictItem,i) => {
+          tmpItemConstrict.push(constrictItem[0])
+        })
+
+        tmpItemValues.forEach((valueItem,i) => {
+          if ( !tmpItemConstrict.includes(valueItem) ) {
+            itemConstrict.push([valueItem,this.$t('new')])
+          }
+        })
+
+      } else {
+        // constrict = ["111","222"]
+        itemConstrict = util.listCombine(itemConstrict,tmpItemValues)
+      }
+      return itemConstrict
+    },
     updateFormdata() {
       let formdataCopy = util.dictDeepCopy(this.formdata)
       // 
       formdataCopy.forEach((item,i) => {
-        if ( ( ['multiselect','dynamicmultiselect'].includes(item['type']) ) && ( (typeof item['value']) != 'object') ){
+        if ( ( ['multiselect','dynamicmultiselect','multiselect_by_http','dynamicmultiselect_by_http'].includes(item['type']) ) && ( (typeof item['value']) != 'object') ){
           // 列表在后端存储时以两个空格分隔
           // item['value'] = item['value'].split('  ')  
           // 后端存储时以字符串转换，因而从后端获取时应该先进行转换
@@ -160,37 +194,7 @@ export default {
         }
         if ( ['dynamicselect','dynamicmultiselect'].includes(item['type']) ) {
           // 动态选择要在 constrict 中添加不存在的value
-          // console.log(item['constrict'])
-          // console.log(item['value'])
-          if ( item['constrict'] == undefined ) {
-            item['constrict'] = []  
-          } 
-
-          let tmpItemValues = item['value']
-          if ( !Array.isArray(item['value']) ) {
-            // "aaa" -> ["aaa"]
-            tmpItemValues = []
-            tmpItemValues.push(item['value'])
-          } 
-          if ( Array.isArray(item['constrict'][0])) {
-            // constrict = [["111","说明1"],["222","说明2"]]
-            //
-            let tmpItemConstrict = []
-            item['constrict'].forEach((constrictItem,i) => {
-              tmpItemConstrict.push(constrictItem[0])
-            })
-
-            tmpItemValues.forEach((valueItem,i) => {
-              if ( !tmpItemConstrict.includes(valueItem) ) {
-                item['constrict'].push([valueItem,this.$t('new')])
-              }
-            })
-
-          } else {
-            // constrict = ["111","222"]
-            item['constrict'] = util.listCombine(item['constrict'],tmpItemValues)
-          }
-
+          item['constrict'] = this.addDynamicValue(item['value'],item['constrict'])
         }
         if ( Array.isArray(item["constrict"]) ) {
           // [] 数字的值转成字符串
@@ -218,11 +222,95 @@ export default {
       this.formKey = util.dictKeys(this.formItem) 
       // 根据表单label的字符串弹性设置表单label长度，每个字符占8px
       this.realLabelwidth = this.labelwidth
+      console.log(formdataCopy)
+      
       this.formKey.forEach((keyItem,i) => {
-          if (this.realLabelwidth < keyItem.length*8) {
-              this.realLabelwidth = keyItem.length*8
+        if (this.realLabelwidth < keyItem.length*8) {
+          this.realLabelwidth = keyItem.length*8
+        }
+        if ( ['select_by_http','multiselect_by_http','dynamicselect_by_http','dynamicmultiselect_by_http']
+          .includes(this.formType[keyItem]) ) {
+          // 通过http请求获取可选值
+          let itemConstrictCopy = util.dictDeepCopy(this.formConstrict[keyItem])
+          console.log(`通过http获取${keyItem}请求参数为:`)
+          console.log(itemConstrictCopy)
+          this.formType[keyItem] = this.formType[keyItem].split("_")[0]
+
+          this.formConstrict[keyItem] = itemConstrictCopy['options']
+          // 先提前设置一次，考虑到http请求可能出现失败
+          if ( ['dynamicselect','dynamicmultiselect'].includes(this.formType[keyItem]) ) {
+            this.formConstrict[keyItem] = this.addDynamicValue(this.formItem[keyItem],this.formConstrict[keyItem])
           }
+
+          let url = itemConstrictCopy['url']
+          let valuePath = itemConstrictCopy['value_path']
+          let commentPath = itemConstrictCopy['comment_path']
+          let method = 'GET'
+          let headers = itemConstrictCopy['header']
+          let params = {
+            'method': method,
+            'headers': headers,
+          }
+          if (!url) {
+            // todo 替换成支持多语言字符串
+            this.$Message.error(keyItem+' '+this.$t(`urlFieldNotInYAML`))  
+            throw new Error(keyItem+' '+'yaml配置文件中url字段不存在')
+          }
+          if ( ('get' in itemConstrictCopy) && (itemConstrictCopy['get'] != null) && (Object.keys(itemConstrictCopy['get']).length > 0 ) ) {
+            const urlTmp = new URL(url);
+            const searchParams = new URLSearchParams(urlTmp.search);
+            for (const [key, value] of Object.entries(itemConstrictCopy['get'])) {
+              searchParams.set(key, value)
+            }
+            urlTmp.search = searchParams.toString();
+            url = urlTmp.toString();
+          }
+
+          if ( ('post' in itemConstrictCopy)){
+            params['method'] = 'POST'
+            params['body'] = '{}'
+            if ((itemConstrictCopy['post'] != null) && (Object.keys(itemConstrictCopy['post']).length > 0 )) {
+              params['body'] = JSON.stringify(itemConstrictCopy['post'])
+            }
+          }
+          console.log(url,params)
+          fetch(url,params)
+            .then(res => {
+              if (!res.ok) {
+                throw new Error('发起http请求报错')
+              }
+              return res.json()
+            }).then(json => {
+              console.log(`通过http获取${keyItem}值为:`)
+              console.log(json)
+              let selectValue = util.getJsonSubElementByKeyPath(json,valuePath)
+
+              let selectComment = null
+              if (commentPath) {
+                selectComment = util.getJsonSubElementByKeyPath(json,commentPath)
+              }
+              
+              if (selectValue && Array.isArray(selectValue) && selectValue.length > 0) {
+                this.formConstrict[keyItem] = selectValue
+                if (selectComment && Array.isArray(selectComment) && selectComment.length > 0) {
+                  this.formConstrict[keyItem] = selectValue.map((item, index) => [item, selectComment[index]])
+                }
+              }
+              // 通过http请求获取到可选值后，再根据已有值重新设置可选值
+              if ( ['dynamicselect','dynamicmultiselect'].includes(this.formType[keyItem]) ) {
+                this.formConstrict[keyItem] = this.addDynamicValue(this.formItem[keyItem],this.formConstrict[keyItem])
+              }
+            }).catch(error => {
+              this.$Message.error(keyItem+' '+this.$t(`httpRequestError`))   
+              console.error(keyItem+'\n'+error);
+            })
+
+          
+        }
       })
+      console.log(this.formItem)
+      // this.formConstrict["aaa"] = []
+      console.log(this.formConstrict)
     },
     checkValidate() {
       // console.log(this.formItem)

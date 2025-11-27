@@ -246,6 +246,8 @@ const lang = {
     onlyOneOndeSelectTips: '需要且只能选择一个节点',
     msg401Tips: '尚未登录认证',
     msg500Tips: '服务器错误',
+    urlFieldNotInYAML: 'yaml配置文件中url字段不存在',
+    httpRequestError: '通过http获取值报错',
 }
 
 export default lang;

@@ -274,6 +274,43 @@ util.parseString2Dict = function  (string,boolean_key=[],padding='###', ) {
   }
   return result
 }
+
+// 根据key的路径获取json子元素
+util.getJsonSubElementByKeyPath = function (jsonTarget,keyPath) {
+  let nextTarget = jsonTarget
+  let keys = keyPath.split(".")
+  for (const k of keys) {
+    let nextKey = k
+    if(k.slice("-2") === "[]"){
+      nextKey = k.slice(0,"-2")
+    } 
+    if (nextTarget instanceof Array) {
+      let tmpTarget = []
+      for (const subTarget of nextTarget) {
+        if (subTarget instanceof Array) {
+          for (const subSubTarget of subTarget) {
+            if ( nextKey === "" ) {
+              tmpTarget.push(subSubTarget)       
+            } else {
+              tmpTarget.push(subSubTarget[nextKey])    
+            }
+          }
+        } else {
+          if ( nextKey === "" ) {
+            tmpTarget.push(subTarget)       
+          } else {
+            tmpTarget.push(subTarget[nextKey])    
+          }
+        }
+      }
+      nextTarget = tmpTarget
+    } else {
+      nextTarget = nextTarget[nextKey] 
+    }  
+  }
+  return nextTarget
+}
+
 ///////////////////////////////
 
 // url解析参数成字典
