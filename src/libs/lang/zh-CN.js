@@ -210,6 +210,7 @@ const lang = {
     paramValue: '参数值 ',
     openNewWindow: '新窗口查看',
     downloadColumn: '下载选中字段的值',
+    resultFormat: '将结果排版',
     emptyFieldWarn: '至少需要选择一个字段',
     add: '添加',
     form: {
@@ -248,6 +249,13 @@ const lang = {
     msg500Tips: '服务器错误',
     urlFieldNotInYAML: 'yaml配置文件中url字段不存在',
     httpRequestError: '通过http获取值报错',
+    notImplement: '尚未实现',
+    loadSuccess: '数据加载成功',
+    reload: '重新加载',
+    refreshTips: '显示刷新',
+    reloadTips: '重新从后端加载数据',
+    field: '字段名',
+    formatType: '格式类型',
 }
 
 export default lang;

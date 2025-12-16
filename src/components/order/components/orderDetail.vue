@@ -95,17 +95,20 @@
         </Tooltip>
       </div>
       <div v-else slot="footer">
-        <Tooltip :content="$t('prePage')" placement="top">
+        <Tooltip :content="$t('prePage')" placement="top" style="margin-right: 0.5%">
           <Button type="primary" shape="circle" icon="md-arrow-round-back" ghost @click.native="showDetailPre"></Button>
         </Tooltip>
-        <Tooltip :content="$t('nextPage') " placement="top">
+        <Tooltip :content="$t('nextPage') " placement="top" style="margin-right: 0.5%">
           <Button type="primary" shape="circle" icon="md-arrow-forward" ghost @click.native="showDetailNext"></Button>
         </Tooltip>
-        <Tooltip :content="$t('refresh')" placement="top">
+        <Tooltip :content="$t('refresh')" placement="top" style="margin-right: 0.5%">
           <Button type="primary" shape="circle" icon="md-refresh" ghost @click.native="refreshDetailInfo"></Button>
         </Tooltip>
-        <Tooltip :content="$t('downloadColumn')" placement="top" style="margin-right: 20px">
+        <Tooltip :content="$t('downloadColumn')" placement="top" style="margin-right: 0.5%">
           <Button type="primary" shape="circle" icon="md-arrow-down" ghost @click.native="download"></Button>
+        </Tooltip>
+        <Tooltip :content="$t('resultFormat')" placement="top" style="margin-right: 1%">
+          <Button type="primary" shape="circle" icon="md-list-box" ghost @click.native="resultFormat"></Button>
         </Tooltip>
       </div>
     </Modal>
@@ -811,6 +814,11 @@
         }else{
           this.$Message.error(this.$t('emptyFieldWarn'))
         }
+      },
+      resultFormat() {
+        let path = this.$router.resolve({ path: '/execDetailViewer', query: {  logID: this.logID } }).href
+        console.log(path)
+        window.open(path, "_blank", "scrollbars=yes,resizable=1,modal=false,alwaysRaised=yes")
       },
       globalVarsCommit(data) {
         this.globalVars=data

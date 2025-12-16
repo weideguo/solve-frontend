@@ -74,6 +74,18 @@ export const playbook = {
   }
 }
 
+export const execDetailViewer = {
+  path: '/execDetailViewer',
+  name: 'execDetailViewer',
+  title: 'execDetailViewer',
+  meta: {
+    title: 'execDetailViewer'
+  },
+  component: resolve => {
+    require(['./components/auxi/execDetailViewer.vue'], resolve)
+  }
+}
+
 export const loginRouter = {
   path: '/login',
   name: 'login',
@@ -380,6 +392,7 @@ export const MainRoute = [
   orderInfo,
   execDetail,
   playbook,
+  execDetailViewer,
   about,
   test,
   page401,
