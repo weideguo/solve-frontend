@@ -116,6 +116,13 @@ util.copy = function (vm, data) {
 }
 
 //////////////////////////////////////////////////////////
+// 渲染模板参数如{{ xxx }}
+util.render = function (template, data) {
+  return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
+    return data.hasOwnProperty(key) ? data[key] : match;
+  });
+}
+
 util.isDictNoSpace = function (dict) {
   for (let k in dict) {
       if ( util.existSpace(k)) {

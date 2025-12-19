@@ -256,6 +256,10 @@ const lang = {
     reloadTips: '重新从后端加载数据',
     field: '字段名',
     formatType: '格式类型',
+    urlFieldNotInYAML: 'yaml配置文件中url字段不存在',
+    renderParamsExist: '不能发起http请求，存在未替换的变量',
+    updateSelectConstrinctSuccess: '更新可选值成功',
+    getSelectConstrict: '通过http获取可选的值',
 }
 
 export default lang;
