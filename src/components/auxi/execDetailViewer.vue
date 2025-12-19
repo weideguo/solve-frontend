@@ -154,7 +154,7 @@ export default {
       } else if (formatType === 'html') {
         this.formatContent = originContent
       } else {
-        this.$Message.error($('notImplement')+' '+formatType)
+        this.$Message.error(this.$t('notImplement')+' '+formatType)
       }
       
     },
