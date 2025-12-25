@@ -393,7 +393,7 @@
         currentNode.children=[]
         target.getTreeInfo(currentNode.value) 
           .then(res => {
-            this.$set(currentNode, 'children', res.data['data'].sort(util.func_sort('title')))
+            this.$set(currentNode, 'children', res.data['data'].sort(util.funcSort('title')))
           })
           .catch(error => {
             util.notice(this, error, 'error')
@@ -411,7 +411,7 @@
         target.getTreeInfo(this.opentarget) 
           .then(res => {
             this.targetDataTree=res.data['data']
-            this.targetDataTree=this.targetDataTree.sort(util.func_sort('title'))
+            this.targetDataTree=this.targetDataTree.sort(util.funcSort('title'))
           })
           .catch(error => {
             util.notice(this, error, 'error')

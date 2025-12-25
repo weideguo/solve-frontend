@@ -229,7 +229,6 @@ export default {
         'headers': headers,
       }
       if (!url) {
-        // todo 替换成支持多语言字符串
         this.$Message.error(keyItem+' '+this.$t(`urlFieldNotInYAML`))  
         throw new Error(keyItem+' '+'yaml配置文件中url字段不存在')
       }

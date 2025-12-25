@@ -225,7 +225,7 @@ util.dictKeys = function (dict) {
   return keys
 }
 
-util.func_sort = function(key){
+util.funcSort = function(key){
   return function(a, b){
     if (a[key] < b[key]){
       return -1
@@ -259,17 +259,17 @@ util.formatDict = function (dict,padding='###') {
   return result.slice(0,-2)
 }
 
-util.parseString2Dict = function  (string,boolean_key=[],padding='###', ) {
+util.parseString2Dict = function  (string,booleanKey=[],padding='###', ) {
   let result = {}
-  let block_list = string.split('\n\n'+padding)
-  block_list[0] = block_list[0].slice(3)
-  console.log(block_list)
-  for (let i in block_list) {
-    //console.log(block_list[i])
-    let pair = block_list[i].split('###\n')
+  let blockList = string.split('\n\n'+padding)
+  blockList[0] = blockList[0].slice(3)
+  console.log(blockList)
+  for (let i in blockList) {
+    //console.log(blockList[i])
+    let pair = blockList[i].split('###\n')
     let k = pair[0]
     let v =  pair[1]
-    if (boolean_key.indexOf(k)>=0) {
+    if (booleanKey.indexOf(k)>=0) {
       if (v === 'true' || v === '1') {
         v= Boolean(1) 
       }else{
