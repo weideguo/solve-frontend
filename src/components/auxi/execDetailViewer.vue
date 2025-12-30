@@ -1,4 +1,4 @@
-<style scoped>
+<style>
 html {
   overflow-x: scroll !important; /* 始终显示水平滚动条 */
 }
@@ -6,6 +6,7 @@ html {
 .format-content {
   line-height: 1.6;
   font-size: 16px;
+  white-space: pre-line; 
 }
 
 .format-content-padding {
@@ -22,12 +23,16 @@ html {
   z-index: 1000;
 }
 
+.ivu-table-cell {
+  white-space: pre-line;
+}
+
 </style>
 <template>
   <div>
     <div >
-      <Table class="format-content" v-if="formatType === 'table'" border stripe :columns="tableColumns" :data="tableData" size="small"></Table>
-      <!-- v-else-if -->
+      <Table class="format-content" v-if="['table','ansible-result'].includes(formatType)" border stripe :columns="tableColumns" :data="tableData" size="small"></Table>
+      <div class="format-content format-content-padding" v-else-if="formatType === 'txt'">{{formatContent}}</div>
       <div class="format-content format-content-padding" v-else v-html="formatContent"></div>
     </div>
 
@@ -87,9 +92,9 @@ export default {
   name: 'execDetailViewer',
   data() {
     return {
-      formatType: 'markedown',
+      formatType: 'txt',
       showField: 'stdout',
-      formatTypeList: ['markedown','table','html'],
+      formatTypeList: ['txt','markedown','table','html','ansible-result'],
       filedList: ['stdout','stderr'],
       originContent: '',
       originContentFull: {},
@@ -143,6 +148,31 @@ export default {
       console.log(this.tableColumns)
       console.log(this.tableData)
     },
+    ansibleResultFormat(originContent) {
+      console.log('ansible-result')
+      this.tableColumns = [
+        {'title':'host', 'key':'host', 'sortable': true, 'resizable': true, 'width':150},
+        {'title':'status', 'key':'status', 'sortable': true, 'resizable': true, 'width':150},
+        {'title':'return code', 'key':'returnCode', 'sortable': true, 'resizable': true, 'width':150},
+        {'title':'ouput', 'key':'ouput', 'resizable': true },
+      ]
+      let hostResultRaws = originContent.split(/(?=^.* \| .* \| rc=\d+ >>\n)/gm).filter(b => b.trim())
+      let hostResults = hostResultRaws.map(hostResultRaw => {
+        let hostExeInfo = hostResultRaw.split('\n')
+        let exeInfo = hostExeInfo[0].split('|')
+        let exeHost = exeInfo[0].trim()
+        let exeStatus = exeInfo[1].trim()
+        let exeRCraw = exeInfo[2].trim()
+        let exeRCmatch = exeRCraw.match(/rc=(\d+)/)
+        let exeRC = exeRCmatch ? exeRCmatch[1]: exeRCraw
+        let exeOutput = hostExeInfo.slice(1).join('\n').trim()
+        return [exeHost, exeStatus, exeRC, exeOutput ]
+      })
+      hostResults.forEach((hostResult,i) => {
+        this.tableData.push({'host':hostResult[0], 'status':hostResult[1], 'returnCode':hostResult[2], 'ouput':hostResult[3]})
+      })
+      console.log(this.tableData)
+    },
     contentFormat(originContentFull,showField,formatType) {
       let originContent = originContentFull[showField]
       console.log('originContent\n'+originContent) 
@@ -151,7 +181,11 @@ export default {
         this.markdownFormat(originContent)
       } else if (formatType === 'table') {
         this.tableFormat(originContent)
-      } else if (formatType === 'html') {
+      } else if (formatType === 'ansible-result') {
+        this.ansibleResultFormat(originContent)
+      }else if (formatType === 'html') {
+        this.formatContent = originContent
+      } else if (formatType === 'txt') {
         this.formatContent = originContent
       } else {
         this.$Message.error(this.$t('notImplement')+' '+formatType)
