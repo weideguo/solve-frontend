@@ -260,6 +260,8 @@ const lang = {
     renderParamsExist: '不能发起http请求，存在未替换的变量',
     updateSelectConstrinctSuccess: '更新可选值成功',
     getSelectConstrict: '通过http获取可选的值',
+    select_field_key_SessionVarConstrictFieldMustExist: 'select_field_key类型的session变量constrict字段必须存在',
+    fieldOfTargetNotAnObject: '执行对象的字段不为对象',
 }
 
 export default lang;

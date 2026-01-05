@@ -297,6 +297,48 @@
             this.execExtraInfo = {}
             this.current += 1
           }
+          // 处理select_field_key类型的session变量
+          let targetName = this.targetName
+          if (this.showTargets.length != 0) {
+            targetName = this.showTargets[0]
+          }
+          //console.log(this.sessionFull)
+          this.sessionFull.forEach((sessionItem) => {
+            if (sessionItem['type'] === 'select_field_key' || sessionItem['_type'] === 'select_field_key') {
+              console.log(sessionItem)
+              sessionItem['_type'] = 'select_field_key'
+              sessionItem['type'] = 'select'
+              if ( !sessionItem.hasOwnProperty('constrict') ) {
+                this.$Message.error(this.$t('select_field_key_SessionVarConstrictFieldMustExist'))
+                return
+              }
+              if ( !sessionItem.hasOwnProperty('_constrict') ) {
+                sessionItem['_constrict'] = sessionItem['constrict']
+              }
+              console.log('targetName',targetName,'field',sessionItem['_constrict'])
+              sessionItem['constrict'] = []
+              setTimeout(() => {
+                // 稍微延后再执行，可能存在执行对象临时构建的情况
+                target.getTargetDetail(targetName,sessionItem['_constrict'])
+                  .then(res => {
+                    if (res.data['status'] > 0) {
+                      if (res.data['status'] === 1) {
+                        sessionItem['constrict'] = Object.keys(res.data['data'])
+                      } else {
+                        console.log(res.data)
+                        util.notice(this, targetName+' '+sessionItem['constrict']+' \n'+this.$t('fieldOfTargetNotAnObject'), 'error')
+                      }
+                    } else {
+                      util.notice(this, targetName+res.data['msg'], 'error')
+                    }
+                  })
+                  .catch(error => {
+                    util.notice(this, error, 'error')
+                  })
+              },500)
+            }
+          })
+
         } else if (this.current === 1) {
           if (this.errFlag) {
             this.$Message.error(this.$t('getPlaybookFailedTips'))

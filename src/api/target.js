@@ -7,6 +7,12 @@ export default {
       method: 'get'
     })
   },
+  getTargetDetail: function (targetName,field) {
+    return request({
+      url: `/target/detail?name=${targetName}&field=${field}`,
+      method: 'get'
+    })
+  },
   delTarget: function (delname) {
     return request({
       url: `/target/del?target=${delname}`,
