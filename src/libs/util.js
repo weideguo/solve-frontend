@@ -89,14 +89,18 @@ util.openPageEx = function (vm, name, query) {
 //////////////////////////////////////////////////////////////
 
 util.downloadBlob = function(blob, filename) {
-  let downloadElement = document.createElement('a');
   let href = window.URL.createObjectURL(blob);       
-  downloadElement.href = href;
+  util.downloadUrl(href,filename);
+}  
+
+util.downloadUrl = function(url, filename) {
+  let downloadElement = document.createElement('a');     
+  downloadElement.href = url;
   downloadElement.download = filename;        
   document.body.appendChild(downloadElement);
   downloadElement.click();                           
   document.body.removeChild(downloadElement);        
-  window.URL.revokeObjectURL(href);
+  window.URL.revokeObjectURL(url);
 }
 
 util.copyData = function (data) {
@@ -283,6 +287,8 @@ util.parseString2Dict = function  (string,booleanKey=[],padding='###', ) {
 }
 
 // 根据key的路径获取json子元素
+// todo 优化获取的方式，支持array的子元素
+// data[].rows[1] data[0].rows[1]
 util.getJsonSubElementByKeyPath = function (jsonTarget,keyPath) {
   let nextTarget = jsonTarget
   let keys = keyPath.split(".")

@@ -21,9 +21,15 @@ export default {
   },
   download: function (file) {
     return request({
-      url: `/file/download?file=${file}`,
+      url: `/fileDownload?file=${file}`,
       method: 'get',
       responseType: 'blob'
+    })
+  },
+  preDownload: function () {
+    return request({
+      url: `/file/preDownload`,
+      method: 'get'
     })
   }
 }

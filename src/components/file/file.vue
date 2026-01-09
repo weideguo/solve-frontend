@@ -131,11 +131,23 @@ export default {
       util.copy(this,fullpath)
     },
     download(filename) {
-      file.download(this.currentPath+'/'+filename)
+      //file.download(this.currentPath+'/'+filename)
+      //  .then(res => {
+      //    util.notice(this, filename+' downloading...', 'fast')
+      //    let blob = new Blob([res.data])
+      //    util.downloadBlob(blob,filename)
+      //  }).catch(error => {
+      //    util.notice(this, error, 'error')
+      //  })
+      file.preDownload()
         .then(res => {
           util.notice(this, filename+' downloading...', 'fast')
-          let blob = new Blob([res.data])
-          util.downloadBlob(blob,filename)
+          if (res.data['status'] > 0 ) {
+            let downloadUrl = `${this.baseurl}/fileDownload?file=${this.currentPath}/${filename}&temp_token=${res.data['temp_token']}`
+            util.downloadUrl(downloadUrl)
+          } else {
+            util.notice(this, res.data['msg'], 'error')
+          }
         }).catch(error => {
           util.notice(this, error, 'error')
         })
