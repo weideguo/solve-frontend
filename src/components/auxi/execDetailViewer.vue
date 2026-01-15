@@ -31,7 +31,7 @@ html {
 <template>
   <div>
     <div >
-      <Table class="format-content" v-if="['table','ansible-result'].includes(formatType)" border stripe :columns="tableColumns" :data="tableData" size="small"></Table>
+      <Table class="format-content" v-if="['table','ansible-result','crontab-result'].includes(formatType)" border stripe :columns="tableColumns" :data="tableData" size="small"></Table>
       <div class="format-content format-content-padding" v-else-if="formatType === 'txt'">{{formatContent}}</div>
       <div class="format-content format-content-padding" v-else v-html="formatContent"></div>
     </div>
@@ -94,7 +94,7 @@ export default {
     return {
       formatType: 'txt',
       showField: 'stdout',
-      formatTypeList: ['txt','markedown','table','html','ansible-result'],
+      formatTypeList: ['txt','markedown','table','html','ansible-result','crontab-result'],
       filedList: ['stdout','stderr'],
       originContent: '',
       originContentFull: {},
@@ -173,6 +173,53 @@ export default {
       })
       console.log(this.tableData)
     },
+    crontabResultFormat(originContent) {
+      console.log('crontab-result')
+      this.tableColumns = [
+        {'title':'id', 'key':'id', 'sortable': true, 'resizable': true, 'width':100},
+        {'title':'minute', 'key':'minute', 'sortable': true, 'resizable': true, 'width':100},
+        {'title':'hour', 'key':'hour', 'sortable': true, 'resizable': true, 'width':100},
+        {'title':'day', 'key':'day', 'sortable': true, 'resizable': true, 'width':100},
+        {'title':'month', 'key':'month', 'sortable': true, 'resizable': true, 'width':100},
+        {'title':'week', 'key':'week', 'sortable': true, 'resizable': true, 'width':100},
+        {'title':'command', 'key':'command', 'resizable': true },
+      ]
+      let crontabResultRaws = originContent.split('\n')
+      let crontabResults = crontabResultRaws.map(crontabResultRaw => {
+        if (crontabResultRaw.trim() === '') {
+          return ['','','','','',crontabResultRaw]
+        } else if (/^#/.test(crontabResultRaw.trim())) {
+          return ['','','','','',crontabResultRaw]
+        } else {
+          let crontabPart = crontabResultRaw.trim().split(' ')
+          let timePart = []
+          let ic = 0
+          for (let [i, k] of crontabPart.entries()) {
+            if (k != '' && timePart.length < 5) {
+              timePart.push(k)
+            }
+            if (timePart.length == 5) {
+              ic = i
+              break
+            }
+          }
+          let command = crontabPart.slice(ic+1).join(' ')
+          return [...timePart,command]
+        }
+      })
+      crontabResults.forEach((crontabResult,i) => {
+        this.tableData.push({
+          'id': i, 
+          'minute':crontabResult[0], 
+          'hour':crontabResult[1], 
+          'day':crontabResult[2], 
+          'month':crontabResult[3], 
+          'week':crontabResult[4], 
+          'command':crontabResult[5]
+        })
+        console.log(this.tableData)
+      })
+    },
     contentFormat(originContentFull,showField,formatType) {
       let originContent = originContentFull[showField]
       console.log('originContent\n'+originContent) 
@@ -183,7 +230,9 @@ export default {
         this.tableFormat(originContent)
       } else if (formatType === 'ansible-result') {
         this.ansibleResultFormat(originContent)
-      }else if (formatType === 'html') {
+      } else if (formatType === 'crontab-result') {
+        this.crontabResultFormat(originContent)
+      } else if (formatType === 'html') {
         this.formatContent = originContent
       } else if (formatType === 'txt') {
         this.formatContent = originContent
