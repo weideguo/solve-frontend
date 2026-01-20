@@ -6,11 +6,12 @@ html {
 .format-content {
   line-height: 1.6;
   font-size: 16px;
-  white-space: pre-wrap; 
+  background:#FFFFFF;
 }
 
 .format-content-padding {
   padding: 2%;
+  white-space: pre-wrap; 
 }
 
 .floating-div {
@@ -24,16 +25,33 @@ html {
 }
 
 .ivu-table-cell {
-  white-space: pre-wrap;
+  white-space: pre-line;
 }
 
+/* 用于markdown格式表格的美化 */
+.markdown-body table {
+  width: 100%;
+}
+
+.markdown-body table,
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+  padding: 8px;
+}
+
+.markdown-body tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
 </style>
 <template>
   <div>
     <div >
-      <Table class="format-content" v-if="['mysql-table','pg-table','ansible-result','crontab-result'].includes(formatType)" border stripe :columns="tableColumns" :data="tableData" size="small"></Table>
-      <div class="format-content format-content-padding" v-else-if="formatType === 'txt'">{{formatContent}}</div>
-      <div class="format-content format-content-padding" v-else v-html="formatContent"></div>
+      <Table class="format-content" v-if="tableFormatList.includes(formatType)" border stripe :columns="tableColumns" :data="tableData" size="small"></Table>
+      <div class="format-content format-content-padding markdown-body" v-else-if="['markdown'].includes(formatType)" v-html="formatContent"></div>
+      <div class="format-content format-content-padding" v-else-if="['html'].includes(formatType)" v-html="formatContent"></div>
+      <div class="format-content format-content-padding" v-else>{{formatContent}}</div>
     </div>
 
     <Tooltip :content="$t('setting')" placement="top" class="floating-div">
@@ -54,6 +72,22 @@ html {
             <Option v-for="item in formatTypeList" :value="item" :key="item">{{ item }}</Option>
           </Select>
         </FormItem>
+        <FormItem v-if="['common-table','text2table'].includes(formatType)" :label="$t('lineSpliter')">
+          <Input v-model="lineSpliter" type="textarea" :autosize="true" :placeholder="$t('lineSpliterComment')" clearable></Input>
+        </FormItem>
+        <FormItem v-if="formatType === 'common-table'" :label="$t('columnSpliter')">
+          <Input v-model="columnSpliter" type="textarea" :autosize="true" :placeholder="$t('columnSpliterComment')" clearable></Input>
+        </FormItem>
+        <FormItem v-if="formatType === 'text2table'" :label="$t('lineFormatRegexp')">
+          <Input v-model="lineFormatRegexp" type="textarea" :autosize="true" :placeholder="$t('lineFormatRegexpComment')" clearable></Input>
+        </FormItem>
+
+        <FormItem v-if="tableColumnNamesGenerateFormatList.includes(formatType)" :label="$t('tableColumnNamesGenerate')">
+          <Select v-model="tableColumnNamesGenerate">
+            <Option v-for="item in [1,0]" :value="item" :key="item">{{ item }}</Option>
+          </Select>
+        </FormItem>
+
         <FormItem>
           <Tooltip :content="$t('refreshTips')" placement="bottom" style="margin-right: 1%">
             <Button type="primary" @click="refresh">{{ $t('refresh') }}</Button>
@@ -93,8 +127,10 @@ export default {
   data() {
     return {
       formatType: 'txt',
+      formatTypeList: ['txt','markdown','mysql-table','pg-table','html','ansible-result','crontab-result','common-table','text2table'],
+      tableFormatList: ['mysql-table','pg-table','ansible-result','crontab-result','common-table','text2table'],
+      tableColumnNamesGenerateFormatList: ['mysql-table','common-table','text2table'],
       showField: 'stdout',
-      formatTypeList: ['txt','markedown','mysql-table','pg-table','html','ansible-result','crontab-result'],
       filedList: ['stdout','stderr'],
       originContent: '',
       originContentFull: {},
@@ -103,6 +139,10 @@ export default {
       tableColumns: [],
       tableData: [],
       logID: '',
+      lineSpliter: '\\n',
+      columnSpliter: '\\s+',
+      lineFormatRegexp: '^([\\s\\S]*)$',
+      tableColumnNamesGenerate: 1,
     }
   },
   methods: {
@@ -121,41 +161,25 @@ export default {
         Prism.highlightAll()
       })
     },
-    tableFormatx(originContent, lineSpliter, columnSpliter) {
-      // 处理如数据库查询的输出，以“\n”换行，“\t”分隔列
+    tableFormat(originContent, lineSpliter, columnSpliter, skipLineRegexps, tableColumnNames, tableColumnNamesGenerate) {
+      // 处理如数据库查询的输出，如以“\n”换行，“\t”分隔列
       console.log('table')
-      let allLines = originContent.split(lineSpliter)
-      allLines[0].split(columnSpliter).forEach((item,i) => {
-        this.tableColumns.push({'title':item, 'key':item, 'sortable': true, 'resizable': true, 'width':0})
-      })
-      // 使用屏幕宽度平均
-      let columnWidth = (screen.width-1)/this.tableColumns.length
-      this.tableColumns.forEach((item,i) => {
-        item['width'] = columnWidth
-      })
-
-      allLines.slice(1).forEach((line,i) => {
-        let lineFormat = {}
-        line.split(columnSpliter).forEach((lineColumn,j) => {
-          lineFormat[this.tableColumns[j].key] = lineColumn
-        })
-        this.tableData.push(lineFormat)
-      })
-
-      console.log('formatContent')
-      console.log(this.tableColumns)
-      console.log(this.tableData)
-    },
-    tableFormat(originContent, lineSpliter, columnSpliter, skipLineRegexps, tableColumnNames) {
-      // 处理如数据库查询的输出，以“\n”换行，“\t”分隔列
-      console.log('table')
+      this.tableData = []
       let allLines = originContent.split(lineSpliter)
       let contentLines = allLines
       if (tableColumnNames.length === 0) {
-        tableColumnNames = allLines[0].split(columnSpliter)
-        contentLines = allLines.slice(1)
-      }
-      
+        let tableColumnNamesRaw = allLines[0].split(columnSpliter)
+        if (tableColumnNamesGenerate) {
+          tableColumnNames = tableColumnNamesRaw
+          contentLines = allLines.slice(1)
+        } else {
+          // 生成_1 _2 _3 ...当成字段名
+          tableColumnNamesRaw.forEach((h,i) => {
+            tableColumnNames.push('_'+(i+1))
+          })
+          contentLines = allLines
+        }
+      }      
       tableColumnNames.forEach((item,i) => {
         this.tableColumns.push({'title':item, 'key':item, 'sortable': true, 'resizable': true, 'width':0})
       })
@@ -186,17 +210,45 @@ export default {
       console.log(this.tableColumns)
       console.log(this.tableData)
     },
-    text2tableFormat(originContent, tableColumnNames, lineSpliter, lineFormatRegexp) {
+    text2tableFormat(originContent, lineSpliter, lineFormatRegexp, tableColumnNames, tableColumnNamesGenerate) {
+      // 行需要以正则指定如何分割成列
       console.log('text2table')
+      let allLines = originContent.split(lineSpliter)
+      let contentLines = allLines
+      if (tableColumnNames.length === 0) {
+        // 通过匹配一行判断有多少个字段，如果都不匹配，则设置只有一个字段
+        let tableColumnNamesRaw =[]
+        for (let [i, line] of allLines.entries()) {
+          let match = line.trim().match(lineFormatRegexp)
+          if (match) {
+            tableColumnNamesRaw = match.slice(1)
+            break
+          } 
+        }
+        if (tableColumnNamesRaw.length ===0 ){
+          tableColumnNamesRaw = ['_1']
+        }
+
+        if (tableColumnNamesGenerate) {
+          tableColumnNames = tableColumnNamesRaw
+          contentLines = allLines.slice(1)
+        } else {
+          // 生成_1 _2 _3 ...当成字段名
+          tableColumnNamesRaw.forEach((h,i) => {
+            tableColumnNames.push('_'+(i+1))
+          })
+          contentLines = allLines
+        }
+      } 
+
       this.tableData = []
-      this.tableColumns = [{'title':'id', 'key':'id', 'sortable': true, 'resizable': true, 'width':150}]
+      this.tableColumns = [{'title':'#id', 'key':'#id', 'sortable': true, 'resizable': true, 'width':150}]
       tableColumnNames.forEach((k,i) => {
         this.tableColumns.push({'title': k, 'key':k , 'sortable': true, 'resizable': true, 'width':150})
       })
       delete this.tableColumns[this.tableColumns.length-1].width
-      
-      let lineRaws = originContent.split(lineSpliter)
-      let lineFormats = lineRaws.map(lineRaw => {
+
+      let lineLists = contentLines.map(lineRaw => {
         let match = lineRaw.trim().match(lineFormatRegexp)
         if (match) {
           return match.slice(1)
@@ -204,104 +256,45 @@ export default {
           return [...Array(tableColumnNames.length-1).fill(''),lineRaw]
         }
       })
-      lineFormats.forEach((lineFormat,i) => {
-        let _lineFormat = {'id': i}
-        lineFormat.forEach((lineColumn,j) => {
-          _lineFormat[this.tableColumns[j+1].key] = lineColumn
+      lineLists.forEach((lineList,i) => {
+        let lineFormat = {'#id': i}
+        lineList.forEach((lineColumn,j) => {
+          lineFormat[this.tableColumns[j+1].key] = lineColumn
         })
-        console.log(_lineFormat)
-        console.log(11111111111111)
-        this.tableData.push(_lineFormat)
+        this.tableData.push(lineFormat)
       })
       console.log(this.tableData)
-    },
-    ansibleResultFormat(originContent) {
-      console.log('ansible-result')
-      this.tableColumns = [
-        {'title':'id', 'key':'id', 'sortable': true, 'resizable': true, 'width':150},
-        {'title':'host', 'key':'host', 'sortable': true, 'resizable': true, 'width':150},
-        {'title':'status', 'key':'status', 'sortable': true, 'resizable': true, 'width':150},
-        {'title':'return code', 'key':'returnCode', 'sortable': true, 'resizable': true, 'width':150},
-        {'title':'ouput', 'key':'ouput', 'resizable': true },
-      ]
-      let lineSpliter = /(?=^.* \| .* \| rc=\d+ >>\n)/gm
-      let lineFormatRegexp = /^(.+?)\s*\|\s*(.+?)\s*\|\s*rc=(\d+)\s*>>\n([\s\S]+)$/ 
-      let hostResultRaws = originContent.split(lineSpliter)
-      let hostResults = hostResultRaws.map(hostResultRaw => {
-        let match = hostResultRaw.trim().match(lineFormatRegexp)
-        if (match) {
-          return match.slice(1)
-        } else {
-          return ['','','',hostResultRaw]
-        }
-      })
-      hostResults.forEach((hostResult,i) => {
-        this.tableData.push({
-          'id': i, 
-          'host':hostResult[0], 
-          'status':hostResult[1], 
-          'returnCode':hostResult[2], 
-          'ouput':hostResult[3]
-        })
-      })
-      console.log(this.tableData)
-    },
-    crontabResultFormat(originContent) {
-      console.log('crontab-result')
-      this.tableColumns = [
-        {'title':'id', 'key':'id', 'sortable': true, 'resizable': true, 'width':100},
-        {'title':'minute', 'key':'minute', 'sortable': true, 'resizable': true, 'width':100},
-        {'title':'hour', 'key':'hour', 'sortable': true, 'resizable': true, 'width':100},
-        {'title':'day', 'key':'day', 'sortable': true, 'resizable': true, 'width':100},
-        {'title':'month', 'key':'month', 'sortable': true, 'resizable': true, 'width':100},
-        {'title':'week', 'key':'week', 'sortable': true, 'resizable': true, 'width':100},
-        {'title':'command', 'key':'command', 'resizable': true },
-      ]
-      let lineSpliter = '\n'
-      // 按照正则分隔成6部分
-      let lineFormatRegexp = /^([^#]+?)\s+(.+?)\s+(.+?)\s+(.+?)\s+(.+?)\s+(.+)$/ 
-      let crontabResultRaws = originContent.split(lineSpliter)
-      let crontabResults = crontabResultRaws.map(crontabResultRaw => {
-          let match = crontabResultRaw.trim().match(lineFormatRegexp)
-          if (match) {
-            return match.slice(1)
-          } else {
-            return ['','','','','',crontabResultRaw]
-          }
-      })
-      crontabResults.forEach((crontabResult,i) => {
-        this.tableData.push({
-          'id': i, 
-          'minute':crontabResult[0], 
-          'hour':crontabResult[1], 
-          'day':crontabResult[2], 
-          'month':crontabResult[3], 
-          'week':crontabResult[4], 
-          'command':crontabResult[5]
-        })
-        console.log(this.tableData)
-      })
     },
     contentFormat(originContentFull,showField,formatType) {
       let originContent = originContentFull[showField]
       console.log('originContent\n'+originContent) 
       this.resetFormatContent()
-      if (formatType === 'markedown' ){
+      if (formatType === 'markdown' ){
         this.markdownFormat(originContent)
       } else if (formatType === 'mysql-table') {
-        this.tableFormat(originContent, '\n', '\t', [], [])
+        this.tableFormat(originContent, '\n', '\t', [], [], this.tableColumnNamesGenerate)
       } else if (formatType === 'pg-table') {
-        this.tableFormat(originContent, '\n', '|', [/^-+(?:\+-+)+$/,/^\(\d+\srows\)$/], [])
+        this.tableFormat(originContent, '\n', '|', [/^-+(?:\+-+)+$/,/^\(\d+\srows\)$/], [], 1)
       } else if (formatType === 'ansible-result') {
         let tableColumnNames = ['host','status','return','ouput']
-        let lineSpliter = /(?=^.* \| .* \| rc=\d+ >>\n)/gm
+        // 分割成行的正则不能以分组的形式
+        // m multi-line 多行
+        let lineSpliter = /(?=^.* \| .* \| rc=\d+ >>\n)/m
         let lineFormatRegexp = /^(.+?)\s*\|\s*(.+?)\s*\|\s*rc=(\d+)\s*>>\n([\s\S]+)$/ 
-        this.text2tableFormat(originContent, tableColumnNames, lineSpliter, lineFormatRegexp)
+        this.text2tableFormat(originContent,  lineSpliter, lineFormatRegexp, tableColumnNames,0)
       } else if (formatType === 'crontab-result') {
         let tableColumnNames = ['minute','hour','day','month','week','command']
         let lineSpliter =  '\n'
         let lineFormatRegexp = /^([^#]+?)\s+(.+?)\s+(.+?)\s+(.+?)\s+(.+?)\s+(.+)$/
-        this.text2tableFormat(originContent, tableColumnNames, lineSpliter, lineFormatRegexp)
+        this.text2tableFormat(originContent, lineSpliter, lineFormatRegexp, tableColumnNames, 0)
+      } else if (formatType === 'common-table') {
+        console.log(new RegExp(this.lineSpliter, 'm'))
+        console.log(new RegExp(this.columnSpliter))
+        this.tableFormat(originContent, new RegExp(this.lineSpliter, 'm'), new RegExp(this.columnSpliter), [], [], this.tableColumnNamesGenerate)
+      } else if (formatType === 'text2table') {
+        console.log(new RegExp(this.lineSpliter, 'm'))
+        console.log(new RegExp(this.lineFormatRegexp))
+        this.text2tableFormat(originContent,  new RegExp(this.lineSpliter, 'm'), new RegExp(this.lineFormatRegexp), [], this.tableColumnNamesGenerate)
       } else if (formatType === 'html') {
         this.formatContent = originContent
       } else if (formatType === 'txt') {

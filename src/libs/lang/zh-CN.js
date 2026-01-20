@@ -262,6 +262,13 @@ const lang = {
     getSelectConstrict: '通过http获取可选的值',
     select_field_key_SessionVarConstrictFieldMustExist: 'select_field_key类型的session变量constrict字段必须存在',
     fieldOfTargetNotAnObject: '执行对象的字段不为对象',
+    lineSpliter: '行分割符',
+    lineSpliterComment: '如何分割成每一行，如\\n\n也可以为正则，需要按照正则表达式转义字符',
+    columnSpliter: '列分割符',
+    columnSpliterComment: '一行如何分割成列，如\\t    \\s+\n也可以为正则，需要按照正则表达式转义字符',
+    lineFormatRegexp: '行的正则表达式',
+    lineFormatRegexpComment: '已经去除行的左右空格，按照分组进行分割成列，如\n^(.*)\\|(.*)$    (\\S*)\\s+(\\S*)',
+    tableColumnNamesGenerate: '第一行当成字段名',
 }
 
 export default lang;
