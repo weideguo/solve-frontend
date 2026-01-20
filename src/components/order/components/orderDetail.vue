@@ -7,7 +7,7 @@
     border-radius: 5px;
   }
   .ivu-table-cell {
-    white-space: pre-wrap;
+    white-space: pre-line;
   }
 </style>
 <template>
