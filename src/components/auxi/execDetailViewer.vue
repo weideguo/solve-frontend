@@ -183,11 +183,7 @@ export default {
       tableColumnNames.forEach((item,i) => {
         this.tableColumns.push({'title':item, 'key':item, 'sortable': true, 'resizable': true, 'width':0})
       })
-      // 使用屏幕宽度平均
-      let columnWidth = (screen.width-1)/this.tableColumns.length
-      this.tableColumns.forEach((item,i) => {
-        item['width'] = columnWidth
-      })
+
 
       contentLines.forEach((line,i) => {
         let skip = false
@@ -200,10 +196,20 @@ export default {
         if (!skip) {
           let lineFormat = {}
           line.split(columnSpliter).forEach((lineColumn,j) => {
+            // 对于行分割后可能多出列的情况，添加多出的列名
+            if ( j >= this.tableColumns.length ) {
+              this.tableColumns.push({'title':'_'+(j+1), 'key':'_'+(j+1), 'sortable': true, 'resizable': true, 'width':0})
+            }
             lineFormat[this.tableColumns[j].key] = lineColumn
           })
           this.tableData.push(lineFormat)
         }
+      })
+
+      // 使用屏幕宽度平均
+      let columnWidth = (screen.width-1)/this.tableColumns.length
+      this.tableColumns.forEach((item,i) => {
+        item['width'] = columnWidth
       })
 
       console.log('formatContent')
