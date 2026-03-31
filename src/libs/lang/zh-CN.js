@@ -166,7 +166,7 @@ const lang = {
     inputConfigTips: '请输入配置信息',
     changeTips: '请按照提示更改输入项',
     fastJobBegin: '开始执行快速任务',
-    playbookFistLineTips: '非空以及非注释的第一行应该为跳转语句 [XXX]',
+    playbookFistLineTips: '非空以及非注释的第一行应该为主机跳转语句 [XXX]',
     playbookNotEmptyTips: '不能都为注释或者空行',
     addHost: '添加主机',
     connect: '连接',

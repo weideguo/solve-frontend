@@ -843,9 +843,6 @@
         this.realQuickShow(targetId)
       },
     },
-    destroyed() {
-      // 销毁组件时调用
-    },
     mounted () {
       this.getCurrentPage();
     }
