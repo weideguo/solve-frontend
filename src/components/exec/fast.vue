@@ -82,6 +82,36 @@
 
   export default {
     data () {
+      const playbookCheck =  (rule, value, callback) => {
+        let v=value.split('\n')
+        for(var i=0;i<v.length;i++){
+          // 跳过以"#"开头的注释行
+          let reg = new RegExp('^( )*?#.*( )*$')
+          if ( v[i].search(reg) >= 0 ) {
+            continue
+          } 
+          // 跳过所有以空行
+          let reg0 = new RegExp('^( )*$')
+          if ( v[i].search(reg0) >= 0 ) {
+            continue
+          } 
+          // console.log("X"+v[i]+"X")
+          // 非空以及非注释的第一行应该如下
+          // [10.0.0.1]
+          let reg2 = new RegExp('^( )*(\\u005B).*?(\\u005D)( )*$')
+          if ( v[i].search(reg2) >= 0 ) {
+            callback()
+          } else {
+            callback(new Error(this.$t('playbookFistLineTips')))
+          }
+          // 只对非空以及非注释的第一行判断
+          break
+        }
+        callback(new Error(this.$t('playbookNotEmptyTips')))
+      };
+      const validatePass = (rule, value, callback) => {
+        callback(new Error('Please enter your password'));
+      };
       return {
         debugRun: false,
         formItem: {
@@ -108,7 +138,8 @@
               trigger: 'blur'
             },
             {
-              validator: this.playbookCheckGenerator(),
+              // validator: this.playbookCheckGenerator(),
+              validator: playbookCheck,
               trigger: 'blur'
             }
           ],
@@ -161,35 +192,6 @@
           .catch(error => {
             util.notice(this, error, 'error')
           })
-      },
-      playbookCheckGenerator () {
-        return function(rule, value, callback) {
-          let v=value.split('\n')
-          for(var i=0;i<v.length;i++){
-            // 跳过以"#"开头的注释行
-            let reg = new RegExp('^( )*?#.*( )*$')
-            if ( v[i].search(reg) >= 0 ) {
-              continue
-            } 
-            // 跳过所有以空行
-            let reg0 = new RegExp('^( )*$')
-            if ( v[i].search(reg0) >= 0 ) {
-              continue
-            } 
-            // console.log("X"+v[i]+"X")
-            // 非空以及非注释的第一行应该如下
-            // [10.0.0.1]
-            let reg2 = new RegExp('^( )*(\\u005B).*?(\\u005D)( )*$')
-            if ( v[i].search(reg2) >= 0 ) {
-              callback()
-            } else {
-              callback(new Error(this.$t('playbookFistLineTips')))
-            }
-            // 只对非空以及非注释的第一行判断
-            break
-          }
-          callback(new Error(this.$t('playbookNotEmptyTips')))
-        }
       },
       save () {
         // let filename = 'fast_'+util.formatDate((new Date().getTime()) / 1000).replaceAll('-','').replaceAll(':','').replaceAll(' ','_')+'.txt'
