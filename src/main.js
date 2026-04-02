@@ -1,106 +1,72 @@
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
-// import iView from 'iview'
-import iView from 'view-design'
-import Vuex from 'vuex'
-import VueRouter from 'vue-router'
-// import axios from 'axios'
-// 原生样式
-import 'view-design/dist/styles/iview.css';
-// 个性化样式，使用则存在报错？
-//import '../theme.less';
-import particles from 'particles.js/particles'
-// multi language
-import VueI18n from 'vue-i18n';
-import en from 'view-design/dist/locale/en-US';
-import zh from 'view-design/dist/locale/zh-CN';
-import { locale } from 'view-design';
-// 自定义lang
-import myEN from './libs/lang/en-US';
-import myZH  from './libs/lang/zh-CN';
+import { createApp } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
+import { createStore } from 'vuex'
+import { createI18n } from 'vue-i18n'
 
+// UI 库
+import iView from 'view-ui-plus'
+import 'view-ui-plus/dist/styles/viewuiplus.css'
+import '../theme.less'
+
+// 语言包
+import en from 'view-ui-plus/dist/locale/en-US'
+import zh from 'view-ui-plus/dist/locale/zh-CN'
+import { locale as iviewLocale } from 'view-ui-plus'
+
+import myEN from './libs/lang/en-US'
+import myZH from './libs/lang/zh-CN'
+
+// 项目文件
 import { MainRoute } from './router'
 import App from './App.vue'
-import store from './store'
+import store from './store' 
 import config from './config/config'
 
 
-const originalPush = VueRouter.prototype.push;
-VueRouter.prototype.push = function push(location) {
+
+// ----------------------
+// 1. 路由配置 (Vue Router 4)
+// ----------------------
+const router = createRouter({
+  history: createWebHistory(), // 对应 mode: 'history'
+  routes: MainRoute
+})
+
+// 重写 push 方法以处理重复导航错误
+const originalPush = router.push
+router.push = function push(location) {
   return originalPush.call(this, location).catch(err => {
-    if (!['NavigationDuplicated','NavigationCancelled','Error'].includes(err.name)) {
-      console.log(err.name);
-      throw err;
+    if (!['NavigationDuplicated', 'NavigationCancelled', 'Error'].includes(err.name)) {
+      console.log(err.name)
+      throw err
     }
     // 导航错误时不抛出错误
-  });
-};
-
-Vue.config.productionTip = false
-Vue.use(particles)
-Vue.use(Vuex)
-Vue.use(VueI18n)
-Vue.use(iView)
-Vue.use(VueRouter)
-// Vue.prototype.$http = axios
-/* eslint-disable no-new */
-const RouterConfig = {
-  // 去除前端路由中的#
-  mode: 'history',
-  routes: MainRoute
+  })
 }
 
-// Vue.locale = () => {};
-const messages = {
-    'en-US': Object.assign(myEN, en),
-    'zh-CN': Object.assign(myZH, zh)
-};
-// 其他页面通过此获取语言列表
-let languageList= [
-          {'name':'zh-CN','value':'中文'},
-          {'name':'en-US','value':'english'}
-        ]
-sessionStorage.setItem('languageList', JSON.stringify(languageList))
-
-// 在其他页面通过设置localStorage并重新加载，实现语言设置
-let _locale = localStorage.getItem('language')
-if (_locale === null) {
-  _locale='zh-CN'
-}
-const i18n = new VueI18n({
-    locale: _locale,  // set locale
-    messages  // set locale messages
-});
-// locale(en)
-locale(messages[_locale])
-
-const router = new VueRouter(RouterConfig)
-
+// 路由守卫
 router.beforeEach((to, from, next) => {
-  iView.LoadingBar.start()                                                          // 页面最上层的进度条
+  iView.LoadingBar.start()
+  
   let title = to.meta.title
   if (title) {
-    title = config.platformname + ' - ' + title
+    title = `${config.platformname} - ${title}`
   } else {
     title = config.platformname
   }
   window.document.title = title
-  // to.name in {'about':'','test':''}
-  if (to.name === 'about' || to.name === 'test') {                                  // 不需要登陆即可访问的页面
+
+
+  if (['about', 'login', 'test'].includes(to.name)) {
     next()
-  } else if (sessionStorage.getItem('locking') === '1' && to.name !== 'locking') {  // 从锁定到其他 锁定到锁定不能适用 why？
-    iView.LoadingBar.finish()
-    next(false)                                                                     // 终止跳转 重置到 from 路由对应的地址
-    // router.replace({name: 'login'})                                              // 跟push类似 但不会向 history 添加新记录 从而不能点浏览器的回退按钮回到之前的页面
-  } else if (to.name === 'locking' && !sessionStorage.getItem('user')) {            // 存在账号才能锁定 防止没有登录就直接锁定
-    iView.LoadingBar.finish()
-    next(false)
+  } else if (sessionStorage.getItem('locking') === '1') {
+    next({ name: 'locking' })
+  } else if (to.name === 'locking' && !sessionStorage.getItem('user')) {
+    next({ name: 'login' })
   } else if (to.name === 'locking' && sessionStorage.getItem('user')) {
     next()
-  } else if (!sessionStorage.getItem('hasLogin') && to.name !== 'login') {          // 未登录且前往的页面不是登录页 未登录到未登录不能适用 why？
-    // iView.LoadingBar.finish()
-    next({name: 'login'})
+  } else if (!sessionStorage.getItem('hasLogin')) {
+    next({ name: 'login' })
   } else {
     next()
   }
@@ -111,11 +77,53 @@ router.afterEach(() => {
   window.scrollTo(0, 0)
 })
 
-new Vue({
-  el: '#app',
-  template: '<App/>',
-  components: {App},
-  store: store,
-  router: router,
-  i18n 
+// ----------------------
+// 2. 国际化配置 (Vue I18n 9+)
+// ----------------------
+const messages = {
+  'en-US': Object.assign(myEN, en),
+  'zh-CN': Object.assign(myZH, zh)
+}
+
+let _locale = localStorage.getItem('language')
+if (_locale === null) {
+  _locale = 'zh-CN'
+}
+
+const i18n = createI18n({
+  locale: _locale,
+  legacy: false, // 使用 Composition API 模式，如果是 Options API 项目可设为 true
+  globalInjection: true, // 全局注入 $t
+  messages
 })
+
+// 设置 View UI Plus 的语言
+iviewLocale(messages[_locale])
+
+// ----------------------
+// 3. 全局变量与 SessionStorage
+// ----------------------
+const languageList = [
+  { 'name': 'zh-CN', 'value': '中文' },
+  { 'name': 'en-US', 'value': 'english' }
+]
+sessionStorage.setItem('languageList', JSON.stringify(languageList))
+
+// ----------------------
+// 4. 初始化 Vue 应用
+// ----------------------
+const app = createApp(App)
+
+// 使用插件
+app.use(iView)
+app.use(router)
+app.use(store)
+app.use(i18n)
+
+// 挂载全局属性
+// 如果需要使用 axios，请取消下方注释
+// import axios from 'axios'
+// app.config.globalProperties.$http = axios
+
+// 挂载应用
+app.mount('#app')

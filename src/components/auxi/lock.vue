@@ -60,10 +60,6 @@
         }
       },
       handleUnlock () {
-        // axios.post(this.baseurl + '/login/', {
-        //   'username': sessionStorage.getItem('user'),
-        //   'password': this.password
-        //   })
         let baseurl=''
         login.login(baseurl, {'username': sessionStorage.getItem('user'),'password': this.password})
           .then(res => {
@@ -85,7 +81,6 @@
     mounted () {
       this.$store.commit('storeSet', ['jwt', ''])
       this.$store.commit('sessionSet', ['locking', 1])
-      window.particlesJS.load('band', '/particlesjs-config.json')
     }
   }
 </script>

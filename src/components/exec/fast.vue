@@ -12,25 +12,21 @@
             </Col>    
             <Col span="14">    
               <FormItem :label="$t('executeType')">
-                <i-switch v-model="formItem.parallel" size="large">
-                  <span slot="open">{{ $t('parallel') }}</span>
-                  <span slot="close">{{ $t('serial') }}</span>
-                </i-switch>
+                <Switch v-model="formItem.parallel" size="large">
+                  <template #open>
+                    <span>{{ $t('parallel') }}</span>
+                  </template>
+                  <template #close>
+                    <span>{{ $t('serial') }}</span>
+                  </template>
+                </Switch>
               </FormItem>
             </Col>
             <Col span="7">
               <FormItem>
                 <Input v-model="formItem.comment" :placeholder="$t('inputCommentTips')" clearable />
               </FormItem>
-            </Col>   
-            <!--Col span="1">    
-              <FormItem>
-                <i-switch v-model="debugRun" size="large">
-                  <span slot="open">debug</span>
-                  <span slot="close"></span>
-                </i-switch>
-              </FormItem>
-            </Col-->
+            </Col>
           </Row>
         </FormItem>
         <FormItem :label="$t('config')" prop="exeinfo">
@@ -59,15 +55,19 @@
       </p>
       <div style="margin-top: 20px; margin-left: 20px">
         <span style="color: #515a6e">{{ $t('debugRun') }} </span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-        <i-switch v-model="debugRun" size="large">
-          <span slot="open">debug</span>
-          <span slot="close"></span>
-        </i-switch>
+        <Switch v-model="debugRun" size="large">
+          <template #open>
+            <span>debug</span>
+          </template>
+          <template #close>
+            <span></span>
+          </template>
+        </Switch>
       </div>
-      <div slot="footer">
+      <template #footer>
         <Button type="text" @click="commitConfirm=false">{{ $t('cancel') }}</Button>
         <Button type="primary" @click="realCommit" >{{ $t('commit') }}</Button>
-      </div>
+      </template>
     </Modal>
 
   </Card>
@@ -138,7 +138,6 @@
               trigger: 'blur'
             },
             {
-              // validator: this.playbookCheckGenerator(),
               validator: playbookCheck,
               trigger: 'blur'
             }

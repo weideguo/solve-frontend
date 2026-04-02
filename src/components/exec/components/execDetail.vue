@@ -1,7 +1,7 @@
 <template>
   <div>
     <Card style="width: 100%">
-      <div slot="title">
+      <template #title>
         <p>{{title}}</p>
         <br><br>
         <Tooltip :content="$t('showPlaybook')" placement="bottom-start">
@@ -10,12 +10,12 @@
         <Tooltip :content="$t('save')" placement="bottom" style="margin-left: 20px">
           <Button type="primary" shape="circle" icon="md-cloud-upload" ghost @click.native="commit()"></Button>
         </Tooltip>
-      </div>
-      <Form :label-width="100">
-        <FormItem label="target_type" required>
-            <Input v-model="target_type" disabled></Input> 
+      </template>
+      <Form :label-width="100" ref="formExecutionSetting" :rules="ruleExecutionSetting">
+        <FormItem label="target_type" prop="target_type" >
+          <Input v-model="target_type" disabled></Input> 
         </FormItem>
-        <FormItem v-for="(item, i) in formItem" :key="i" :label="item.key" required>
+        <FormItem v-for="(item, i) in formItem" :key="i" :label="item.key" :prop="item.key">
           <Input v-if="item.key === 'target'" v-model="item.value" @click.native="clusterAdd()"></Input>
           <Select v-else-if="item.key === 'tmpl'" v-model="item.value" filterable>
             <Option v-for="i in tmplList" :value="i" :key="i">{{ i }}</Option>
@@ -29,10 +29,7 @@
     </Card>
 
     <Modal v-model="openswitchAdd" @on-ok="commitinfoAdd" :ok-text="$t('confirm')" width="800"  :title="$t('executeTarget')">
-      <Card style="width: 100%">
-        <Tree :data="treeData" show-checkbox ref="mytree"></Tree>
-        
-      </Card>
+      <Tree :data="treeData" show-checkbox ref="mytree"></Tree>
     </Modal>
     
   </div>
@@ -59,7 +56,12 @@
         tmplList: [],
         title: '',
         playbook: '',
-        name_o: ''
+        name_o: '',
+        ruleExecutionSetting: {
+          name: [
+            { required: true }
+          ],
+        },
       }
     },
     computed: {
@@ -113,7 +115,6 @@
         window.open(path, "_blank", "scrollbars=yes,resizable=1,modal=false,alwaysRaised=yes")
       },
       commit () {
-        // this.info = util.arry2dict(this.formItem, 'key', 'value')
         if (util.existSpace(this.info['name'])) {
           this.$Message.error('name'+this.$t('shouldNoSpaceLR'))
         } else if (this.info['name'] === 'exec:') {
@@ -154,10 +155,11 @@
       },
       getCurrentPage () {
         let tag =''
+        console.log(this.$route.query['row'])
         if (this.$route.query['row']) {
-          this.fromData = this.$route.query['row']
+          this.fromData = JSON.parse(this.$route.query['row'])
           tag = this.$route.query['tag']
-          sessionStorage.setItem('exe_data', JSON.stringify(this.$route.query['row']))
+          sessionStorage.setItem('exe_data', this.$route.query['row'])
           sessionStorage.setItem('exe_data_is_add',this.$route.query['tag'])
         } else {
           this.fromData = JSON.parse(sessionStorage.getItem('exe_data'))
@@ -176,6 +178,7 @@
         } finally {
           this.formItem = util.dict2arry(this.fromData, 'key', 'value', this.formItemSort)
         }
+        console.log(this.formItem )
         console.log(tag)
         if (tag === 'add') {
           this.name_o = ''

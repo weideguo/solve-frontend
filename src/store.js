@@ -1,11 +1,8 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-//
+import { createStore } from 'vuex'
 import { appRouter, orderDetail, execDetail, home } from './router'
-// import util from './libs/util'
 
-Vue.use(Vuex)
-const store = new Vuex.Store({
+
+const store = new createStore({
   state: {
     menuList: appRouter,
     newRouter: [...appRouter, orderDetail, execDetail],

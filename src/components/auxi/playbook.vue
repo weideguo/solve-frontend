@@ -11,7 +11,7 @@
       </div>
     </div>
     <div style="margin-left: 5%;margin-top: 1%;">
-      <i-switch v-model="isWrap" @on-change="reHighlight()" />
+      <Switch v-model="isWrap" @on-change="reHighlight()"></Switch>
     </div>
     <div style="position: relative;margin-top: 1%;font-size:20px">
       <div>
@@ -30,8 +30,8 @@
 
   // 加载后立即渲染 数据之后才获取 因此导出出错 不用该方法引入
   import Prism from 'prismjs'
-  import PrismBash from 'prismjs/components/prism-bash.js'
-  import PrismLineNumber from 'prismjs/plugins/line-numbers/prism-line-numbers.js'
+  import 'prismjs/components/prism-bash';
+  import 'prismjs/plugins/line-numbers/prism-line-numbers.js'
 
   export default {
     name: 'playbook',

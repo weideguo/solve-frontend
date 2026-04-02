@@ -2,35 +2,52 @@
   <div>
     <Row>
       <Card>
-        <div slot="title" style="height: 32px">
+        <template #title style="height: 32px">
           <Button type="info" icon="md-add" @click.native="targetinfoAdd()">{{ $t('addHost') }}</Button>
-          <!--Vue 限制的两个标签 Switch 和 Circle-->
-          <i-switch size="large" @on-change="onlineFilter" style="margin-left: 50px">
-            <span slot="open">{{ $t('connect') }}</span>
-            <span slot="close">{{ $t('all') }}</span>
-          </i-switch>
+          <Switch size="large" @on-change="onlineFilter" style="margin-left: 50px">
+            <template #open>
+              <span>{{ $t('connect') }}</span>
+            </template>
+            <template #close>
+              <span>{{ $t('all') }}</span>
+            </template>
+          </Switch>
           <div style="float:right;margin-right: 0px">
             <Input v-model="searchWord" @on-search="search()" search enter-button :placeholder="$t('searchTips')" style="width: 350px"/>
           </div>
-        </div>
+        </template>
         
         <Row>
           <Col span="24">
-            <Table border :columns="columns" :data="tableData" @on-row-dblclick="targetinfoDetail" stripe size="small"></Table>
+            <Table border :columns="columns" :data="tableData" @on-row-dblclick="targetinfoDetail" stripe size="small">
+              <template #operation="{ row, index }">                
+                <Button v-if="row['is_conn'] === 0" type="warning" size="small" @click="createConn(row)">{{ $t('createConnect') }}</Button>
+                <Button v-else-if="row['is_conn'] === 1" type="success" size="small" @click="closeConn(row)">{{ $t('closeConnect') }}</Button>
+                <Button v-else-if="row['is_conn'] === 2" type="success" loading size="small" >{{ $t('closeConnecting') }}</Button>
+                <Button v-else-if="row['is_conn'] === 3" type="warning" loading size="small" >{{ $t('createConnecting') }}</Button>
+              </template>
+              <template #detail="{ row, index }">
+                <Button type="success" size="small" @click="targetinfoDetail(row)">{{ $t('detail') }}</Button>
+              </template>
+              <template #delete="{ row, index }">
+                <Button type="error" size="small" @click="delTarget(row.name)">{{ $t('delete') }}</Button>
+              </template>
+            </Table>
           </Col>
         </Row>
         <br>
-        <Page :total="pageNumber" @on-change="getCurrentPage" :page-size="this.pageSize" :current="this.currentPage" show-elevator show-total></Page>
+        <Page :total="pageNumber" @on-change="getCurrentPage" :page-size="this.pageSize" :model-value="this.currentPage" show-elevator show-total></Page>
       </Card>
     </Row>
 
-    <Modal v-model="openswitch" width="50%">          
-      <p slot="header">
-        <span>{{modelTitle}}</span>
-      </p>
+    <Modal v-model="openswitch" footer-hide width="50%">
+      <template #header>          
+        <p>
+          <span>{{modelTitle}}</span>
+        </p>
+      </template>
       
       <safe-form ref="myform" :labelwidth="100" :formdata="formItem" :formvalidate="formItemValidate" @primaryClick="formCommit" :primaryButtonName="isAdd? $t('add') : $t('update')" @secondClick="optionOperate" :secondCheck="!isAdd" :secondButtonName="isAdd? $t('cancel') : $t('copy')"></safe-form>
-      <div slot="footer"></div>
     </Modal>
     
   </div>
@@ -38,7 +55,6 @@
 
 <script>
   //
-  // import axios from 'axios'
   import target from '@/api/target'
   import host from '@/api/host'
   import config from '@/api/config'
@@ -132,116 +148,21 @@
           },
           {
             title: this.$t('operation'),
-            key: 'action',
+            slot: 'operation',
             align: 'center',
             width: 200,
-            render: (h, params) => {
-              let x;
-              if (params.row['is_conn'] === 0) {
-                x = h('div', [
-                  h('Button', {
-                    props: {
-                      size: 'small',
-                      type: 'warning'
-                    },
-                    on: {
-                      click: () => {
-                        this.createConn(params);
-                      }
-                    }
-                  }, this.$t('createConnect'))
-                ])
-              } else if (params.row['is_conn'] === 1) {
-                x = h('div', [
-                  h('Button', {
-                    props: {
-                      size: 'small',
-                      type: 'success'
-                    },
-                    on: {
-                      click: () => {
-                        this.closeConn(params);
-                      }
-                    }
-                  }, this.$t('closeConnect'))
-                ])
-              } else if (params.row['is_conn'] === 2) {
-                x = h('div', [
-                  h('Button', {
-                    props: {
-                      size: 'small',
-                      type: 'success',
-                      loading: true
-                    },
-                    on: {
-                      click: () => {
-                        this.closeConn(params);
-                      }
-                    }
-                  }, this.$t('closeConnecting'))
-                ])
-              } else if (params.row['is_conn'] === 3) {
-                x = h('div', [
-                  h('Button', {
-                    props: {
-                      size: 'small',
-                      type: 'warning',
-                      loading: true
-                    },
-                    on: {
-                      click: () => {
-                        this.createConn(params);
-                      }
-                    }
-                  }, this.$t('createConnecting'))
-                ])
-              }
-              return x
-            }
           },
           {
             title: this.$t('detail'),
-            key: 'action',
+            slot: 'detail',
             align: 'center',
             width: 200,
-            render: (h, params) => {
-              let x;
-              x = h('div', [
-                h('Button', {
-                  props: {
-                    size: 'small',
-                    type: 'success'
-                  },
-                  on: {
-                    click: () => {
-                      this.targetinfoDetail(params.row)
-                    }
-                  }
-                }, this.$t('detail'))
-                ])
-              return x
-            }
           },
           {
             title: this.$t('delete'),
-            key: 'action',
+            slot: 'delete',
             align: 'center',
             width: 100,
-            render: (h, params) => {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    size: 'small',
-                    type: 'error'
-                  },
-                  on: {
-                    click: () => {
-                      this.delTarget(params.row.name);
-                    }
-                  }
-                }, this.$t('delete'))
-              ])
-            }
           }
         ],
         tableData: [],
@@ -416,18 +337,17 @@
             util.notice(this, error, 'error')
           });
       },
-      closeConn (params) {
-        if (params.row['ip']) {
-          params.row['is_conn'] = 2
-          // axios.get(`${this.baseurl}/host/kill?ip=${params.row['ip']}`)
-          host.kill(params.row['ip'])
+      closeConn (row) {
+        if (row['ip']) {
+          row['is_conn'] = 2
+          host.kill(row['ip'])
             .then(res => {
               if (res.data['status'] === 1) {
-                params.row['is_conn'] = 0
-                util.notice(this, `${params.row['ip']} ${res.data['msg']}`, 'success')
+                row['is_conn'] = 0
+                util.notice(this, `${row['ip']} ${res.data['msg']}`, 'success')
               } else {
-                params.row['is_conn'] = 1
-                util.notice(this, `${params.row['ip']} ${res.data['msg']}`, 'error')
+                row['is_conn'] = 1
+                util.notice(this, `${row['ip']} ${res.data['msg']}`, 'error')
               }
             })
             .catch(error => {
@@ -437,18 +357,17 @@
           this.$Message.info(this.$t('notCloseConnectTips'))
         }    
       },
-      createConn (params) {
-        if (params.row['ip']) {
-          params.row['is_conn'] = 3
-          // axios.get(`${this.baseurl}/host/conn?ip=${params.row['ip']}`)
-          host.conn(params.row['ip'])
+      createConn (row) {
+        if (row['ip']) {
+          row['is_conn'] = 3
+          host.conn(row['ip'])
             .then(res => {
               if (res.data['status'] === 1) {
-                params.row['is_conn'] = 1
-                util.notice(this, `${params.row['ip']} ${res.data['msg']}`, 'success')
+                row['is_conn'] = 1
+                util.notice(this, `${row['ip']} ${res.data['msg']}`, 'success')
               } else {
-                params.row.is_conn = 0
-                util.notice(this, `${params.row['ip']} ${res.data['msg']}`, 'error')
+                row.is_conn = 0
+                util.notice(this, `${row['ip']} ${res.data['msg']}`, 'error')
               }
             })
             .catch(error => {

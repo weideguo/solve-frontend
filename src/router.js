@@ -3,15 +3,13 @@ import Main from './components/main/main.vue'
 // 以下的title不是原始值，只作为变量在实际渲染时再翻译
 
 export const page404 = {
-  path: '/*',
+  path: '/:pathMatch(.*)*',
   name: 'error_404',
   title: '404',
   meta: {
     title: '404-pageNotFound'
   },
-  component: resolve => {
-    require(['./components/auxi/error/404.vue'], resolve)
-  }
+  component: () => import('./components/auxi/error/404.vue')
 }
 
 export const page401 = {
@@ -21,9 +19,7 @@ export const page401 = {
   meta: {
     title: '401-Unauthorized '
   },
-  component: resolve => {
-    require(['./components/auxi/error/401.vue'], resolve)
-  }
+  component: () => import('./components/auxi/error/401.vue')
 }
 
 export const page500 = {
@@ -33,9 +29,7 @@ export const page500 = {
   meta: {
     title: '500-serverError'
   },
-  component: resolve => {
-    require(['./components/auxi/error/500.vue'], resolve)
-  }
+  component: () => import('./components/auxi/error/500.vue')
 }
 
 export const about = {
@@ -45,9 +39,7 @@ export const about = {
   meta: {
     title: 'about'
   },
-  component: resolve => {
-    require(['./components/auxi/about.vue'], resolve)
-  }
+  component: () => import('./components/auxi/about.vue')
 }
 
 export const test = {
@@ -57,9 +49,7 @@ export const test = {
   meta: {
     title: 'test.aaa'
   },
-  component: resolve => {
-    require(['./components/auxi/test.vue'], resolve)
-  }
+  component: () => import('./components/auxi/test.vue')
 }
 
 export const playbook = {
@@ -69,9 +59,7 @@ export const playbook = {
   meta: {
     title: 'playbook'
   },
-  component: resolve => {
-    require(['./components/auxi/playbook.vue'], resolve)
-  }
+  component: () => import('./components/auxi/playbook.vue')
 }
 
 export const execDetailViewer = {
@@ -81,9 +69,7 @@ export const execDetailViewer = {
   meta: {
     title: 'execDetailViewer'
   },
-  component: resolve => {
-    require(['./components/auxi/execDetailViewer.vue'], resolve)
-  }
+  component: () => import('./components/auxi/execDetailViewer.vue')
 }
 
 export const loginRouter = {
@@ -93,18 +79,14 @@ export const loginRouter = {
   meta: {
     title: 'login'
   },
-  component: resolve => {
-    require(['./components/main/login.vue'], resolve)
-  }
+  component: () => import('./components/main/login.vue')
 }
 
 export const locking = {
   path: '/locking',
   name: 'locking',
   title: 'locking',
-  component: resolve => {
-    require(['./components/auxi/lock.vue'], resolve)
-  }
+  component: () => import('./components/auxi/lock.vue')
 }
 
 export const orderInfo = {
@@ -114,9 +96,7 @@ export const orderInfo = {
   meta: {
     title: 'orderInfo'
   },
-  component: resolve => {
-    require(['./components/order/components/orderDetail.vue'], resolve)
-  }
+  component: () => import('./components/order/components/orderDetail.vue')
 }
 
 export const appRouter = [
@@ -136,9 +116,7 @@ export const appRouter = [
         meta: {
           title: 'orderList'
         },
-        component: resolve => {
-          require(['./components/order/order.vue'], resolve)
-        }
+        component: () => import('./components/order/order.vue')
       }
     ]
   },
@@ -157,9 +135,7 @@ export const appRouter = [
           title: 'hostManage'
         },
         icon: 'md-laptop',
-        component: resolve => {
-          require(['./components/host/host.vue'], resolve)
-        }
+        component: () => import('./components/host/host.vue')
       }
     ]
   },
@@ -179,9 +155,7 @@ export const appRouter = [
           title: 'const'
         },
         icon: 'md-compass',
-        component: resolve => {
-          require(['./components/target/target.vue'], resolve)
-        }
+        component: () => import('./components/target/target.vue')
       },
       {
         path: 'host',
@@ -191,9 +165,7 @@ export const appRouter = [
           title: 'host'
         },
         icon: 'md-desktop',
-        component: resolve => {
-          require(['./components/target/target.vue'], resolve)
-        }
+        component: () => import('./components/target/target.vue')
       },
       {
         path: 'server',
@@ -203,9 +175,7 @@ export const appRouter = [
           title: 'server'
         },
         icon: 'md-code',
-        component: resolve => {
-          require(['./components/target/target.vue'], resolve)
-        }
+        component: () => import('./components/target/target.vue')
       },
       {
         path: 'cluster',
@@ -215,9 +185,7 @@ export const appRouter = [
           title: 'cluster'
         },
         icon: 'md-grid',
-        component: resolve => {
-          require(['./components/target/target.vue'], resolve)
-        }
+        component: () => import('./components/target/target.vue')
       },
       {
         path: 'container',
@@ -227,9 +195,7 @@ export const appRouter = [
           title: 'container'
         },
         icon: 'md-apps',
-        component: resolve => {
-          require(['./components/target/target.vue'], resolve)
-        }
+        component: () => import('./components/target/target.vue')
       }
     ]
   },
@@ -249,9 +215,7 @@ export const appRouter = [
           title: 'execute'
         },
         icon: 'md-flower',
-        component: resolve => {
-          require(['./components/exec/exec.vue'], resolve)
-        }
+        component: () => import('./components/exec/exec.vue')
       },
       {
         path: 'tmpl',
@@ -261,9 +225,7 @@ export const appRouter = [
           title: 'jobTmplate'
         },
         icon: 'md-albums',
-        component: resolve => {
-          require(['./components/exec/tmplexec.vue'], resolve)
-        }
+        component: () => import('./components/exec/tmplexec.vue')
       },
       {
         path: 'fast',
@@ -273,9 +235,7 @@ export const appRouter = [
           title: 'fastJob'
         },
         icon: 'md-plane',
-        component: resolve => {
-          require(['./components/exec/fast.vue'], resolve)
-        }
+        component: () => import('./components/exec/fast.vue')
       }
     ]
   },
@@ -294,9 +254,7 @@ export const appRouter = [
           title: 'fileManage'
         },
         icon: 'md-briefcase',
-        component: resolve => {
-          require(['./components/file/file.vue'], resolve)
-        }
+        component: () => import('./components/file/file.vue')
       }
     ]
   },
@@ -316,9 +274,7 @@ export const appRouter = [
           title: 'userManage'
         },
         icon: 'md-people',
-        component: resolve => {
-          require(['./components/user/userInfo.vue'], resolve)
-        }
+        component: () => import('./components/user/userInfo.vue')
       }
     ]
   }
@@ -338,9 +294,7 @@ export const home = {
         title: 'mainPage'
       },
       name: 'mainPage',
-      component: resolve => {
-        require(['./components/home/home.vue'], resolve)
-      }
+      component: () => import('./components/home/home.vue')
     }
   ]
 }
@@ -357,9 +311,7 @@ export const orderDetail = {
       meta: {
         title: 'orderDetail'
       },
-      component: resolve => {
-        require(['./components/order/components/orderDetail.vue'], resolve)
-      }
+      component: () => import('./components/order/components/orderDetail.vue')
     }
   ]
 }
@@ -376,9 +328,7 @@ export const execDetail = {
       meta: {
         title: 'execDetail'
       },
-      component: resolve => {
-        require(['./components/exec/components/execDetail.vue'], resolve)
-      }
+      component: () => import('./components/exec/components/execDetail.vue')
     }
   ]
 }

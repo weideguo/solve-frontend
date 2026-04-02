@@ -1,20 +1,24 @@
 <template>
   <div>
     <Card>
-      <Table border stripe :columns="columns" :data="tableData" size="small" @on-row-dblclick="quickShow"></Table>
+      <Table border stripe :columns="columns" :data="tableData" size="small" @on-row-dblclick="quickShow">
+        <template #action="{ row, index }">
+          <Button type="info" size="small" style="margin-right: 20px" @click="execJob(row)">{{ $t('run') }}</Button>
+          <Button type="success" size="small" style="margin-right: 20px" @click="targetinfoDetail(row)">{{ $t('setting') }}</Button>
+          <Button type="error" size="small" @click="delTarget(row)">{{ $t('delete') }}</Button>
+        </template>
+      </Table>
       <br>
-      <Page :total="pageNumber" @on-change="getCurrentPage" :current="currentPage" :page-size="pagesize"  @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
+      <Page :total="pageNumber" @on-change="getCurrentPage" :model-value="currentPage" :page-size="pagesize"  @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
     </Card>
     
     
     <Modal v-model="openswitchAdd"  width="800"  :title="$t('executeSubTarget')">
-      <Card style="width: 100%">
-        <Tree :data="subTargetTreeData" ref="subTargetTree" show-checkbox></Tree>
-      </Card>
+      <Tree :data="subTargetTreeData" ref="subTargetTree" show-checkbox></Tree>
       
-      <div slot="footer">
+      <template #footer>
         <Button type="primary" @click="subTargetSelect"> {{ $t('confirm') }} </Button>
-      </div>
+      </template>
     </Modal>
 
 
@@ -29,7 +33,7 @@
 
         <Form v-if="showTargets.length === 0" :label-width="100">
 
-          <FormItem v-for="(item, i) in targetConstict" :key="i" :label="item.field" required>
+          <FormItem v-for="(item, i) in targetConstict" :key="i" :label="item.field">
             
             <Input v-model="item.value" :placeholder="item.comment" @click.native="subTargetAdd(item)" clearable></Input>
           </FormItem>
@@ -64,20 +68,22 @@
           <Step :title="$t('confirmRun')"></Step>
       </Steps>
       
-      <div slot="footer">
+      <template #footer>
         <Button v-if="current != 0" @click="previous">{{ $t('previousStep') }}</Button>
         <Button v-if="current != 2" type="primary" @click="next">{{ $t('nextStep') }}</Button>
         <Button v-if="current === 2" type="primary" @click="commit">{{ $t('run') }}</Button>
         <Button v-if="current === 2" type="info" @click="debugRun">{{ $t('debugRun') }}</Button>
         <!--Button v-if="current === 2 && debugAble" type="info" @click="debugRun">{{ $t('debugRun') }}</Button-->
-      </div>
+      </template>
     </Modal>
 
     <!--双击行时的弹框显示-->
-    <Modal v-model="openshow" width="50%">
-      <p slot="header">
-        {{showTitle}}
-      </p>
+    <Modal v-model="openshow" footer-hide width="50%">
+      <template #header>
+        <p>
+          {{showTitle}}
+        </p>
+      </template>
       <Tabs value="target">
         <TabPane :label="$t('executeTarget')" name="target">
           <div>
@@ -92,7 +98,6 @@
           <Input v-model="playbookContent" type="textarea" :autosize="{minRows: 10,maxRows: 20}" placeholder="playbook is loading" readonly />
         </TabPane>
       </Tabs>
-      <div slot="footer"></div>
     </Modal>
 
   </div>
@@ -100,6 +105,7 @@
 
 <script>
   //
+  import { toRaw } from 'vue'
   // import axios from 'axios'
   import exec from '@/api/exec'
   import util from '@/libs/util'
@@ -174,68 +180,12 @@
             minWidth: 300
           },
           {
-            title: this.$t('run'),
-            key: 'action',
-            align: 'center',
-            width: 150,
-            render: (h, params) => {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    size: 'small',
-                    type: 'info'
-                  },
-                  on: {
-                    click: () => {
-                      this.execJob(params);
-                    }
-                  }
-                }, this.$t('run'))
-              ])
-            }
-          },
-          {
             title: this.$t('operation'),
-            key: 'action',
+            slot: 'action',
             align: 'center',
-            width: 150,
-            render: (h, params) => {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    size: 'small',
-                    type: 'success'
-                  },
-                  on: {
-                    click: () => {
-                      this.targetinfoDetail(params)
-                    }
-                  }
-                }, this.$t('setting'))
-              ])
-            }
-          },
-          {
-            title: this.$t('delete'),
-            key: 'action',
-            align: 'center',
-            width: 100,
-            render: (h, params) => {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    size: 'small',
-                    type: 'error'
-                  },
-                  on: {
-                    click: () => {
-                      this.delTarget(params.row.name);
-                    }
-                  }
-                }, this.$t('delete'))
-              ])
-            }
+            width: 450,
           }
+
         ],
         tableData: [],
         pagesize: 16,
@@ -420,16 +370,15 @@
             this.$Message.error(this.$t('getTemplateFailedTips'))
           })
       },
-      execJob (params) {
+      execJob (row) {
         this.showTargets = []
-        if (params.row['target'] != '') {
-          this.showTargets = params.row['target'].split(',')
+        if (row['target'] != '') {
+          this.showTargets = row['target'].split(',')
         }
         
-        this.openinfo = params.row
-        this.openinfo_s = params.row['name_s']
-        // axios.get(`${this.baseurl}/session/extend?filter=${params.row['name']}`)
-        exec.getSession(`${params.row['name']}`)
+        this.openinfo = row
+        this.openinfo_s = row['name_s']
+        exec.getSession(`${row['name']}`)
           .then(res => {
             // this.openswitch = !this.openswitch
             this.sessionFull = res.data['session']
@@ -441,7 +390,7 @@
             this.formItem = util.arry2dict(this.sessionFull)
             this.errFlag = false
 
-            if ( ! this.targetConstict.length && ! parseInt(params.row['number']) ) {
+            if ( ! this.targetConstict.length && ! parseInt(row['number']) ) {
               this.$Message.error(this.$t('getExecuteTargetTips'))
             } else {
               this.openswitch = !this.openswitch
@@ -514,11 +463,12 @@
       debugRun () {
         this.realCommit(1)
       },
-      targetinfoDetail (params) {
-        this.execInfo = params.row;
+      targetinfoDetail (row) {
+        this.execInfo = row;
         this.execInfo['name'] = this.execInfo['name_s'];
         delete this.execInfo['name_s'];
-        util.openPageEx(this, 'execDetail', {row: this.execInfo, tag: 'update'})
+        // console.log(toRaw(this.execInfo))
+        util.openPageEx(this, 'execDetail', {row: JSON.stringify(this.execInfo), tag: 'update'})
       },
       getCurrentPageNew (pagesize) {
         this.pagesize=pagesize
@@ -548,7 +498,7 @@
           })
       },
       delTarget (d) {
-        this.delname = d
+        this.delname = d.name
         // this.deleteConfirm = true
         this.$Modal.confirm({'title': this.$t('confirmDelete')+` ${this.delname} ？`,'onOk': this.realDelTarget, 'okText':this.$t('delete'), 'cancelText': this.$t('cancel') , 'width': '700px'});
       },

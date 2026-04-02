@@ -1,24 +1,29 @@
 <template>
   <Card :style="{height: cardHeight}" style="width:100%">
-
-    <p slot="title">
-      <Icon type="md-checkbox-outline"></Icon>
-      {{ $t('todoTitle') }}
-    </p>
-    <a type="text" slot="extra" @click.prevent="todoUp()">
-      <Icon type="md-arrow-up"></Icon>
-    </a>
-    <a type="text" slot="extra">&nbsp; &nbsp;</a>
-    <a type="text" slot="extra" @click.prevent="todoDown()">
-      <Icon type="md-arrow-down"></Icon>
-    </a>
-    <a type="text" slot="extra">&nbsp; &nbsp;</a>
-    <a type="text" slot="extra" @click.prevent="showAddNewTodo=!showAddNewTodo">
-      <Icon type="md-add"></Icon>
-    </a>
+    <template #title>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <p>
+          <Icon type="md-checkbox-outline"></Icon>
+          {{ $t('todoTitle') }}
+        </p>
+        <div style="width: 100px">
+          <a type="text" slot="extra" @click.prevent="todoUp()">
+            <Icon type="md-arrow-up"></Icon>
+          </a>
+          <a type="text" slot="extra">&nbsp; &nbsp;</a>
+          <a type="text" slot="extra" @click.prevent="todoDown()">
+            <Icon type="md-arrow-down"></Icon>
+          </a>
+          <a type="text" slot="extra">&nbsp; &nbsp;</a>
+          <a type="text" slot="extra" @click.prevent="showAddNewTodo=!showAddNewTodo">
+            <Icon type="md-add"></Icon>
+          </a>
+        </div>
+      </div>
+    </template>
 
     <!--使用:key可以实现在列表变动时 对应列表元素的状态可以保存-->
-    <div v-for="(item, index) in toDoList" v-if="item.title != ''"  :key="item.title">
+    <div v-for="(item, index) in toDoList" :key="item.title">
       <Row>
         <Col span="2">
           <Checkbox v-model="item.status"></Checkbox>
@@ -40,7 +45,7 @@ export default {
   name: 'toDoList',
   data () {
     return {
-      toDoList: [{}],
+      toDoList: [],
       todoitem: false,
       showAddNewTodo: false,
       newToDoItemValue: ''
@@ -56,13 +61,14 @@ export default {
     getTodo () {
       this.toDoList = [{'title': ''}];  // 如果为空 从零添加会导致首次渲染异常
       let todos = JSON.parse(localStorage.getItem('todolist'))
-      if (todos) {
+      if (todos && Array.isArray(todos)) {
         todos.forEach((title, index) => {
-          this.toDoList.push({'title': title, 'status':false})
+          if (title != '') {
+            this.toDoList.push({'title': title, 'status':false})
+          }
         })
       }
-      // this.$router.push({name: 'myhome'})
-      // console.log(this.toDoList);
+      this.toDoList.splice(0, 1)
     },
     addTodo () {
       if (this.newToDoItemValue.length !== 0) {

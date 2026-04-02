@@ -13,7 +13,7 @@
 <template>
   <div>
     <Card style="width: 100%">
-      <div slot="title">
+      <template #title>
         <Poptip transfer :content="playbook" trigger="hover" placement="bottom-start">
           <p>{{ this.workid }}</p>
         </Poptip>
@@ -31,11 +31,15 @@
         <Tooltip :content="$t('summary')" placement="bottom" style="margin-left: 20px">
           <Button type="primary" shape="circle" icon="md-bookmarks" ghost @click.native="summary()"></Button>
         </Tooltip>
-        <i-switch size="large" @on-change="finishFilter" style="margin-left: 50px">
-          <span slot="open">{{ $t('filter') }}</span>
-          <span slot="close">{{ $t('all') }}</span>
-        </i-switch>
-        <Tooltip disabled style="float:right;margin-right: 50px">
+        <Switch size="large" @on-change="finishFilter" style="margin-left: 50px">
+          <template #open>
+            <span>{{ $t('filter') }}</span>
+          </template>
+          <template #close>
+            <span>{{ $t('all') }}</span>
+          </template>
+        </Switch>
+        <div style="float:right;margin-right: 50px">
           <b>
           {{ $t('executing') }} <font color="#EEB422"> {{sum['executing']}} </font>
           {{ $t('exeFailed') }} <font color="#FF0000"> {{sum['fail']}} </font>
@@ -43,9 +47,20 @@
           {{ $t('currentNum') }} <font color="#0000FF">{{targetAmount}}</font>
           {{ $t('allNum') }} <font color="#0000FF">{{sum['all']}}</font>
           </b>
-        </Tooltip>
-      </div>
-      <Table border stripe :columns="tabcolumns" :data="TableDataNew" @on-row-dblclick="quickShow"></Table>
+        </div>
+      </template>
+      <Table border stripe :columns="tabcolumns" :data="TableDataNew" @on-row-dblclick="quickShow">
+        <template #action="{ row, index }">
+          <Button v-if="row.finish === 0" type="warning" size="small" @click="abort(row)">{{ $t('abort') }}</Button>
+          <Button v-else-if="row.exe_status === 'done'" type="success" size="small" @click="quickShow(row)">{{ $t('exeSuccess') }}</Button>
+          <Button v-else-if="row.exe_status === 'rerun'" loading type="warning" size="small" >{{ $t('reExecuting') }}</Button>
+          <div v-else>
+            <Button type="warning" style="margin-right: 5px" size="small" @click="quickShow(row)">{{ $t('exeFailed') }}</Button>
+            <Button type="error" style="margin-right: 5px" size="small" @click="rerun(row)">{{ $t('rerun') }}</Button>
+            <Button type="error" size="small" @click="continueRun(row)">{{ $t('continueRun') }}</Button>
+          </div>
+        </template>
+      </Table>
         
     </Card>
 
@@ -69,72 +84,82 @@
 
     <!--命令的详细信息-->
     <Modal v-model="modalDetail" scrollable width="55%">
-      <p slot="header">{{detailTitle}}</p>
+      <template #header>
+        <p>{{detailTitle}}</p>
+      </template>
       <div>
         <Table border stripe :columns="columnsDetailInfo" :data="dataDetailInfo" :show-header="false" :no-data-text="$t('noCommandInfo')" @on-select=detailSelect @on-selection-change=detailChange></Table>
         {{selectionKeyStr}}
       </div>
-      <div v-if="pauseOpt" slot="footer">
-        <Tooltip :content="$t('pauseAbort')" placement="top">
-          <Button type="warning" shape="circle" icon="md-close" @click.native="pauseAbort"></Button>
-        </Tooltip>
-        <Tooltip :content="$t('pauseRunAll')" placement="top">
-          <Button type="info" shape="circle" icon="md-checkmark" @click.native="pauseRunAll"></Button>
-        </Tooltip>
-        <Tooltip :content="$t('pauseRunNext')" placement="top">
-          <Button type="info" shape="circle" icon="md-fastforward" @click.native="pauseRunNext"></Button>
-        </Tooltip>
-        <Tooltip :content="$t('prePage')" placement="top">
-          <Button type="primary" shape="circle" icon="md-arrow-round-back" ghost @click.native="showDetailPre"></Button>
-        </Tooltip>
-        <Tooltip :content="$t('nextPage') " placement="top">
-          <Button type="primary" shape="circle" icon="md-arrow-forward" ghost @click.native="showDetailNext"></Button>
-        </Tooltip>
-        <Tooltip :content="$t('refresh')" placement="top" style="margin-right: 20px">
-          <Button type="primary" shape="circle" icon="md-refresh" ghost @click.native="refreshDetailInfo"></Button>
-        </Tooltip>
-      </div>
-      <div v-else slot="footer">
-        <Tooltip :content="$t('prePage')" placement="top" style="margin-right: 0.5%">
-          <Button type="primary" shape="circle" icon="md-arrow-round-back" ghost @click.native="showDetailPre"></Button>
-        </Tooltip>
-        <Tooltip :content="$t('nextPage') " placement="top" style="margin-right: 0.5%">
-          <Button type="primary" shape="circle" icon="md-arrow-forward" ghost @click.native="showDetailNext"></Button>
-        </Tooltip>
-        <Tooltip :content="$t('refresh')" placement="top" style="margin-right: 0.5%">
-          <Button type="primary" shape="circle" icon="md-refresh" ghost @click.native="refreshDetailInfo"></Button>
-        </Tooltip>
-        <Tooltip :content="$t('downloadColumn')" placement="top" style="margin-right: 0.5%">
-          <Button type="primary" shape="circle" icon="md-arrow-down" ghost @click.native="download"></Button>
-        </Tooltip>
-        <Tooltip :content="$t('resultFormat')" placement="top" style="margin-right: 1%">
-          <Button type="primary" shape="circle" icon="md-list-box" ghost @click.native="resultFormat"></Button>
-        </Tooltip>
-      </div>
+      <template #footer>
+        <div v-if="pauseOpt">
+          <Tooltip :content="$t('pauseAbort')" placement="top">
+            <Button type="warning" shape="circle" icon="md-close" @click.native="pauseAbort"></Button>
+          </Tooltip>
+          <Tooltip :content="$t('pauseRunAll')" placement="top">
+            <Button type="info" shape="circle" icon="md-checkmark" @click.native="pauseRunAll"></Button>
+          </Tooltip>
+          <Tooltip :content="$t('pauseRunNext')" placement="top">
+            <Button type="info" shape="circle" icon="md-fastforward" @click.native="pauseRunNext"></Button>
+          </Tooltip>
+          <Tooltip :content="$t('prePage')" placement="top">
+            <Button type="primary" shape="circle" icon="md-arrow-round-back" ghost @click.native="showDetailPre"></Button>
+          </Tooltip>
+          <Tooltip :content="$t('nextPage') " placement="top">
+            <Button type="primary" shape="circle" icon="md-arrow-forward" ghost @click.native="showDetailNext"></Button>
+          </Tooltip>
+          <Tooltip :content="$t('refresh')" placement="top" style="margin-right: 20px">
+            <Button type="primary" shape="circle" icon="md-refresh" ghost @click.native="refreshDetailInfo"></Button>
+          </Tooltip>
+        </div>
+        <div v-else>
+          <Tooltip :content="$t('prePage')" placement="top" style="margin-right: 0.5%">
+            <Button type="primary" shape="circle" icon="md-arrow-round-back" ghost @click.native="showDetailPre"></Button>
+          </Tooltip>
+          <Tooltip :content="$t('nextPage') " placement="top" style="margin-right: 0.5%">
+            <Button type="primary" shape="circle" icon="md-arrow-forward" ghost @click.native="showDetailNext"></Button>
+          </Tooltip>
+          <Tooltip :content="$t('refresh')" placement="top" style="margin-right: 0.5%">
+            <Button type="primary" shape="circle" icon="md-refresh" ghost @click.native="refreshDetailInfo"></Button>
+          </Tooltip>
+          <Tooltip :content="$t('downloadColumn')" placement="top" style="margin-right: 0.5%">
+            <Button type="primary" shape="circle" icon="md-arrow-down" ghost @click.native="download"></Button>
+          </Tooltip>
+          <Tooltip :content="$t('resultFormat')" placement="top" style="margin-right: 1%">
+            <Button type="primary" shape="circle" icon="md-list-box" ghost @click.native="resultFormat"></Button>
+          </Tooltip>
+        </div>
+      </template>
     </Modal>
 
     <Modal v-model="modalSummary" scrollable width="55%">
-      <div slot="header">
+      <template #header>
         <div style="float:left;margin-top:5px;width:300px;">{{ $t('summaryTitle') }}</div>
         <div>
-          <i-switch size="large" true-color="#ff4949" false-color="#13ce66" @on-change="summaryFilter" >
-            <span slot="open">{{ $t('stderr') }}</span>
-            <span slot="close">{{ $t('stdout') }}</span>
-          </i-switch>
+          <Switch size="large" true-color="#ff4949" false-color="#13ce66" @on-change="summaryFilter">
+            <template #open>
+              <span>{{ $t('stderr') }}</span>
+            </template>
+            <template #close>
+              <span>{{ $t('stdout') }}</span>
+            </template>
+          </Switch>
         </div>
-      </div>
+      </template>
       <div>
         <Table border stripe :columns="columnsSummaryInfo" :data="summaryInfo" ></Table>
       </div>
-      <div slot="footer">
+      <template #footer>
         <Tooltip :content="$t('refresh')" placement="top" style="margin-right: 20px">
           <Button type="primary" shape="circle" icon="md-refresh" ghost @click.native="refreshSummary"></Button>
         </Tooltip>
-      </div>
+      </template>
     </Modal>
 
     <Modal v-model="modalRerun" scrollable width="55%" >
-      <p slot="header">{{runTitle}}</p>
+      <template #header>
+        <p>{{runTitle}}</p>
+      </template>
       <div>
         <Form :label-width="realLabelwidth">
           <Divider>readonly</Divider>
@@ -161,32 +186,32 @@
           </FormItem>
         </Form>
       </div>
-      <div slot="footer">
+      <template #footer>
           <Button type="primary" size="large" @click.native="realRerun">{{ $t('run') }}</Button>
-      </div>
+      </template>
     </Modal>
 
-    <Modal v-model="modalSelect" @on-ok="setSelect" scrollable width="55%" >
-      <p slot="header">{{ $t('selectTitle') }}  {{selectVar}}</p>
+    <Modal v-model="modalSelect" @on-ok="setSelect" footer-hide scrollable width="55%" >
+      <template #header>
+        <p>{{ $t('selectTitle') }}  {{selectVar}}</p>
+      </template>
       <div>
       <Select v-model="selectValue" :placeholder="$t('selectTips')" multiple filterable>
           <Option v-for="j in selectList" :value="j" :key="JSON.stringify(j)">{{ j }}</Option>
       </Select>
       </div>
-      <!--
-      <div slot="footer">
-          <Button type="primary" size="large" @click.native="setSelect">{{ $t('run') }}</Button>
-      </div>-->
     </Modal>
 
-    <Modal v-model="modalGolbalVars" scrollable width="55%" >
-      <p slot="header">
-        <span>{{ $t('setGolbalVarsTitle') }}</span>
-      </p>
+    <Modal v-model="modalGolbalVars" footer-hide scrollable width="55%" >
+      <template #header>
+        <p>
+          <span>{{ $t('setGolbalVarsTitle') }}</span>
+        </p>
+      </template>
       <safe-form ref="formGolbalVars" :labelwidth="100" :dynamicData="globalVars" :dynamic="true" :inputValueTips="$t('inputGlobalVarsTips')"
         @primaryClick="globalVarsCommit" @secondClick="modalGolbalVars=false" >
       </safe-form>
-      <div slot="footer"></div>
+      
     </Modal>
 
   </div>
@@ -320,100 +345,10 @@
           },
           {
              title: this.$t('action'),
-             key: 'action',
+             slot: 'action',
              align: 'center',
              minWidth: 300,
-             render: (h, params) => {
-              let b = ''
-              // if ( [ 'executing','pausing','waiting select'].indexOf(params.row.exe_status) >= 0 ) {
-              if ( params.row.finish==0 ) {
-                b = h('div', [
-                  h('Button', {
-                    props: {
-                      size: 'small',
-                      type: 'warning'
-                    },
-                    on: {
-                      click: () => {
-                        this.abort(params.row)
-                      }
-                    }
-                  }, this.$t('abort'))
-                ])
-              } else if (params.row.exe_status === 'done') {
-                b = h('div', [
-                  h('Button', {
-                    props: {
-                      size: 'small',
-                      type: 'success'
-                    },
-                    on: {
-                      click: () => {
-                        this.quickShow(params.row)
-                      }
-                    }
-                  }, this.$t('exeSuccess'))
-                ])
-              } else if (params.row.exe_status === 'rerun') {
-                b = h('div', [
-                  h('Button', {
-                    props: {
-                      size: 'small',
-                      type: 'warning'
-                    },
-                    on: {
-                      click: () => {
-                        util.notice(this, this.$t('reExecute'), 'info')
-                      }
-                    }
-                  }, this.$t('reExecuting'))
-                ])
-              } else {
-                b = h('div', [
-                  h('Button', {
-                    props: {
-                      size: 'small',
-                      type: 'warning'
-                    },
-                    style: {
-                      marginRight: '5px'
-                    },
-                    on: {
-                      click: () => {
-                        this.quickShow(params.row)
-                      }
-                    }
-                  }, this.$t('exeFailed')),
-                  h('Button', {
-                    props: {
-                      size: 'small',
-                      type: 'error'
-                    },
-                    style: {
-                      marginRight: '5px'
-                    },
-                    on: {
-                      click: () => {
-                        this.rerun(params.row)
-                      }
-                    }
-                  }, this.$t('rerun')),
-                  h('span', {}, ' '),
-                  h('Button', {
-                    props: {
-                      size: 'small',
-                      type: 'error'
-                    },
-                    on: {
-                      click: () => {
-                        this.continueRun(params.row)
-                      }
-                    }
-                  }, this.$t('continueRun'))
-                ])
-              }
-              return b
-            }
+
           }
         ],
         TableDataNew: [],

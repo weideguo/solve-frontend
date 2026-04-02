@@ -59,9 +59,11 @@
                   <span>{{ userName }}</span>
                   <Icon type="md-arrow-dropdown" />
                 </a>
-                <DropdownMenu slot="list">
-                  <DropdownItem name="loginout">{{ $t('exit') }}</DropdownItem>
-                </DropdownMenu>
+                <template #list>
+                  <DropdownMenu>
+                    <DropdownItem name="loginout">{{ $t('exit') }}</DropdownItem>
+                  </DropdownMenu>
+                </template>
               </Dropdown>
             </div>
   
@@ -82,9 +84,7 @@
       <!--首页右边下 点击左边的选项显示的内容-->
       <!--使用<keep-alive></keep-alive>标签可以避免组件反复渲染，切换到其他的tab再切换回来不会改变组建的参数-->
       <div  style="clear:both">
-        <template>
-          <router-view></router-view>
-        </template>
+        <router-view></router-view>
       </div>
 
     </div>
@@ -110,7 +110,7 @@
     },
     data () {
       return {
-        project: this.$store.getters.sessionGet('project'),
+        project: sessionStorage.getItem('project'),
         hideMenuText: false,
         userName: sessionStorage.getItem('user'),
         isFullScreen: false

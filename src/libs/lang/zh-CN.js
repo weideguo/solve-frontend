@@ -228,12 +228,12 @@ const lang = {
                  '10.0.0.2  |  who     |  date                            \n'+
                  '10.0.0.3  |  date    |  who                              ',
     playbookDemo: 
-                  '# 使用方式跟普通的playbook类似                                      \n'+
+                  '# 使用方式跟普通的playbook类似                                       \n'+
                   '# 不同之处为使用 _1 _2 _3 ... 接受单行配置信息分割后的对应参数         \n'+
                   '# 样例如：                                                          \n'+
-                  '[{{_1}}]                                                           \n'+
-                  'echo {{_2}}                                                        \n'+
-                  'echo {{_3}}                                                          ',
+                  '[\\{\\{_1\\}\\}]\n                                                 \n'+
+                  'echo \\{\\{_2\\}\\}                                                \n'+
+                  'echo \\{\\{_3\\}\\}                                                  ',
     backToHome: '返回首页',
     backToPre: '返回上一页',
     setGolbalVars: 'global设置',

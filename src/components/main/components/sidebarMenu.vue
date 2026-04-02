@@ -36,27 +36,22 @@
       <!--处理子节点不为1的-->
       <template v-else-if="item.children.length>1">  
         <Submenu :name="item.name" :key="item.path">
-          <template slot="title">
+          <template #title>
             <Icon :type="item.icon" :size="iconSize"></Icon>
             <span class="layout-text">{{ $t(item.title) }}</span>
           </template>
-          <!-- -->
-          <template v-for="child in item.children">
-            <template>
-              <MenuItem :name="child.name" :key="child.name">
-                <Icon :type="child.icon" :size="iconSize" :key="child.name"></Icon>
-                <span class="layout-text" :key="child.name + 1">{{ $t(child.title) }}</span>
-              </MenuItem>
-            </template>
-          </template>
+          <MenuItem v-for="child in item.children" :key="child.name" :name="child.name" >
+            <Icon :type="child.icon" :size="iconSize" :key="child.name"></Icon>
+            <span class="layout-text" :key="child.name + 1">{{ $t(child.title) }}</span>
+          </MenuItem>
         </Submenu>
       </template>
     </template>
 
-    <Menu-item name="login">
+    <MenuItem name="login">
       <Icon type="md-log-out" :size="iconSize"></Icon>
       <span class="layout-text">{{ $t('exit') }}</span>
-    </Menu-item>
+    </MenuItem>
   </Menu>
 </template>
 <script>

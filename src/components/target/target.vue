@@ -1,7 +1,7 @@
 <template>
   <div>
     <Card style="width: 100%">
-      <div slot="title" style="height: 32px">
+      <template #title style="height: 32px">
         <Tooltip :content="$t('modifyFiled')"  placement="bottom-start">
           <Button type="info" icon="md-list" @click.native="switchFormInfo=true" ></Button>
         </Tooltip>
@@ -13,45 +13,48 @@
         <div style="float:right;margin-right: 0vw">
           <Input v-model="searchWord" @on-search="search()" search enter-button :placeholder="$t('searchTips')" style="width: 350px"/>
         </div>
-      </div>
+      </template>
       
-      <Table border stripe :columns="columns" :data="tableData" size="small" @on-row-dblclick="targetinfoDetail"></Table>
+      <Table border stripe :columns="columns" :data="tableData" size="small" @on-row-dblclick="targetinfoDetail">
+        <template #operation="{ row, index }">
+          <Button type="success" size="small" style="margin-right: 50px" @click="targetinfoDetail(row)">{{ $t('detail') }}</Button>
+          <Button type="error" size="small" @click="delTarget(row.name)">{{ $t('delete') }}</Button>
+        </template>
+      </Table>
       <br>
-      <Page :total="pageNumber" @on-change="getCurrentPage" :page-size="pagesize" :current="currentPage" @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
+      <Page :total="pageNumber" @on-change="getCurrentPage" :page-size="pagesize" :model-value="currentPage" @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
     </Card>
 
-    <Modal v-model="openswitch" width="50%">    
-      <div slot="header">   
+    <Modal v-model="openswitch" footer-hide width="50%">    
+      <template #header> 
         <Button v-if="!isAdd" shape="circle" icon="md-list" @click.native="getTreeNode"></Button>
         <p style="display:inline"><span>{{modelTitle}}</span></p>
-      </div>
+      </template>
       <safe-form ref="myform" :labelwidth="100" :formdata="formItem" :dynamic="true" :formvalidate="formItemValidate" 
         @primaryClick="formCommit" @secondClick="optionOperate" :primaryButtonName="isAdd? $t('add') : $t('update') "
         :secondCheck="!isAdd" :secondButtonName="isAdd? $t('cancel') : $t('copy') " :inputValueTips="$t('inputFieldValueTips')">
       </safe-form>
-      <div slot="footer"></div>
     </Modal>
 
-    <Modal v-model="cascadeSwitch" width="60%"> 
-      <div slot="header">   
+    <Modal v-model="cascadeSwitch" footer-hide width="60%"> 
+      <template #header>  
         <p>
           <span> {{ $t('selectedPath') }}: {{cascadePath}} </span>
         </p>
-      </div>
+      </template>
       <div>
         <Tree :data="cascadeTreeData" @on-select-change="showCascadePath" ref="casCadeTree"></Tree>
       </div>
-      <div slot="footer"></div>
     </Modal>
 
 
-    <Modal v-model="treeswitch" width="60%"> 
-      <div slot="header">   
+    <Modal v-model="treeswitch" footer-hide width="60%"> 
+      <template #header>   
         <p>
           <span>{{opentarget}}</span>
           <span style="margin-left:30px;">{{ $t('paramName')  }} {{treeLevel}}</span>
         </p>
-      </div>
+      </template>  
       <div>
         <div style="background: #DCDCDC">
           <div style="width:100px;display: inline-block">{{ $t('paramLevel')  }}</div>
@@ -59,17 +62,15 @@
         </div>
         <Tree ref="mytree" :data="targetDataTree" :render="renderContent" @on-select-change="showPath" @on-toggle-expand="showChildren" class="demo-tree-render"></Tree>
       </div>
-      <div slot="footer"></div>
     </Modal>
 
-    <Modal v-model="switchFormInfo" width="50%">          
-      <p slot="header">
+    <Modal v-model="switchFormInfo" footer-hide width="50%">          
+      <template #header>  
         <span>{{filter}} {{ $t('modifyFiled') }}</span>
-      </p>
+      </template>  
       <safe-form ref="formInfo" :labelwidth="100" :dynamicData="formItemInfo" :dynamic="true" :inputValueTips="$t('inputDescValueTips')"
         @primaryClick="formInfoCommit" @secondClick="switchFormInfo=false" >
       </safe-form>
-      <div slot="footer"></div>
     </Modal>
 
   </div>
@@ -129,46 +130,10 @@
             minWidth: 600
           },
           {
-            title: this.$t('detail'),
-            key: 'action',
+            title: this.$t('operation'),
+            slot: 'operation',
             align: 'center',
-            width: 200,
-            render: (h, params) => {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    size: 'small',
-                    type: 'success'
-                  },
-                  on: {
-                    click: () => {
-                      this.targetinfoDetail(params.row)
-                    }
-                  }
-                }, this.$t('detail'))
-              ])
-            }
-          },
-          {
-            title: this.$t('delete'),
-            key: 'action',
-            align: 'center',
-            width: 100,
-            render: (h, params) => {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    size: 'small',
-                    type: 'error'
-                  },
-                  on: {
-                    click: () => {
-                      this.delTarget(params.row['name']);
-                    }
-                  }
-                }, this.$t('delete'))
-              ])
-            }
+            width: 300,
           }
         ],
         tableData: [],
@@ -393,7 +358,8 @@
         currentNode.children=[]
         target.getTreeInfo(currentNode.value) 
           .then(res => {
-            this.$set(currentNode, 'children', res.data['data'].sort(util.funcSort('title')))
+            // this.$set(currentNode, 'children', res.data['data'].sort(util.funcSort('title')))
+            currentNode.children = res.data['data'].sort(util.funcSort('title'))
           })
           .catch(error => {
             util.notice(this, error, 'error')

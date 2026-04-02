@@ -32,24 +32,28 @@
         <div class="btn_hover">
           <Icon size="20" :color="iconColor" :type="item.icon"></Icon>
         </div>
-        <DropdownMenu style="width: 200px;" slot="list">
-          <DropdownItem v-for="child in item.children" :name="child.name" :key="child.title">
-            <Icon :type="child.icon" size="20"></Icon>
-            <span style="padding-left:10px;">{{ $t(child.title) }}</span>
-          </DropdownItem>
-        </DropdownMenu>
+        <template #list>
+          <DropdownMenu style="width: 200px;">
+            <DropdownItem v-for="child in item.children" :name="child.name" :key="child.title">
+              <Icon :type="child.icon" size="20"></Icon>
+              <span style="padding-left:10px;">{{ $t(child.title) }}</span>
+            </DropdownItem>
+          </DropdownMenu>
+        </template>
       </Dropdown>
       <!--处理子节点为1的-->
-      <Dropdown v-else-if="item.children.length === 1" placement="right-start" :key="index" @on-click="currentPageTab">
+      <Dropdown v-else-if="item.children.length === 1" placement="right-start" :key="index+1" @on-click="currentPageTab">
         <div @click="currentPageTab(item.children[0].name)" class="btn_hover">
           <Icon :size="20" :color="iconColor" :type="item.icon"></Icon>
         </div>
-        <DropdownMenu style="width: 200px;" slot="list">
-          <DropdownItem :name="item.children[0].name" :key="item.children[0].title">
-            <Icon :type="item.icon" size="20"></Icon>
-            <span style="padding-left:10px;">{{ $t(item.children[0].title) }}</span>
-          </DropdownItem>
-        </DropdownMenu>
+        <template #list>
+          <DropdownMenu style="width: 200px;">
+            <DropdownItem :name="item.children[0].name" :key="item.children[0].title">
+              <Icon :type="item.icon" size="20"></Icon>
+              <span style="padding-left:10px;">{{ $t(item.children[0].title) }}</span>
+            </DropdownItem>
+          </DropdownMenu>
+        </template>
       </Dropdown>
       
     </template>
@@ -59,12 +63,14 @@
       <div @click="currentPageTab('login')" class="btn_hover">
         <Icon type="md-log-out" size="20" :color="iconColor"></Icon>
       </div>
-      <DropdownMenu style="width: 200px;" slot="list">
-        <DropdownItem name="logout" key="logout">
-          <Icon type="md-log-out" size="20"></Icon>
-          <span style="padding-left:10px;">{{ $t('exit') }}</span>
-        </DropdownItem>
-      </DropdownMenu>
+      <template #list>
+        <DropdownMenu style="width: 200px;">
+          <DropdownItem name="logout" key="logout">
+            <Icon type="md-log-out" size="20"></Icon>
+            <span style="padding-left:10px;">{{ $t('exit') }}</span>
+          </DropdownItem>
+        </DropdownMenu>
+      </template>
     </Dropdown>
 
   </div>

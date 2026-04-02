@@ -7,7 +7,8 @@
 import util from '@/libs/util'
 import home from '@/api/home'
 
-const echarts = require('echarts');
+//const echarts = require('echarts');
+import * as echarts from 'echarts'
 export default {
   name: 'dataChart',
   data () {

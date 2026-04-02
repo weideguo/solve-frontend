@@ -1,25 +1,33 @@
 <template>
   <div>
-    <Col span="24">
-      <Card>
-        <div slot="title">
-          <!--Icon type="md-people"></Icon>
-          <b>{{ $t('userList') }}</b-->
-          <Button type="info" icon="md-add" shape="circle" size="small" @click="addUser"></Button>
-        </div>
-        
-        <div>
-          <Table border :columns="usercolumns" :data="userdata" stripe height="700"></Table>
-        </div>
-        <br>
-        <Page :total="pagenumber" @on-change="splicpage" :page-size="pagesize" ref="total" :current="currentPage" show-elevator show-total></Page>
-      </Card>
-    </Col>
+    <Card>
+      <template #title>
+        <!--Icon type="md-people"></Icon>
+        <b>{{ $t('userList') }}</b-->
+        <Button type="info" icon="md-add" shape="circle" size="small" @click="addUser"></Button>
+      </template>
+      
+      <div>
+        <Table border :columns="usercolumns" :data="userdata" stripe height="700">
+          <template #operation="{ row, index }">  
+            <Button v-if="row['username'] === currentUser" type="primary" size="small" @click="editPass(row)">{{ $t('chanePassword') }}</Button>
+            <div v-else>
+              <Button type="primary" style="margin-right: 5px" size="small" @click="editPass(row)">{{ $t('chanePassword') }}</Button>
+              <Button type="error" size="small" @click="deleteUser(row)">{{ $t('delete') }}</Button>
+            </div>
+          </template>
+        </Table>
+      </div>
+      <br>
+      <Page :total="pagenumber" @on-change="splicpage" :page-size="pagesize" ref="total" :model-value="currentPage" show-elevator show-total></Page>
+    </Card>
 
     <Modal v-model="editModal" :mask-closable=false :width="500">
-      <p slot="header">
-        <b>{{modelTitle}}</b>
-      </p>
+      <template #header>
+        <p>
+          <b>{{modelTitle}}</b>
+        </p>
+      </template>
       <Form ref="editForm" :model="editForm" :label-width="100" label-position="right" :rules="editValidate">
         <FormItem :label="$t('username')" prop="username">
           <Input v-model="editForm.username" :placeholder="$t('inputUsernameTips')" :readonly="!notEdit" :clearable="notEdit"></Input>
@@ -31,16 +39,18 @@
           <Input v-model="editForm.rePass" :placeholder="$t('reInputPasswordTips')" type="password" clearable></Input>
         </FormItem>
       </Form>
-      <div slot="footer">
+      <template #footer>
         <Button type="text" @click="cancelEdit">{{ $t('cancel') }}</Button>
         <Button type="primary" @click="commit" :loading="saveLoading">{{ $t('save') }}</Button>
-      </div>
+      </template>
     </Modal>
 
     <Modal v-model="deluserModal" :mask-closable=false :width="500">
-      <p slot="header">
-        <b>{{ $t('deleteUser') }}</b>
-      </p>
+      <template #header>
+        <p>
+          <b>{{ $t('deleteUser') }}</b>
+        </p>
+      </template>
       <Form :label-width="100" label-position="right">
         <FormItem :label="$t('username')">
           <Input v-model="username" readonly="readonly"></Input>
@@ -49,10 +59,10 @@
           <Input v-model="confirmuser" :placeholder="$t('confirmUsernameTips')"></Input>
         </FormItem>
       </Form>
-      <div slot="footer">
+      <template #footer>
         <Button type="text" @click="cancelDelUser">{{ $t('cancel') }}</Button>
         <Button type="error" @click="delUser">{{ $t('delete') }}</Button>
-      </div>
+      </template>
     </Modal>
 
   </div>
@@ -89,57 +99,9 @@
           },
           {
             title: this.$t('operation'),
-            key: 'action',
+            slot: 'operation',
             width: 400,
             align: 'center',
-            render: (h, params) => {
-              if (params.row['username'] === this.currentUser) {
-                return h('div', [
-                  h('Button', {
-                    props: {
-                      type: 'primary',
-                      size: 'small'
-                    },
-                    style: {
-                      marginRight: '5px'
-                    },
-                    on: {
-                      click: () => {
-                        this.editPass(params.row)
-                      }
-                    }
-                  }, this.$t('chanePassword'))
-                ])
-              } else {
-                return h('div', [
-                  h('Button', {
-                    props: {
-                      type: 'primary',
-                      size: 'small'
-                    },
-                    style: {
-                      marginRight: '5px'
-                    },
-                    on: {
-                      click: () => {
-                        this.editPass(params.row)
-                      }
-                    }
-                  }, this.$t('chanePassword')),
-                  h('Button', {
-                    props: {
-                      type: 'error',
-                      size: 'small'
-                    },
-                    on: {
-                      click: () => {
-                        this.deleteUser(params.row)
-                      }
-                    }
-                  }, this.$t('delete'))
-                ])
-              }
-            }
           }
         ],
         userdata: [],

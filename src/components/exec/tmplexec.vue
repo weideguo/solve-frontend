@@ -1,35 +1,42 @@
 <template>
   <div>
     <Card style="width: 100%">
-      <div slot="title">
+      <template #title>
         <Tooltip :content="$t('modifySelectedInfo')" placement="bottom-start">
           <Button type="info" icon="md-list" @click.native="switchFormInfo=true" ></Button>
         </Tooltip>
         <Button type="info" icon="md-add" @click.native="targetinfoAdd()" style="margin-left: 0.2vw">{{ $t('addTemplate') }}</Button>
-      </div>
-      
-      <Table border :columns="columns" :data="tableData" @on-row-dblclick="targetinfoDetail" stripe size="small"></Table>
+
+      </template>
+      <Table border :columns="columns" :data="tableData" @on-row-dblclick="targetinfoDetail" stripe size="small">
+        <template #operation="{ row, index }">
+          <Button type="info" size="small" style="margin-right: 20px" @click="generateJob(row)">{{ $t('createJob') }}</Button>
+          <Button type="success" size="small" style="margin-right: 20px" @click="targetinfoDetail(row)">{{ $t('detail') }}</Button>
+          <Button type="error" size="small" @click="delTarget(row)">{{ $t('delete') }}</Button>
+        </template>
+      </Table>
       <br>
-      <Page :total="pageNumber" @on-change="getCurrentPage" :current="currentPage" :page-size="pagesize" @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
+      <Page :total="pageNumber" @on-change="getCurrentPage" :model-value="currentPage" :page-size="pagesize" @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
     </Card>
     
-    <Modal v-model="openswitch" width="800">
-      <p slot="header">
-        <span>{{modelTitle}}</span>
-      </p>
+    <Modal v-model="openswitch" footer-hide width="800">
+      <template #header>
+        <p>
+          <span>{{modelTitle}}</span>
+        </p>
+      </template>
       <safe-form ref="mytest" :labelwidth="100" :formdata="formItem" :formvalidate="formItemValidate" @primaryClick="formSubmit" @secondClick="openswitch = false"
         :primaryButtonName="isAdd? $t('add') : $t('update') ">
       </safe-form>
-      <div slot="footer">
-      </div>
-
     </Modal>
 
     <Modal v-model="switchFormInfo" width="50%" @on-cancel="cancelFormInfo">
-      <p slot="header">
-        <span>{{ $t('modifyTips') }}</span>
-      </p>
-       <Form :label-width="80">
+      <template #header>
+        <p>
+          <span>{{ $t('modifyTips') }}</span>
+        </p>
+      </template>
+      <Form :label-width="80">
         <FormItem label="target_type">
           <Select v-model="targetType" filterable multiple allow-create @on-create="putTargetType">
             <Option v-for="item in targetTypeTmp" :value="item" :key="item">{{ item }}</Option>
@@ -40,11 +47,11 @@
             <Option v-for="item in jobTypeTmp" :value="item" :key="item">{{ item }}</Option>
           </Select>
         </FormItem>
-       </Form> 
-       <div slot="footer">
+      </Form> 
+      <template #footer>
         <Button type="primary" @click="cancelFormInfo">{{ $t('cancel') }}</Button>
         <Button @click="commitFormInfo">{{ $t('commit') }}</Button>
-      </div>
+      </template>
     </Modal>
     
   </div>
@@ -167,68 +174,9 @@
           },
           {
             title: this.$t('operation'),
-            key: 'action',
+            slot: 'operation',
             align: 'center',
-            width: 150,
-            render: (h, params) => {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    size: 'small',
-                    type: 'info'
-                  },
-                  on: {
-                    click: () => {
-                      this.generateJob(params);
-                    }
-                  }
-                }, this.$t('createJob'))
-              ])
-            }
-          },
-          {
-            title: this.$t('detail'),
-            key: 'action',
-            align: 'center',
-            width: 150,
-            render: (h, params) => {
-              let x;
-              x = h('div', [
-                h('Button', {
-                  props: {
-                    size: 'small',
-                    type: 'success'
-                  },
-                  on: {
-                    click: () => {
-                      this.targetinfoDetail(params.row)
-                    }
-                  }
-                }, this.$t('detail'))
-                ])
-              return x
-            }
-          },
-          {
-            title: this.$t('delete'),
-            key: 'action',
-            align: 'center',
-            width: 100,
-            render: (h, params) => {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    size: 'small',
-                    type: 'error'
-                  },
-                  on: {
-                    click: () => {
-                      this.delTarget(params.row.name)
-                    }
-                  }
-                }, this.$t('delete'))
-              ])
-            }
+            width: 450,
           }
         ],
         tableData: [],
@@ -343,10 +291,10 @@
             })
         }
       },
-      targetinfoDetail (params) {
-        let info = util.dictDeepCopy(params)
+      targetinfoDetail (row) {
+        let info = util.dictDeepCopy(row)
         info['name'] = info['name_s']
-        this.name_o = params['name']
+        this.name_o = row['name']
         this.formItem = util.dictDeepCopy(this.formItemOrigin)
         this.formItem.forEach((item,i) => {
           item['value'] = info[item['key']]
@@ -370,8 +318,8 @@
         this.addTarget(formInfo)
         this.openswitch = false
       },
-      generateJob (params) {
-        let tmplInfo = params.row;
+      generateJob (row) {
+        let tmplInfo = row;
         tmplInfo['tmpl'] = tmplInfo['name']
         tmplInfo['name'] = tmplInfo['name_s']
         tmplInfo['target'] = ''
@@ -379,7 +327,7 @@
         x.forEach((item,i) => {
           delete tmplInfo[item]
         })
-        util.openPageEx(this, 'execDetail', {row: tmplInfo, tag: 'add'})
+        util.openPageEx(this, 'execDetail', {row: JSON.stringify(tmplInfo), tag: 'add'})
       },
       getCurrentPageNew (pagesize) {
         this.pagesize=pagesize
@@ -409,7 +357,7 @@
           })
       },
       delTarget (d) {
-        this.delname = d
+        this.delname = d.name
         // this.deleteConfirm=true
         this.$Modal.confirm({'title': this.$t('confirmDelete')+` ${this.delname} ？`,'onOk': this.realDelTarget, 'okText':this.$t('delete'), 'cancelText': this.$t('cancel') , 'width': '700px'});
       },

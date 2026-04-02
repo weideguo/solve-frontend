@@ -1,9 +1,14 @@
 <template>
   <div>
     <Card>
-      <Table border :columns="columns" :data="tableData" stripe @on-row-dblclick="orderDetail" size="small"></Table>
+      <Table border :columns="columns" :data="tableData" stripe @on-row-dblclick="orderDetail" size="small">
+        <template #operation="{ row, index }">
+          <Button type="success" size="small" style="margin-right: 20px" @click="orderDetail(row)">{{ $t('detail') }}</Button>
+          <Button type="error" size="small" @click="deleteRow(row)">{{ $t('delete') }}</Button>
+        </template>
+      </Table>
       <br>
-      <Page :total="pageNumber" @on-change="getCurrentPage" @on-page-size-change="getCurrentPageNew" :current="currentPage" :page-size="pagesize" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
+      <Page :total="pageNumber" @on-change="getCurrentPage" @on-page-size-change="getCurrentPageNew" :model-value="currentPage" :page-size="pagesize" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
     </Card>
   </div>
 </template>
@@ -62,45 +67,9 @@
           },
           {
             title: this.$t('operation'),
-            key: 'action',
+            slot: 'operation',
             align: 'center',
-            width: 200,
-            render: (h, params) => {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    size: 'small',
-                    type: 'success'
-                  },
-                  on: {
-                    click: () => {
-                      this.orderDetail(params.row);
-                    }
-                  }
-                }, this.$t('detail'))
-              ])
-            }
-          },
-          {
-            title: this.$t('delete'),
-            key: 'action',
-            align: 'center',
-            width: 100,
-            render: (h, params) => {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    size: 'small',
-                    type: 'error'
-                  },
-                  on: {
-                    click: () => {
-                      this.delete(params);
-                    }
-                  }
-                }, this.$t('delete'))
-              ])
-            }
+            width: 300,
           }
         ],
         pagesize: 18,
@@ -114,13 +83,13 @@
       orderDetail (paramsDict) {
         util.openPageEx(this, 'orderDetail', {workid: paramsDict['work_id']});
       },
-      delete (params) {
+      deleteRow (params) {
         // axios.get(`${this.baseurl}/order/del?workid=${params.row['work_id']}`)
-        order.delOrder(`${params.row['work_id']}`)
+        order.delOrder(`${params['work_id']}`)
           .then(res => {
             if (res.data['status'] === 1) {
               this.getCurrentPage();
-              util.notice(this, `${params.row['work_id']} `+this.$t('deleteSuccess'), 'success')
+              util.notice(this, `${params['work_id']} `+this.$t('deleteSuccess'), 'success')
             } else {
               // util.notice(this, this.$t('deleteFailed'), 'error')
               util.notice(this, res.data['msg'], 'error')
@@ -163,4 +132,5 @@
     }
   }
 </script>
+
 

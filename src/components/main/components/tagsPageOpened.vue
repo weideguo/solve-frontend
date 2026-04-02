@@ -23,10 +23,12 @@
           {{ $t('tag') }}
           <Icon type="md-arrow-dropdown"></Icon>
         </Button>
-        <DropdownMenu slot="list">
-          <DropdownItem name="clearAll">{{ $t('closeAll') }}</DropdownItem>
-          <DropdownItem name="clearOthers">{{ $t('closeOther') }}</DropdownItem>
-        </DropdownMenu>
+        <template #list>
+          <DropdownMenu>
+            <DropdownItem name="clearAll">{{ $t('closeAll') }}</DropdownItem>
+            <DropdownItem name="clearOthers">{{ $t('closeOther') }}</DropdownItem>
+          </DropdownMenu>
+        </template>
       </Dropdown>
     </div>
     

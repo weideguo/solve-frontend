@@ -1,7 +1,7 @@
 <template>
   <Card>
     <div>
-      <div slot="title" style="padding-bottom: 30px;">
+      <div style="padding-bottom: 30px;">
         <div style="float:left">
           <Button  type="info" @click="createDirFlag = true">{{ $t('createDir') }}</Button>
           <Button  type="success" @click="gobackdir" style="margin-left: 0.2vw">{{ $t('preDir') }}</Button>
@@ -42,9 +42,9 @@
         <div>
            <Input v-model="createDirName" :placeholder="$t('inputFilenameTips')" clearable/>
         </div>
-        <div slot="footer">
+        <template #footer>
           <Button type="primary"  @click="realCreateDir">{{ $t('create') }}</Button>
-        </div>
+        </template>
       </Modal>
 
     </div>
