@@ -13,8 +13,6 @@
   </div>
 </template>
 <script>
-  //
-  // import axios from 'axios'
   import order from '@/api/order'
   import util from '@/libs/util'
 
@@ -84,7 +82,6 @@
         util.openPageEx(this, 'orderDetail', {workid: paramsDict['work_id']});
       },
       deleteRow (params) {
-        // axios.get(`${this.baseurl}/order/del?workid=${params.row['work_id']}`)
         order.delOrder(`${params['work_id']}`)
           .then(res => {
             if (res.data['status'] === 1) {
@@ -112,8 +109,6 @@
         }
         this.currentPage = parseInt(vl)
         sessionStorage.setItem('orderCurrentpage', vl);
-        // axios.get(`${this.baseurl}/order/?page=${vl}&pagesize=${this.pagesize}`)
-        // axios.get(`${this.baseurl}/order/?page=${vl}&pagesize=${this.pagesize}`)
         order.getOrder(vl,this.pagesize)
           .then(res => {
             this.tableData = res.data['data']

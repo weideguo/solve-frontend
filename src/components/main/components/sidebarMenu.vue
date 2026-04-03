@@ -57,8 +57,6 @@
 <script>
   //
   import util from '@/libs/util'
-  // import axios from 'axios'
-  // import VueI18n from 'vue-i18n'
 
   export default {
     name: 'sidebarMenu',

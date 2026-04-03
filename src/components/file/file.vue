@@ -54,7 +54,7 @@
 </template>
 
 <script>
-// import axios from 'axios'
+//
 import file from '@/api/file'
 import util from '@/libs/util'
 import fileList from './components/fileList.vue'
@@ -105,7 +105,6 @@ export default {
         let path = this.currentPath + '/' + this.createDirName
         path = path.replace('//','/')
         this.$Message.success(this.$t('commitBegin'))
-        // axios.get(`${this.baseurl}/file/create?path=${path}`)
         file.createPath(path)
           .then(res => {
             // console.log(res.data)
@@ -162,7 +161,6 @@ export default {
       this.getFileInfo(this.currentPath)
     },
     getFileInfo (path){
-      // axios.get(`${this.baseurl}/file/list?path=${path}`)
       // let prePath = path
       file.getFileList(path)
         .then(res => {

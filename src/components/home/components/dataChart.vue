@@ -3,24 +3,22 @@
 </template>
 
 <script>
-// import axios from 'axios'
 import util from '@/libs/util'
 import home from '@/api/home'
 
-//const echarts = require('echarts');
 import * as echarts from 'echarts'
 export default {
   name: 'dataChart',
   data () {
       return {
         // baseurl: this.$store.getters.sessionGet('baseurl'),
+        // dataSourcePie: null
       }
   },
   mounted () {
     // Vue 异步执行 DOM 更新
     this.$nextTick(() => {
       var dataSourcePie = echarts.init(document.getElementById('data_source_con'));
-      // axios.get(`${this.baseurl}/home/stats`)
       home.getHomeStats()
         .then(res => {
           let xdata = res.data.time
@@ -37,36 +35,41 @@ export default {
             })
           })
           let option = {
-          title: {
-              text: this.$t('orderStats')
-          },
-          tooltip: {
+            title: {
+              text: this.$t('orderStats'),
+              left: '0px',
+              top: '0px',
+            },
+            tooltip: {
               trigger: 'axis'
-          },
-          grid: {
+            },
+            grid: {
               left: '3%',
               right: '4%',
               bottom: '3%',
               containLabel: true
-          },
-          toolbox: {
+            },
+            toolbox: {
               feature: {
-                  saveAsImage: {}
+                saveAsImage: {}
               }
-          },
-          xAxis: {
+            },
+            xAxis: {
               type: 'category',
               boundaryGap: false,
               data: xdata
-          },
-          yAxis: {
+            },
+            yAxis: {
               type: 'value'
-          },
-          legend: {data: mylegend},
-          series: myseries
+            },
+            legend: {
+              data: mylegend,
+              top: '0px'
+            },
+            series: myseries
           };
           dataSourcePie.setOption(option);
-          window.addEventListener('resize', function () {
+          window.addEventListener('resize', () => {
             dataSourcePie.resize();
           });
       })

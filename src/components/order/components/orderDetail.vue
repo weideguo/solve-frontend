@@ -221,7 +221,6 @@
   import order from '@/api/order'
   import exec from '@/api/exec'
   import util from '@/libs/util'
-  // import axios from 'axios'
   import safeForm from '@/components/common/safeForm.vue'
   //
   export default {
@@ -390,7 +389,6 @@
       },
       abort (params) {
         util.notice(this, this.$t('abortTips'), 'info')
-        // axios.get(`${this.baseurl}/order/abort?target_id=${params['target_id']}`)
         order.abort(params['target_id'])
           .then(res => {
             if (parseFloat(res.data.abort_time)) {
@@ -426,7 +424,6 @@
         this.modalRerun = true
         this.selectParams = params
         this.targetId = targetId
-        // axios.get(`${this.baseurl}/execution/rerun_info?work_id=${this.workid}&target=${this.selectParams['target']}&target_id=${target_id}`)
         exec.getRerunInfo(this.workid,this.selectParams['target'],targetId)
           .then(res => {
             if (this.begin_line === 0) {
@@ -473,7 +470,6 @@
         this.selectParams['exe_status'] = 'rerun'
         this.modalRerun = false
         // console.log(this.newJobId)
-        // axios.get(`${this.baseurl}/execution/rerun?work_id=${this.workid}&target=${this.selectParams['target']}&target_id=${this.selectParams['target_id']}&begin_host=${begin_host}&begin_line=${begin_line}`)
         exec.rerun(this.workid,this.selectParams['target'],this.selectParams['target_id'],begin_line,this.newJobId)
           .then(res => {
             console.log(res.data)
@@ -515,7 +511,6 @@
             .catch(error => {
               util.notice(this, error, 'error')
             })
-          // axios.get(`${this.baseurl}/order/exelist?id=${params['target_id']}`)
           this.realQuickShow(params['target_id'])
         } else {
           this.currentTargetId = ''
@@ -553,7 +548,6 @@
       refreshShowDetail (logID) {
         this.selectionKey=[]
         this.selectionKeyStr='' 
-        // axios.get(`${this.baseurl}/order/exedetail?id=${logID}`)
         order.exedetail(logID)
           .then(res => {
             if (res.data['status'] > 0) {
@@ -619,7 +613,6 @@
       },
       summary () {
         this.modalSummary = true
-        // axios.get(`${this.baseurl}/order/summary?workid=${this.workid}`)
         order.summary(this.workid)
           .then(res => {
               this.summaryInfo = res.data['data']
@@ -659,7 +652,6 @@
         } else {
           this.workid = sessionStorage.getItem('orderListWorkid');
         }
-        // axios.get(`${this.baseurl}/order/detail?workid=${this.workid}&exclude=${exclude}`)
         order.detail(this.workid,exclude)
           .then(res => {
             if (res.data['status']>=1) {

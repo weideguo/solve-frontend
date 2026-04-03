@@ -207,7 +207,6 @@
       onlineFilter () {
         this.isOnline = ! this.isOnline
         if (this.isOnline) {
-          // axios.get(`${this.baseurl}/host/onlinedetail`)
           host.getOnlinedetail()
             .then(res => {
               res.data['data'].forEach((item) => {
@@ -231,10 +230,8 @@
           searchWord = this.$route.name + '*'
         }
         searchWord = encodeURIComponent(searchWord)
-        // axios.get(`${this.baseurl}/target/get?filter=${searchWord}&page=${vl}&pagesize=${this.pageSize}`)
         target.getTarget(searchWord,vl,this.pageSize)
           .then(res => {
-            // axios.get(`${this.baseurl}/host/online`)
             host.getOnline()
               .then(res2 => {
                 let onlinehost = [];
@@ -308,7 +305,6 @@
       realDelTarget () {
         // this.deleteConfirm = false
         let t = this.delname
-        // axios.get(`${this.baseurl}/target/del?target=${t}`)
         target.delTarget(t.replace('#','%23'))
           .then(res => {
             // console.log(res.data.status);
@@ -324,7 +320,6 @@
           });
       },
       addTarget (info) {
-        // axios.post(`${this.baseurl}/target/add`, info)
         target.addTarget(info)
           .then(res => {
             if (res.data['status'] >= 1) {
@@ -378,8 +373,6 @@
         }
       },
       reflashTmpl() {
-        // axios.get(`${this.baseurl}/target/get?filter=tmpl_${this.$route.name}`)
-        // axios.get(`${this.baseurl}/config?key=tmpl_${this.$route.name}`)
         config.getKey(`tmpl_${this.$route.name}`)
           .then(res => {
             delete res.data['data']['name']

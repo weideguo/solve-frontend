@@ -1,5 +1,4 @@
 import { createApp } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
 import { createStore } from 'vuex'
 import { createI18n } from 'vue-i18n'
 
@@ -17,20 +16,12 @@ import myEN from './libs/lang/en-US'
 import myZH from './libs/lang/zh-CN'
 
 // 项目文件
-import { MainRoute } from './router'
+import { router } from './router'
 import App from './App.vue'
 import store from './store' 
 import config from './config/config'
 
 
-
-// ----------------------
-// 1. 路由配置 (Vue Router 4)
-// ----------------------
-const router = createRouter({
-  history: createWebHistory(), // 对应 mode: 'history'
-  routes: MainRoute
-})
 
 // 重写 push 方法以处理重复导航错误
 const originalPush = router.push

@@ -1,5 +1,3 @@
-import axios from 'axios'
-
 let util = {}
 
 // iview方法二次封装
@@ -32,16 +30,14 @@ util.validatorGenerator = function(constrict,msg='') {
 
 }
 
-util.checkLogin = function (vm,error) {
+// 在此判断登录是否过期，给出更个性化提示
+util.checkLoginNotice = function (vm,error) {
   // console.log(error.response)
   if (error.response != undefined) {
     // 网络请求时则存在状态码
     if ( error.response.status === 401 ) {
-      // 401 权限错误
       vm.$Message.error('Unauthorized')
-      util.openPage(vm,'login')
     } else if ( error.response.status === 429 ) {
-      // console.log(error.response)
       let msg=error.response.data['detail']
       if ( msg != undefined ) {
         vm.$Notice.error({title: 'ERROR', desc: msg})
@@ -68,9 +64,8 @@ util.notice = function (vm, error, level) {
   } else if (level === 'warning') {
     vm.$Notice.warning({title: 'WARN', desc: error})
   } else if (level === 'error') {
+    util.checkLoginNotice(vm,error)
     // vm.$Notice.error({title: 'ERROR', desc: error})
-    // 在此判断登录是否过期 因为每后端请求都会有错误捕获 然后跳转到login？
-    util.checkLogin(vm,error)
   } else if (level === 'fast') {
     vm.$Notice.info({title: 'INFO', desc: error, duration: 1})
   }

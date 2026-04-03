@@ -1,5 +1,5 @@
+import { createRouter, createWebHistory } from 'vue-router'
 import Main from './components/main/main.vue'
-// vue-i18n与路由同级 不能直接 import VueRouter from 'vue-router'
 // 以下的title不是原始值，只作为变量在实际渲染时再翻译
 
 export const page404 = {
@@ -333,7 +333,7 @@ export const execDetail = {
   ]
 }
 
-export const MainRoute = [
+const MainRoute = [
   home,
   loginRouter,
   locking,
@@ -349,3 +349,10 @@ export const MainRoute = [
   page500,
   page404          // 由于路径匹配为/* 这个必须放在最后 否则都定向到这个路由
 ]
+
+const router = createRouter({
+  history: createWebHistory(), // 对应 mode: 'history'
+  routes: MainRoute
+})
+
+export { router }

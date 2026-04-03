@@ -9,8 +9,7 @@
         </Col>
         <Col span="16" style="height: 100%;">
           <Row style="height: 100%;" type="flex" align="middle" justify="center">
-            <count-up  :id-name="idName" :end-val="endVal" :color="color" :countSize="countSize" :countWeight="countWeight">
-              <p style="font-size: 1vh;color: #C8C8C8;" slot="intro">{{ introText }}</p>
+            <count-up  :id-name="idName" :end-val="endVal" :color="color" :introText="introText" :countSize="countSize" :countWeight="countWeight">
             </count-up>
           </Row>
         </Col>
@@ -20,6 +19,7 @@
 </template>
 
 <script>
+//
 import countUp from './countUp.vue';
 
 export default {

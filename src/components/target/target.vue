@@ -78,7 +78,6 @@
 
 <script>
   //
-  // import axios from 'axios'
   import target from '@/api/target'
   import config from '@/api/config'
   import util from '@/libs/util'
@@ -165,7 +164,6 @@
           searchWord = this.$route.name + '*'
         }
         searchWord = encodeURIComponent(searchWord)
-        // axios.get(`${this.baseurl}/target/get?filter=${searchWord}&page=${vl}&pagesize=${this.pagesize}`)
         target.getTarget(searchWord,vl,this.pagesize)
           .then(res => {
             this.tableData = res.data['data']
@@ -248,7 +246,6 @@
       },
       formInfoCommit (data) {
         this.switchFormInfo = false
-        // axios.post(`${this.baseurl}/config/?key=tmpl_${this.$route.name}`, data)
         config.postKey(`tmpl_${this.$route.name}`,data)
           .then(res => {
             if (res.data['status'] >= 1) {
@@ -287,7 +284,6 @@
         // this.deleteConfirm=false
         let t = this.delname
 
-        // axios.get(`${this.baseurl}/target/del?target=${t}`)
         target.delTarget(t.replace(new RegExp("#","g"),"%23"))
           .then(res => {
             if (res.data['status'] === 1) {
@@ -302,7 +298,6 @@
           });
       },
       addTarget (info) {
-        // axios.post(`${this.baseurl}/target/`, info)
         target.addTarget(info)
           .then(res => {
             if (res.data['status'] >= 1) {
@@ -320,7 +315,6 @@
           });
       },
       reflashTmpl () {
-        // axios.get(`${this.baseurl}/config/?key=tmpl_${this.$route.name}`)
         config.getKey(`tmpl_${this.$route.name}`)
           .then(res => {
             let keyInfo={}
@@ -345,7 +339,6 @@
           .catch(error => {
             util.notice(this, error, 'error')
           })
-        // axios.get(`${this.baseurl}/target/info?filter=const*`)
         target.getNameList('const*')
           .then(res => {
             this.constKeyList = res.data['data']

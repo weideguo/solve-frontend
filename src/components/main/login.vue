@@ -94,7 +94,6 @@
 </template>
 
 <script>
-  // import axios from 'axios'
   import login from '@/api/login'
   import util from '@/libs/util'
   import config from '@/config/config'
@@ -198,7 +197,6 @@
         this.baseurl = JSON.parse(this.formInline.baseurl)[1]
         localStorage.setItem('project',this.project)
         localStorage.setItem('baseurl',this.baseurl)
-        // axios.get(`${this.baseurl}/cas/login?service=${this.service}`)
         login.loginCAS(this.baseurl,this.service)
           .then(res => {
             if (res.data['status'] === 1) {

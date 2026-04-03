@@ -98,7 +98,6 @@
   import sidebarMenu from './components/sidebarMenu.vue'
   import sidebarMenuShrink from './components/sidebarMenuShrink.vue'
   import tagsPageOpened from './components/tagsPageOpened.vue'
-  // import axios from 'axios'
   import util from '@/libs/util'
   import custom from '@/config/custom'
 
@@ -158,9 +157,6 @@
       }
     },
     created () {
-      // 由于每个页面都引入main.vue 可以实现全局设置headers
-      // 再设置一次，以实现在单独使用axios时设置头部
-      // axios.defaults.headers.common['Authorization'] = this.$store.getters.sessionGet('jwt')
     }
   }
 </script>

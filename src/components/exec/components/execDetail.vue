@@ -11,7 +11,7 @@
           <Button type="primary" shape="circle" icon="md-cloud-upload" ghost @click.native="commit()"></Button>
         </Tooltip>
       </template>
-      <Form :label-width="100" ref="formExecutionSetting" :rules="ruleExecutionSetting">
+      <Form :label-width="100" ref="formExecutionSetting" :model="formExecutionSetting":rules="ruleExecutionSetting">
         <FormItem label="target_type" prop="target_type" >
           <Input v-model="target_type" disabled></Input> 
         </FormItem>
@@ -36,22 +36,20 @@
 </template>
 
 <script>
-  // import axios from 'axios'
   import exec from '@/api/exec'
   import target from '@/api/target'
   import util from '@/libs/util'
-  // import VueI18n from 'vue-i18n'
 
   //
   export default {
     data () {
       return {
         target_type: '',
-        // baseurl: this.$store.getters.sessionGet('baseurl'),
         openswitchAdd: false,
         fromData: {},
         formItem: [],
         formItemSort: ['name', 'tmpl', 'target','comment'],
+        formExecutionSetting: {},
         treeData: [],
         tmplList: [],
         title: '',
@@ -59,7 +57,7 @@
         name_o: '',
         ruleExecutionSetting: {
           name: [
-            { required: true }
+            { required: true, message: 'name'+this.$t('shouldNotEmpty') }
           ],
         },
       }
@@ -76,6 +74,13 @@
       },
       tmpl () {
         return util.arry2dict(this.formItem, 'key', 'value')['tmpl']
+      },
+      formExecutionSetting() {
+        let x = {}
+        this.formItem.forEach((item,i) => {
+          x[item['key']] = item['value']
+        })
+        return x
       }
     },
     watch: {
@@ -84,7 +89,6 @@
           if (this.info['tmpl'] === '') {
             this.target_type = ''
           } else {
-            // axios.get(`${this.baseurl}/executionInfo/get?filter=${this.info['tmpl']}`)
             exec.getExecutionInfo(`${this.info['tmpl']}`)
               .then(res => {
                 try {
@@ -138,7 +142,6 @@
       },
       addinfo (info) {
         try {
-          // axios.post(`${this.baseurl}/executionInfo/add`, info)
           exec.postExecutionInfo(info)
             .then(res => {
               if (res.data['status'] >= 1) {
@@ -166,13 +169,8 @@
           tag = sessionStorage.getItem('exe_data_is_add')
         }
         try {
-          // Object.keys(this.fromData).forEach((item,i) => {
-          //     if (item.substring(0,1) === '_') {
-          //       delete this.fromData[item]
-          //     }
-          //   })
           let x = ['_index','_rowKey','number']
-            x.forEach((item,i) => {
+          x.forEach((item,i) => {
             delete this.fromData[item]
           })
         } finally {
@@ -198,7 +196,6 @@
           this.openswitchAdd = !this.openswitchAdd
           let formdata = util.arry2dict(this.formItem, 'key', 'value')
           let selectedItem = (formdata['target']).split(',');
-          // axios.get(`${this.baseurl}/target/info?filter=${this.target_type}*`)
           target.getNameList(`${this.target_type}*`)
             .then(res => {
               this.treeData = []
@@ -220,7 +217,6 @@
         });
       },
       reflashTmpl () {
-        // axios.get(`${this.baseurl}/executionInfo/info?filter=tmpl*`)
         exec.getNameList('tmpl*')
           .then(res => {
             this.tmplList = res.data['data']

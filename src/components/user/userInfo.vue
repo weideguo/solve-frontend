@@ -70,7 +70,7 @@
 
 
 <script>
-  // import axios from 'axios'
+  //
   import user from '@/api/user'
   import util from '@/libs/util'
 
@@ -157,10 +157,6 @@
     },
     methods: {
       realAddUser () {
-        // axios.post(this.baseurl + '/userinfo/', {
-        //     'username': this.editForm.username,
-        //     'password': this.editForm.pass
-        //   })
         user.postUserinfo({'username': this.editForm.username, 'password': this.editForm.pass})
           .then(res => {
             this.editModal = false
@@ -179,7 +175,6 @@
           })
       },
       refreshuser (vl = 1) {
-        // axios.get(`${this.baseurl}/userinfo/?page=${vl}&pagesize=${this.pagesize}`)
         user.getUserinfo(vl,this.pagesize)
           .then(res => {
             this.userdata = res.data['data']
@@ -224,10 +219,6 @@
         
       },
       saveEdit () {
-        // axios.put(this.baseurl + '/userinfo/changepwd', {
-        //     'username': this.editForm.username,
-        //     'new': this.editForm.pass
-        //   })
         user.putUserinfo({'username': this.editForm.username,'new': this.editForm.pass})
           .then(res => {
             if (this, res.data['status'] === 1) {
@@ -250,7 +241,6 @@
       delUser () {
         if (this.username === this.confirmuser) {
           this.$Message.success(this.$t('commitBegin'))
-          // axios.delete(this.baseurl + '/userinfo/' + this.username)
           user.deleteUserinfo(this.username)
             .then(res => {
               if (this, res.data['status'] === 1) {

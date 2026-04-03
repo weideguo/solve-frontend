@@ -3,8 +3,8 @@
     <Card>
       <Table border stripe :columns="columns" :data="tableData" size="small" @on-row-dblclick="quickShow">
         <template #action="{ row, index }">
-          <Button type="info" size="small" style="margin-right: 20px" @click="execJob(row)">{{ $t('run') }}</Button>
-          <Button type="success" size="small" style="margin-right: 20px" @click="targetinfoDetail(row)">{{ $t('setting') }}</Button>
+          <Button type="info" size="small" style="margin-right: 50px" @click="execJob(row)">{{ $t('run') }}</Button>
+          <Button type="success" size="small" style="margin-right: 50px" @click="targetinfoDetail(row)">{{ $t('setting') }}</Button>
           <Button type="error" size="small" @click="delTarget(row)">{{ $t('delete') }}</Button>
         </template>
       </Table>
@@ -13,7 +13,7 @@
     </Card>
     
     
-    <Modal v-model="openswitchAdd"  width="800"  :title="$t('executeSubTarget')">
+    <Modal v-model="switchSubTargetSelect"  width="800"  :title="$t('executeSubTarget')">
       <Tree :data="subTargetTreeData" ref="subTargetTree" show-checkbox></Tree>
       
       <template #footer>
@@ -22,7 +22,7 @@
     </Modal>
 
 
-    <Modal v-model="openswitch" @on-cancel="current = 0" scrollable :mask-closable="false" width="50%">
+    <Modal v-model="switchExecutionInfo" @on-cancel="current = 0" scrollable :mask-closable="false" width="50%">
 
       <div v-if="current === 0">
         <div>
@@ -63,9 +63,9 @@
       
       <br>
       <Steps :current="current">
-          <Step :title="$t('executeTarget')"></Step>
-          <Step :title="$t('paramsSetting')"></Step>
-          <Step :title="$t('confirmRun')"></Step>
+        <Step :title="$t('executeTarget')"></Step>
+        <Step :title="$t('paramsSetting')"></Step>
+        <Step :title="$t('confirmRun')"></Step>
       </Steps>
       
       <template #footer>
@@ -106,13 +106,11 @@
 <script>
   //
   import { toRaw } from 'vue'
-  // import axios from 'axios'
   import exec from '@/api/exec'
   import util from '@/libs/util'
   import file from '@/api/file'
   import target from '@/api/target'
   import constrictForm from '@/components/common/constrictForm.vue'
-  // import VueI18n from 'vue-i18n'
 
   export default {
     components: {
@@ -125,7 +123,7 @@
         openshow: false,
         showTitle: '',
         showTargets: [],
-        openswitch: false,
+        switchExecutionInfo: false,
         formItem: {},
         formComment: {},
         formType: {},
@@ -198,7 +196,7 @@
         debugAble: false,
         targetConstict: [],
         execExtraInfo: {},
-        openswitchAdd: false,
+        switchSubTargetSelect: false,
         subTargetTreeData: [],
         targetInfoOld: '',
         shouldTagetCommit: true,
@@ -226,6 +224,14 @@
               this.targetName = 'container_auto_'+util.formatDate((new Date().getTime()) / 1000).replace(new RegExp('-','g'),'').replace(new RegExp(':','g'),'').replace(new RegExp(' ','g'),'_')
                                 +'_'+Math.round(Math.random()*10000)
               targetInfo['name'] = this.targetName
+              
+              for (const [key, value] of Object.entries(targetInfo)) {
+                if (value === undefined || value === null || value === '') {
+                  util.notice(this, key+this.$t('shouldNotEmpty'), 'error')
+                  return
+                }
+              }
+              
               target.addTarget(targetInfo)
                 .then(res => {
                   if (res.data['status'] < 1) {
@@ -314,8 +320,6 @@
       },
       saveSession (data) {
         // console.log(data)
-        // axios.post(`${this.baseurl}/session/?filter=${this.openinfo['name']}`, this.formItem)
-        /**/
         exec.postSession(`${this.openinfo['name']}`, data)
           .then(res => {
             util.notice(this, this.$t('sessionSaveSuccess'), 'info')
@@ -346,7 +350,6 @@
         }
         this.tmplInfo = []
         this.playbookContent = ''
-        // axios.get(`${this.baseurl}/executionInfo/get?filter=${params['tmpl']}`)
         exec.getExecutionInfo(`${params['tmpl']}`)
           .then(res => {
             let r = res.data['data'][0]
@@ -380,7 +383,7 @@
         this.openinfo_s = row['name_s']
         exec.getSession(`${row['name']}`)
           .then(res => {
-            // this.openswitch = !this.openswitch
+            // this.switchExecutionInfo = !this.switchExecutionInfo
             this.sessionFull = res.data['session']
             this.debugList = res.data['pause']
             this.targetConstict = res.data['target_constrict']
@@ -393,7 +396,7 @@
             if ( ! this.targetConstict.length && ! parseInt(row['number']) ) {
               this.$Message.error(this.$t('getExecuteTargetTips'))
             } else {
-              this.openswitch = !this.openswitch
+              this.switchExecutionInfo = !this.switchExecutionInfo
               this.shouldTagetCommit = true
             }
 
@@ -412,7 +415,7 @@
         this.activeTargetConstict = targetConstict
         this.targetType = targetConstict['constrict']
         if (this.targetType != '') {
-          this.openswitchAdd = true
+          this.switchSubTargetSelect = true
           let selectedItem = []
           target.getNameList(`${this.targetType}`)
             .then(res => {
@@ -430,7 +433,7 @@
         let checkedleaf = util.getCheckedLeaf(this.subTargetTreeData)
         // console.log(this.activeTargetConstict)
         if (checkedleaf.length === 1) {
-          this.openswitchAdd = false
+          this.switchSubTargetSelect = false
           this.activeTargetConstict.value = checkedleaf[0]
         } else {
           this.$Message.error(this.$t('onlyOneOndeSelectTips'))
@@ -443,10 +446,9 @@
           if (!debug) {
             debug = this.debugList
           }
-          this.openswitch = false
+          this.switchExecutionInfo = false
           this.$Message.info(this.$t('afterCommitTips'))
 
-          // axios.post(`${this.baseurl}/execution/?filter=${this.openinfo['name']}`, this.sessionInfo)
           exec.postExecution(this.openinfo['name'], this.sessionInfo, String(debug), this.targetName)
             .then(res => {
               util.notice(this, `${this.openinfo['name_s']} `+this.$t('commitBegin'), 'info')
@@ -484,7 +486,6 @@
         }
         this.currentPage = parseInt(vl)
         sessionStorage.setItem('execCurrentpage', vl);
-        // axios.get(`${this.baseurl}/executionInfo/get?filter=${this.filter}&page=${vl}&pagesize=${this.pagesize}&orderby=name`)
         exec.getExecutionInfo(this.filter,vl,this.pagesize,'name')
           .then(res => {
             this.tableData = res.data['data']
@@ -505,7 +506,6 @@
       realDelTarget () {
         // this.deleteConfirm = false
         let d = this.delname
-        // axios.get(`${this.baseurl}/executionInfo/del?target=${t}`)
         exec.delExecutionInfo(d)
           .then(res => {
             if (res.data['status'] === 1) {

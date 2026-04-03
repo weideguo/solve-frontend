@@ -3,15 +3,15 @@
     <Card style="width: 100%">
       <template #title>
         <Tooltip :content="$t('modifySelectedInfo')" placement="bottom-start">
-          <Button type="info" icon="md-list" @click.native="switchFormInfo=true" ></Button>
+          <Button type="info" icon="md-list" @click.native="switchTmplType=true" ></Button>
         </Tooltip>
         <Button type="info" icon="md-add" @click.native="targetinfoAdd()" style="margin-left: 0.2vw">{{ $t('addTemplate') }}</Button>
 
       </template>
       <Table border :columns="columns" :data="tableData" @on-row-dblclick="targetinfoDetail" stripe size="small">
         <template #operation="{ row, index }">
-          <Button type="info" size="small" style="margin-right: 20px" @click="generateJob(row)">{{ $t('createJob') }}</Button>
-          <Button type="success" size="small" style="margin-right: 20px" @click="targetinfoDetail(row)">{{ $t('detail') }}</Button>
+          <Button type="info" size="small" style="margin-right: 50px" @click="generateJob(row)">{{ $t('createJob') }}</Button>
+          <Button type="success" size="small" style="margin-right: 50px" @click="targetinfoDetail(row)">{{ $t('detail') }}</Button>
           <Button type="error" size="small" @click="delTarget(row)">{{ $t('delete') }}</Button>
         </template>
       </Table>
@@ -19,18 +19,18 @@
       <Page :total="pageNumber" @on-change="getCurrentPage" :model-value="currentPage" :page-size="pagesize" @on-page-size-change="getCurrentPageNew" :page-size-opts="pageSizeOpts" show-elevator show-total show-sizer></Page>
     </Card>
     
-    <Modal v-model="openswitch" footer-hide width="800">
+    <Modal v-model="switchTmplDetail" footer-hide width="800">
       <template #header>
         <p>
           <span>{{modelTitle}}</span>
         </p>
       </template>
-      <safe-form ref="mytest" :labelwidth="100" :formdata="formItem" :formvalidate="formItemValidate" @primaryClick="formSubmit" @secondClick="openswitch = false"
+      <safe-form ref="tmplDetail" :labelwidth="100" :formdata="formItem" :formvalidate="formItemValidate" @primaryClick="formSubmit" @secondClick="switchTmplDetail = false"
         :primaryButtonName="isAdd? $t('add') : $t('update') ">
       </safe-form>
     </Modal>
 
-    <Modal v-model="switchFormInfo" width="50%" @on-cancel="cancelFormInfo">
+    <Modal v-model="switchTmplType" width="50%" @on-cancel="cancelFormInfo">
       <template #header>
         <p>
           <span>{{ $t('modifyTips') }}</span>
@@ -59,7 +59,6 @@
 
 <script>
   //
-  // import axios from 'axios'
   import exec from '@/api/exec'
   import vconfig from '@/api/config'
   import util from '@/libs/util'
@@ -74,10 +73,10 @@
       return {
         baseurl: this.$store.getters.sessionGet('baseurl'),
         modelTitle: '',
-        switchFormInfo: false,
+        switchTmplType: false,
         jobType: [],
         targetType: [],
-        openswitch: false,
+        switchTmplDetail: false,
         formItem: [],
         formItemOrigin: [
           {key: 'name', label: 'name', comment: this.$t('templateName')},
@@ -194,7 +193,7 @@
     },
     methods: {
       cancelFormInfo () {
-        this.switchFormInfo = false
+        this.switchTmplType = false
         this.jobType = util.dictDeepCopy(this.jobTypeOld)
         this.jobTypeTmp = util.dictDeepCopy(this.jobTypeOld)
         this.targetType = util.dictDeepCopy(this.targetTypeOld)
@@ -207,7 +206,6 @@
         this.targetTypeTmp.push(val)
       },
       getJobTypes () {
-        // axios.get(`${this.baseurl}/config/?key=job_types`)
         vconfig.getKey('job_types')
           .then(res => {
             this.jobTypeOld=util.dictDeepCopy(res.data['data'])
@@ -233,7 +231,7 @@
           });
       },
       getTargetTypes () {
-        // axios.get(`${this.baseurl}/config/?key=target_types`)
+
         vconfig.getKey('target_types')
           .then(res => {
             this.targetTypeOld = util.dictDeepCopy(res.data['data'])
@@ -258,10 +256,9 @@
           });
       },
       commitFormInfo (){
-        this.switchFormInfo = false
+        this.switchTmplType = false
         // console.log(this.jobType , this.jobTypeOld)
         if ( this.jobType != this.jobTypeOld) {
-          // axios.post(`${this.baseurl}/config/?key=job_types&type=set`, this.job_type.split(','))
           // vconfig.postKey('job_types',this.job_type.split(','),'set')
           vconfig.postKey('job_types',this.jobType,'set')
             .then(res => {
@@ -276,7 +273,6 @@
             })  
         }
         if ( this.targetType != this.targetTypeOld) {
-          // axios.post(`${this.baseurl}/config/?key=target_types&type=set`, this.target_type.split(','))
           // vconfig.postKey('target_types',this.target_type.split(','),'set')
           vconfig.postKey('target_types',this.targetType,'set')
             .then(res => {
@@ -299,12 +295,12 @@
         this.formItem.forEach((item,i) => {
           item['value'] = info[item['key']]
         })
-        this.openswitch = true
+        this.switchTmplDetail = true
         this.isAdd = false
         this.modelTitle = this.$t('templateDetail')
       },
       targetinfoAdd () {
-        this.openswitch = true
+        this.switchTmplDetail = true
         this.formItem = this.formItemOrigin
         this.isAdd = true
         this.modelTitle = this.$t('addTemplate')
@@ -316,7 +312,7 @@
           formInfo['name_o'] = this.name_o 
         }
         this.addTarget(formInfo)
-        this.openswitch = false
+        this.switchTmplDetail = false
       },
       generateJob (row) {
         let tmplInfo = row;
@@ -343,7 +339,6 @@
         }
         this.currentPage = parseInt(vl)
         sessionStorage.setItem('tmplexecCurrentpage', vl)
-        // axios.get(`${this.baseurl}/executionInfo/get?filter=${this.filter}&page=${vl}&pagesize=${this.pagesize}&orderby=name`)
         exec.getExecutionInfo(this.filter,vl,this.pagesize,'name')
           .then(res => {
             this.tableData = res.data.data;
@@ -364,7 +359,6 @@
       realDelTarget () {
         // this.deleteConfirm=false
         let d = this.delname
-        // axios.get(`${this.baseurl}/executionInfo/del?target=${t}`)
         exec.delExecutionInfo(d)
           .then(res => {
             if (res.data['status'] === 1) {
@@ -379,7 +373,6 @@
           });
       },
       addTarget (info) {
-        // axios.post(`${this.baseurl}/executionInfo/`, info)
         exec.postExecutionInfo(info)
           .then(res => {
             this.addName = info['name'].split('tmpl:')[1]

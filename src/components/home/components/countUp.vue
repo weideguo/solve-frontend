@@ -1,17 +1,51 @@
 <template>
-<div>
-  <p :style="{textAlign: 'center', color: color, fontSize: countSize, fontWeight: countWeight}">
-    <span v-cloak :id="idName">{{ startVal }}</span>
-    <span>{{ unit }}</span>
-  </p>
-  <slot name="intro"></slot>
-</div>
+  <div>
+    <p :style="{textAlign: 'center', color: color, fontSize: countSize, fontWeight: countWeight}">
+      <span v-cloak :id="idName">{{ startVal }}</span>
+      <span>{{ unit }}</span>
+    </p>
+    <p style="font-size: 1vh; color: rgb(200, 200, 200);">{{ introText }}</p>
+  </div>
 </template>
 
-<script>
-import CountUp from 'countup';
+<script setup>
+import { ref, onMounted, nextTick } from 'vue';
+import { CountUp } from 'countup.js';
 
-function transformValue (val) {
+const props = defineProps({
+  idName: String,
+  introText: String,
+  endVal: {
+    type: Number,
+    required: true
+  },
+  startVal: {
+    type: Number,
+    default: 0
+  },
+  options: {
+    type: Object,
+    default: () => ({ duration: 2 })
+  },
+  delay: {
+    type: Number,
+    default: 500
+  },
+  color: String,
+  countSize: {
+    type: String,
+    default: '30px'
+  },
+  countWeight: {
+    type: Number,
+    default: 700
+  }
+});
+
+
+const unit = ref('');
+
+function transformValue(val) {
   let endVal = 0;
   let unit = '';
   if (val < 1000) {
@@ -32,74 +66,20 @@ function transformValue (val) {
   };
 }
 
-export default {
-  data () {
-    return {
-      unit: '',
-      demo: {}
-    };
-  },
-  name: 'countUp',
-  props: {
-    idName: String,
-    className: String,
-    startVal: {
-      type: Number,
-      default: 0
-    },
-    endVal: {
-      type: Number,
-      required: true
-    },
-    decimals: {
-      type: Number,
-      default: 0
-    },
-    duration: {
-      type: Number,
-      default: 2
-    },
-    delay: {
-      type: Number,
-      default: 500
-    },
-    options: {
-      type: Object,
-      default: () => {
-        return {
-          useEasing: true,
-          useGrouping: true,
-          separator: ',',
-          decimal: '.'
-        };
-      }
-    },
-    color: String,
-    countSize: {
-      type: String,
-      default: '30px'
-    },
-    countWeight: {
-      type: Number,
-      default: 700
-    },
-    introText: [String, Number]
-  },
-  mounted () {
-    this.$nextTick(() => {
-      setTimeout(() => {
-        let res = transformValue(this.endVal);
-        let endVal = res.val;
-        this.unit = res.unit;
-        let demo = {};
-        if (document.getElementById(this.idName)) {
-          this.demo = demo = new CountUp(this.idName, this.startVal, endVal, this.decimals, this.duration, this.options);
-          if (!demo.error) {
-            demo.start();
-          }
+onMounted(() => {
+  nextTick(() => {
+    setTimeout(() => {
+      const res = transformValue(props.endVal);
+      const endVal = res.val;
+      unit.value = res.unit;
+
+      if (document.getElementById(props.idName)) {
+        let myCountUp = new CountUp(props.idName, endVal, props.options);
+        if (!myCountUp.error) {
+          myCountUp.start();
         }
-      }, this.delay);
-    });
-  }
-};
+      }
+    }, props.delay);
+  });
+});
 </script>

@@ -30,10 +30,9 @@
 </template>
 //
 <script>
-  // import axios from 'axios'
+  //
   import util from '@/libs/util'
   import login from '@/api/login'
-  // import VueI18n from 'vue-i18n'
 
   export default {
     data () {
