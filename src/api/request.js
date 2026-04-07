@@ -4,14 +4,14 @@ import { router } from '@/router.js'
 
 // 创建 axios 实例
 const request = axios.create({
-  // baseURL: 'http://192.168.59.132:8000/api/v1xx', 
-  baseURL: sessionStorage.getItem('baseurl'), 
   timeout: 5000 // 超时时间
 })
 
 // 请求拦截器
 request.interceptors.request.use(
   config => {
+    config.baseURL = sessionStorage.getItem('baseurl')
+
     // 设置语言
     config.headers['Accept-Language'] = localStorage.getItem('language')
     // 设置 Token

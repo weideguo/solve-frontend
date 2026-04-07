@@ -1,28 +1,28 @@
 import request from '@/api/request'
 
 export default {
-  login: function (baseurl, params) {
+  login: function (params) {
     return request({
-      url: baseurl+'/login/',
+      url: '/login/',
       method: 'post',
       data: params
     })
   },
-  loginCAS: function (baseurl, service) {
+  loginCAS: function (service) {
     return request({
-      url: baseurl+'/cas/login?service='+service,
+      url: '/cas/login?service='+service,
       method: 'get',
     })
   },
-  casServiceValidate: function (baseurl, ticket, service) {
+  casServiceValidate: function (ticket, service) {
     return request({
-      url: baseurl+`/cas/serviceValidate?ticket=${ticket}&service=${service}`,
+      url: `/cas/serviceValidate?ticket=${ticket}&service=${service}`,
       method: 'get',
     })
   },
-  logout: function (baseurl, service) {
+  logout: function (service) {
     return request({
-      url: baseurl+`/logout/?service=${service}`,
+      url: `/logout/?service=${service}`,
       method: 'get',
     })
   },

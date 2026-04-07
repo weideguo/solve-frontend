@@ -118,7 +118,6 @@
     },
     data () {
       return {
-        baseurl: this.$store.getters.sessionGet('baseurl'),
         current: 0,
         openshow: false,
         showTitle: '',

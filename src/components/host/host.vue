@@ -67,8 +67,6 @@
     },
     data () {
       return {
-        switch1: true,
-        baseurl: this.$store.getters.sessionGet('baseurl'),
         isOnline: false,
         searchWord: '',
         formItemValidate: {

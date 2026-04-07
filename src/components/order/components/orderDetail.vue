@@ -230,7 +230,6 @@
     },
     data () {
       return {
-        baseurl: this.$store.getters.sessionGet('baseurl'),
         modalRerun: false,
         modalList: false,
         modalDetail: false,

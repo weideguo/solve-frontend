@@ -71,7 +71,6 @@
     },
     data () {
       return {
-        baseurl: this.$store.getters.sessionGet('baseurl'),
         modelTitle: '',
         switchTmplType: false,
         jobType: [],

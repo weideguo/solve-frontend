@@ -64,7 +64,7 @@ export default {
   },
   data () {
     return {
-      baseurl: this.$store.getters.sessionGet('baseurl'),
+      baseurl: sessionStorage.getItem('baseurl'),
       currentDirs: [],
       currentFiles: [],
       currentPath: '/',

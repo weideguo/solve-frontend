@@ -20,7 +20,6 @@
     name: 'order',
     data () {
       return {
-        // baseurl: this.$store.getters.sessionGet('baseurl'),
         columns: [
           {
             title: this.$t('jobID'),

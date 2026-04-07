@@ -37,7 +37,6 @@
   export default {
     data () {
       return {
-        baseurl: this.$store.getters.sessionGet('baseurl'),
         avatorLeft: '0px',
         inputLeft: '400px',
         password: '',
@@ -59,12 +58,9 @@
         }
       },
       handleUnlock () {
-        let baseurl=''
-        login.login(baseurl, {'username': sessionStorage.getItem('user'),'password': this.password})
+        login.login({'username': sessionStorage.getItem('user'),'password': this.password})
           .then(res => {
             if (res.data['token']) {
-              this.$store.commit('storeSet', ['jwt', `Bearer ${res.data['token']}`])
-              this.$store.commit('sessionSet', ['locking', 0])
               sessionStorage.setItem('locking', '0')
               this.$router.push({
                 name: sessionStorage.getItem('lastPageName')
@@ -78,8 +74,7 @@
       }
     },
     mounted () {
-      this.$store.commit('storeSet', ['jwt', ''])
-      this.$store.commit('sessionSet', ['locking', 1])
+      sessionStorage.setItem('locking', '1')
     }
   }
 </script>

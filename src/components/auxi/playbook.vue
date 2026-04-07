@@ -11,7 +11,7 @@
       </div>
     </div>
     <div style="margin-left: 5%;margin-top: 1%;">
-      <Switch v-model="isWrap" @on-change="reHighlight()"></Switch>
+      <Switch v-model="isWrap" @on-change="highlightCode()"></Switch>
     </div>
     <div style="position: relative;margin-top: 1%;font-size:20px">
       <div>
@@ -21,62 +21,54 @@
   </div>
 </template>
 
-<script>
-  import util from '@/libs/util'
-  import file from '@/api/file'
+<script setup>
+//
+import { ref, onMounted, nextTick, watch } from 'vue'
+import Prism from 'prismjs'
+import 'prismjs/themes/prism-tomorrow.css'
+import 'prismjs/plugins/line-numbers/prism-line-numbers.css'
+import 'prismjs/components/prism-bash'
+import 'prismjs/plugins/line-numbers/prism-line-numbers'
+
+
+import util from '@/libs/util'
+import file from '@/api/file'
+
+// 响应式数据
+const title = ref('')
+const playbook = ref('')
+const content = ref('')
+const isWrap = ref(true)
+
+// 高亮函数
+const highlightCode = async () => {
+  // nextTick 确保在 DOM 更新后执行
+  await nextTick()
+  Prism.highlightAll()
+}
+
+// 监听内容变化，一旦内容更新就重新高亮
+watch(content, () => {
+  highlightCode()
+})
+
+
+// 在组件挂载后获取数据
+onMounted(async () => {
+  const result = util.parseUrlParams(window.location)
+  title.value = result['title']
+  playbook.value = result['playbook']
   
-  import 'prismjs/themes/prism-tomorrow.css'
-  import 'prismjs/plugins/line-numbers/prism-line-numbers.css'
-
-  // 加载后立即渲染 数据之后才获取 因此导出出错 不用该方法引入
-  import Prism from 'prismjs'
-  import 'prismjs/components/prism-bash';
-  import 'prismjs/plugins/line-numbers/prism-line-numbers.js'
-
-  export default {
-    name: 'playbook',
-    //components: {
-    //  Prism
-    //},
-    data () {
-      return {
-        title: '',
-        playbook: '',
-        content: '',
-        isWrap: true,
-      }
-    },
-    methods: {
-      reHighlight() {
-        //this.isWrap = ! this.isWrap
-        setTimeout(function() {
-          Prism.highlightAll()
-        }, 10)
-      }
-    },
-    mounted () {
-    },
-    created () {
-      //loadLanguages(['shell'])
-      let result = util.parseUrlParams(window.location)
-      this.title = result['title']
-      this.playbook = result['playbook']
-      file.getFileContent(this.playbook)
-        .then(res => {
-          if (res.data['status'] > 0) {
-            // console.log(res.data)
-            this.content = res.data['content']
-            setTimeout(function() {
-              // 必须延迟以确保css先加载
-              Prism.highlightAll()
-            }, 10)
-          } else {
-            util.notice(this, res.data['msg'], 'error')
-          }
-        }).catch(error => {
-          util.notice(this, error, 'error')
-        })
+  try {
+    const res = await file.getFileContent(playbook.value)
+    if (res.data['status'] > 0) {
+      content.value = res.data['content']
+      // 数据赋值后，watch 会自动触发 highlightCode
+    } else {
+      util.notice(this, res.data['msg'], 'error')
     }
+  } catch (error) {
+    util.notice(this, error, 'error')
   }
+})
 </script>
-

@@ -84,7 +84,6 @@
         }
       }
       return {
-        baseurl: this.$store.getters.sessionGet('baseurl'),
         currentUser: sessionStorage.getItem('user'),
         // 用户表
         currentPage: 1,

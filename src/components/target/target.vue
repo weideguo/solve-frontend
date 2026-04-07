@@ -93,7 +93,6 @@
         f(rule, value, callback)
       }
       return {
-        baseurl: this.$store.getters.sessionGet('baseurl'),
         searchWord: '',
         username: sessionStorage.getItem('user'),
         formItem: [],

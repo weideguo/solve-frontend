@@ -123,7 +123,7 @@ export default {
       myheader: {
         'Authorization': sessionStorage.getItem('jwt')
       },
-      baseurl: this.$store.getters.sessionGet('baseurl'),
+      baseurl: sessionStorage.getItem('baseurl'),
       currentKey: "",    // 当前触发的key名
     }
   },

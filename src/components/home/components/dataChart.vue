@@ -11,7 +11,6 @@ export default {
   name: 'dataChart',
   data () {
       return {
-        // baseurl: this.$store.getters.sessionGet('baseurl'),
         // dataSourcePie: null
       }
   },

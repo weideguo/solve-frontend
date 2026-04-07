@@ -165,12 +165,12 @@
           if (valid) {
             let project = JSON.parse(this.formInline.baseurl)[0]
             let baseurl = JSON.parse(this.formInline.baseurl)[1]
-            login.login(baseurl, {'username': this.formInline.user, 'password': this.formInline.password})
+            sessionStorage.setItem('baseurl', baseurl)
+            sessionStorage.setItem('project', project)
+            login.login({'username': this.formInline.user, 'password': this.formInline.password})
               .then(res => {
                 if (res.data['token']) {
                   sessionStorage.setItem('jwt', `Bearer ${res.data['token']}`)
-                  sessionStorage.setItem('baseurl', baseurl)
-                  sessionStorage.setItem('project', project)
                   sessionStorage.setItem('hasLogin', 1)
                   sessionStorage.setItem('user', this.formInline.user)
                   sessionStorage.setItem('loginTimestamp', (new Date().getTime()) / 1000)
@@ -195,9 +195,11 @@
       login () {
         this.project = JSON.parse(this.formInline.baseurl)[0]
         this.baseurl = JSON.parse(this.formInline.baseurl)[1]
+        sessionStorage.setItem('project',this.project)
+        sessionStorage.setItem('baseurl',this.baseurl)
         localStorage.setItem('project',this.project)
         localStorage.setItem('baseurl',this.baseurl)
-        login.loginCAS(this.baseurl,this.service)
+        login.loginCAS(this.service)
           .then(res => {
             if (res.data['status'] === 1) {
               window.location = res.data['cas_login_url']
@@ -211,13 +213,13 @@
           })
       },
       vertify () {
-        login.casServiceValidate(this.baseurl,this.ticket,this.service)
+        sessionStorage.setItem('baseurl', this.baseurl)
+        sessionStorage.setItem('project', this.project)
+        login.casServiceValidate(this.ticket,this.service)
           .then(res => {
             // this.jwt = 'JWT '+res.data['token']
             if (res.data['token']) {
               sessionStorage.setItem('jwt', `Bearer ${res.data['token']}`)
-              sessionStorage.setItem('baseurl', this.baseurl)
-              sessionStorage.setItem('project', this.project)
               sessionStorage.setItem('hasLogin', 1)
               sessionStorage.setItem('user', res.data['user'])
               sessionStorage.setItem('loginTimestamp', (new Date().getTime()) / 1000)
@@ -241,7 +243,7 @@
         })
       },
       logout () {
-        login.logout(this.baseurl, this.service)
+        login.logout(this.service)
           .then(res => {
             // util.notice(this, res.data, 'info');
             // console.log(res.data)
