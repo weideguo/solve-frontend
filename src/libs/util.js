@@ -71,16 +71,7 @@ util.notice = function (vm, error, level) {
   }
 }
 
-// 打开前的页面调用
-util.openPage = function (vm, name) {
-  vm.$router.push({name: name})
-  vm.$store.commit('setTagBreadBeforeOpen', name);
-}
 
-util.openPageEx = function (vm, name, query) {
-  vm.$router.push({name: name, query: query})
-  vm.$store.commit('setTagBreadBeforeOpen', name);
-}
 //////////////////////////////////////////////////////////////
 
 util.downloadBlob = function(blob, filename) {

@@ -1,5 +1,4 @@
 import { createApp } from 'vue'
-import { createStore } from 'vuex'
 import { createI18n } from 'vue-i18n'
 
 // UI 库
@@ -18,7 +17,7 @@ import myZH from './libs/lang/zh-CN'
 // 项目文件
 import { router } from './router'
 import App from './App.vue'
-import store from './store' 
+import { pinia } from './store'
 import config from './config/config'
 
 
@@ -108,7 +107,8 @@ const app = createApp(App)
 // 使用插件
 app.use(iView)
 app.use(router)
-app.use(store)
+//app.use(store)
+app.use(pinia)
 app.use(i18n)
 
 // 挂载全局属性

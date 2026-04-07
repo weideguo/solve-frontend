@@ -37,13 +37,17 @@
 
 <script>
   // import VueI18n from 'vue-i18n'
+  import { useAppStore } from '@/store' 
 
   export default {
     name: 'tagsPageOpened',
+    setup() {
+      const appStore = useAppStore()
+      return { appStore }
+    },
     data () {
       return {
         currentPageName: this.$route.name
-        // except_item: this.$store.state.pageOpenedList[0].name
         // tagBodyLeft: 0
       }
     },
@@ -51,37 +55,35 @@
       pageTagsList: Array
     },
     computed: {
-      // title () {
-      //   return this.$store.state.currentTitle
-      // }
     },
     methods: {
       closePage (event, name) {
-        this.$store.commit('removeTag', name)
+        this.appStore.removeTag(name)
         if (this.currentPageName === name) {
-          let lastPageName = this.$store.state.pageOpenedList[this.$store.state.pageOpenedList.length - 1].name
+          let lastPageName = this.appStore.pageOpenedList[this.appStore.pageOpenedList.length - 1].name
           this.$router.push({
             name: lastPageName
           })
-          this.$store.commit('setBreadcrumb', lastPageName)
-          this.$store.state.currentPageName = lastPageName
+          this.appStore.setBreadcrumb(lastPageName)
+          this.appStore.currentPageName = lastPageName
         }
       },
       linkTo (name) {
         this.$router.push({
           name: name
         })
-        this.$store.commit('setBreadcrumb', name)
-        this.$store.state.currentPageName = name
+        this.appStore.setBreadcrumb(name)
+        this.appStore.currentPageName = name
       },
       handleTagsOption (type) {
         if (type === 'clearAll') {
-          this.$store.commit('clearAllTags')
+          this.appStore.clearAllTags()
           this.$router.push({
-            name: this.$store.state.pageOpenedList[0].name
+            name: this.appStore.pageOpenedList[0].name
           })
         } else {
-          this.$store.commit('clearOtherTags', this)
+          let currentName = this.$route.name
+          this.appStore.clearOtherTags(currentName)
         }
       }
     },

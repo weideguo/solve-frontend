@@ -79,6 +79,7 @@
 <script>
   //
   import util from '@/libs/util'
+  import { useAppStore } from '@/store' 
 
   export default {
     name: 'sidebarMenuShrink',
@@ -91,6 +92,10 @@
         default: 'white'
       }
     },
+    setup() {
+      const appStore = useAppStore()
+      return { appStore }
+    },
     data () {
       return {
         currentPageName: this.$route.name
@@ -98,7 +103,8 @@
     },
     methods: {
       currentPageTab (val) {
-        util.openPage(this, val)
+        this.$router.push({name: val})
+        this.appStore.setTagBreadBeforeOpen(val)
       }
     },
     created () {

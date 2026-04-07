@@ -15,9 +15,14 @@
 <script>
   import order from '@/api/order'
   import util from '@/libs/util'
+  import { useAppStore } from '@/store' 
 
   export default {
     name: 'order',
+    setup() {
+      const appStore = useAppStore()
+      return { appStore }
+    },
     data () {
       return {
         columns: [
@@ -78,7 +83,8 @@
     },
     methods: {
       orderDetail (paramsDict) {
-        util.openPageEx(this, 'orderDetail', {workid: paramsDict['work_id']});
+        this.$router.push({name: 'orderDetail', query: {workid: paramsDict['work_id']}})
+        this.appStore.setTagBreadBeforeOpen('orderDetail')
       },
       deleteRow (params) {
         order.delOrder(`${params['work_id']}`)

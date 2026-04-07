@@ -1,93 +1,137 @@
-import { createStore } from 'vuex'
+import { defineStore,createPinia } from 'pinia'
+import { ref, computed } from 'vue'
 import { appRouter, orderDetail, execDetail, home } from './router'
 
+const pinia = createPinia()
 
-const store = new createStore({
-  state: {
-    menuList: appRouter,
-    newRouter: [...appRouter, orderDetail, execDetail],
-    currentPageName: home.children[0].name,
-    currentPath: [home],
-    pageOpenedList: JSON.parse(JSON.stringify(home.children))
-  },
-  mutations: {
-    clearAllTags (state) {
-      state.pageOpenedList.splice(1)               // 删除 从1到结尾 列表从0开始 即剩第一个
-      state.currentPath.splice(1)
-    },
-    clearOtherTags (state, vm) {
-      let currentName = vm.$route.name
-      let currentIndex = 0
-      state.pageOpenedList.forEach((item, index) => {
-        if (item.name === currentName) {
-          currentIndex = index
-        }
-      })
-      if (currentIndex === 0) {
-        state.pageOpenedList.splice(1)
-      } else {
-        state.pageOpenedList.splice(currentIndex + 1)        // 移除匹配之后 顺序不能反
-        state.pageOpenedList.splice(1, currentIndex - 1)     // 移除匹配之前 顺序不能反
+const useAppStore = defineStore('app', () => {
+  // 1. State (响应式数据)
+  const menuList = ref(appRouter)
+  const newRouter = ref([...appRouter, orderDetail, execDetail])
+  const currentPageName = ref(home.children[0].name)
+  const currentPath = ref([home])
+  const pageOpenedList = ref(JSON.parse(JSON.stringify(home.children)))
+  
+  const dynamicData = ref({}) 
+
+  // 2. Getters 
+  const storeGet = computed(() => (key) => {
+    return dynamicData.value[key]
+  })
+  
+  // 3. Actions 
+  
+  // 清空所有标签
+  const clearAllTags = () => {
+    pageOpenedList.value.splice(1)
+    currentPath.value.splice(1)
+  }
+
+  // 清空其他标签
+  const clearOtherTags = (currentName) => {
+    let currentIndex = 0
+    
+    pageOpenedList.value.forEach((item, index) => {
+      if (item.name === currentName) {
+        currentIndex = index
       }
-    },
-    removeTag (state, name) {
-      state.pageOpenedList.map((item, index) => {
-        if (item.name === name) {
-          state.pageOpenedList.splice(index, 1)     // 只移除一个
+    })
+
+    if (currentIndex === 0) {
+      pageOpenedList.value.splice(1)
+    } else {
+      pageOpenedList.value.splice(currentIndex + 1)
+      pageOpenedList.value.splice(1, currentIndex - 1)
+    }
+  }
+
+  // 移除单个标签
+  const removeTag = (name) => {
+    const index = pageOpenedList.value.findIndex(item => item.name === name)
+    if (index !== -1) {
+        pageOpenedList.value.splice(index, 1)
+    }
+  }
+
+  // 设置标签
+  const setTag = (name) => {
+    // 先移除（防止重复）
+    removeTag(name)
+    
+    newRouter.value.forEach((val) => {
+      for (let i of val.children) {
+        if (i.name === name) {
+          pageOpenedList.value.push({
+            title: i.title,
+            name: name
+          })
         }
-      })
-    },
-    setTag (state, name) {
-      store.commit('removeTag', name);
-      state.newRouter.forEach((val) => {
-        for (let i of val.children) {
-            if (i.name === name) {
-              state.pageOpenedList.push({
-                title: i.title,
-                name: name
-              })
-            }
-          }
-        })
-      state.currentPageName = name;
-    },
-    setBreadcrumb (state, name) {
-      state.currentPath.splice(1, state.currentPath.length - 1)
-      state.newRouter.forEach((val) => {
-        for (let i of val.children) {
-          if (i.name === name) {
-            state.currentPath.push({
+      }
+    })
+    currentPageName.value = name
+  }
+
+  // 设置面包屑
+  const setBreadcrumb = (name) => {
+    // 保留第一个，删除后面的
+    currentPath.value.splice(1, currentPath.value.length - 1)
+    
+    newRouter.value.forEach((val) => {
+      for (let i of val.children) {
+        if (i.name === name) {
+          currentPath.value.push(
+            {
               'title': val.title,
               'path': val.path,
               'name': val.name
-            }, {
+            }, 
+            {
               'title': i.title,
               'path': `${val.path}/${i.path}`,
               'name': i.name
-            })
-          }
+            }
+          )
         }
-      })
-    },
-    setTagBreadBeforeOpen (state, name) {
-      store.commit('setBreadcrumb', name);
-      store.commit('setTag', name);
-    },
-    storeSet(state, kv){
-      state[kv[0]] = kv[1]
-    },
-    sessionSet(state, kv){
-      sessionStorage.setItem([kv[0]], kv[1])
-    }
-  },
-  getters: {
-    storeGet: (state) => (key) => {
-      return state[key]
-    },
-    sessionGet: (state) => (key) => {
-      return sessionStorage.getItem(key)
-    }
+      }
+    })
+  }
+
+  // 组合操作：设置标签和面包屑
+  const setTagBreadBeforeOpen = (name) => {
+    setBreadcrumb(name)
+    setTag(name)
+  }
+
+  // 通用设置 State
+  const storeSet = (kv) => {
+    // kv[0] 是 key, kv[1] 是 value
+    // 动态修改 ref 的值
+    let key = kv[0]
+    let value = kv[1]
+    dynamicData.value[key] = value
+  }
+
+
+  // 4. 返回给组件使用
+  return {
+    // State
+    menuList,
+    newRouter,
+    currentPageName,
+    currentPath,
+    pageOpenedList,
+    // Getters
+    storeGet,
+    // Actions
+    clearAllTags,
+    clearOtherTags,
+    removeTag,
+    setTag,
+    setBreadcrumb,
+    setTagBreadBeforeOpen,
+    storeSet
   }
 })
 
-export default store
+
+export { pinia, useAppStore }

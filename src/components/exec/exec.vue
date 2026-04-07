@@ -111,10 +111,15 @@
   import file from '@/api/file'
   import target from '@/api/target'
   import constrictForm from '@/components/common/constrictForm.vue'
+  import { useAppStore } from '@/store' 
 
   export default {
     components: {
       constrictForm
+    },
+    setup() {
+      const appStore = useAppStore()
+      return { appStore }
     },
     data () {
       return {
@@ -451,7 +456,8 @@
           exec.postExecution(this.openinfo['name'], this.sessionInfo, String(debug), this.targetName)
             .then(res => {
               util.notice(this, `${this.openinfo['name_s']} `+this.$t('commitBegin'), 'info')
-              util.openPageEx(this, 'orderDetail', {'workid': res.data['data']})
+              this.$router.push({name: 'orderDetail', query: {'workid': res.data['data']}})
+              this.appStore.setTagBreadBeforeOpen('orderDetail')
             })
             .catch(error => {
               util.notice(this, error, 'error')
@@ -469,7 +475,8 @@
         this.execInfo['name'] = this.execInfo['name_s'];
         delete this.execInfo['name_s'];
         // console.log(toRaw(this.execInfo))
-        util.openPageEx(this, 'execDetail', {row: JSON.stringify(this.execInfo), tag: 'update'})
+        this.$router.push({name: 'execDetail', query: {row: JSON.stringify(this.execInfo), tag: 'update'}})
+        this.appStore.setTagBreadBeforeOpen('execDetail')
       },
       getCurrentPageNew (pagesize) {
         this.pagesize=pagesize

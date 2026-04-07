@@ -64,10 +64,15 @@
   import util from '@/libs/util'
   import config from '@/config/config'
   import safeForm from '@/components/common/safeForm.vue'
+  import { useAppStore } from '@/store' 
 
   export default {
     components: {
       safeForm
+    },
+    setup() {
+      const appStore = useAppStore()
+      return { appStore }
     },
     data () {
       return {
@@ -322,7 +327,8 @@
         x.forEach((item,i) => {
           delete tmplInfo[item]
         })
-        util.openPageEx(this, 'execDetail', {row: JSON.stringify(tmplInfo), tag: 'add'})
+        this.$router.push({name: 'execDetail', query: {row: JSON.stringify(tmplInfo), tag: 'add'}})
+        this.appStore.setTagBreadBeforeOpen('execDetail')
       },
       getCurrentPageNew (pagesize) {
         this.pagesize=pagesize

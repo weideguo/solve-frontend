@@ -100,12 +100,17 @@
   import tagsPageOpened from './components/tagsPageOpened.vue'
   import util from '@/libs/util'
   import custom from '@/config/custom'
+  import { useAppStore } from '@/store' 
 
   export default {
     components: {
       sidebarMenu,
       sidebarMenuShrink,
       tagsPageOpened
+    },
+    setup() {
+      const appStore = useAppStore()
+      return { appStore }
     },
     data () {
       return {
@@ -117,13 +122,15 @@
     },
     computed: {
       menuList () {
-        return this.$store.state['menuList']
+        return this.appStore.menuList
       },
       pageTagsList () {
-        return this.$store.state['pageOpenedList'] // 打开的页面的页面对象
+        // 打开的页面的页面对象
+        return this.appStore.pageOpenedList
       },
       currentPath () {
-        return this.$store.state['currentPath']         // 当前路径数组
+        // 当前路径数组
+        return this.appStore.currentPath
       },
       // isFullScreen () {
       //   return document.isFullScreen || document.mozIsFullScreen || document.webkitIsFullScreen
@@ -131,7 +138,8 @@
     },
     methods: {
       logout (name) {
-        util.openPage(this, 'login')
+        this.$router.push({name: 'login'})
+
       },
       // 全屏 兼容其他浏览器
       handleFullScreen () {

@@ -57,6 +57,7 @@
 <script>
   //
   import util from '@/libs/util'
+  import { useAppStore } from '@/store' 
 
   export default {
     name: 'sidebarMenu',
@@ -64,25 +65,23 @@
       menuList: Array,
       iconSize: Number
     },
+    setup() {
+      const appStore = useAppStore()
+      return { appStore }
+    },
     data () {
       return {
       }
     },
     computed: {
       currentPageName () {
-        return this.$store.state.currentPageName
+        return this.appStore.currentPageName
       }
     },
     methods: {
       currentPageTab (val) {
-        // if (val === 'login') {
-        //   this.$router.push({
-        //     name: 'login'
-        //   })
-        // } else {
-        //   util.openPage(this, val)
-        // }
-        util.openPage(this, val)
+        this.$router.push({name: val})
+        this.appStore.setTagBreadBeforeOpen(val)
       }
     },
     created () {
