@@ -99,12 +99,6 @@ util.copyData = function (data) {
 }
 
 
-// 复制数据到粘贴板
-util.copy = function (vm, data) {
-  util.copyData(data)
-  vm.$Message.info({'content':'path copy success'})
-}
-
 //////////////////////////////////////////////////////////
 // 渲染模板参数如{{ xxx }}
 util.render = function (template, data) {

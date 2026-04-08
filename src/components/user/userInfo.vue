@@ -28,15 +28,15 @@
           <b>{{modelTitle}}</b>
         </p>
       </template>
-      <Form ref="editForm" :model="editForm" :label-width="100" label-position="right" :rules="editValidate">
+      <Form ref="editForm" :model="editFormData" :label-width="100" label-position="right" :rules="editValidate">
         <FormItem :label="$t('username')" prop="username">
-          <Input v-model="editForm.username" :placeholder="$t('inputUsernameTips')" :readonly="!notEdit" :clearable="notEdit"></Input>
+          <Input v-model="editFormData.username" :placeholder="$t('inputUsernameTips')" :readonly="!notEdit" :clearable="notEdit"></Input>
         </FormItem>
         <FormItem :label="$t('newPassword')" prop="pass">
-          <Input v-model="editForm.pass" :placeholder="$t('inputPasswordTips')" type="password" clearable></Input>
+          <Input v-model="editFormData.pass" :placeholder="$t('inputPasswordTips')" type="password" clearable></Input>
         </FormItem>
         <FormItem :label="$t('confirmNewPassword')" prop="rePass">
-          <Input v-model="editForm.rePass" :placeholder="$t('reInputPasswordTips')" type="password" clearable></Input>
+          <Input v-model="editFormData.rePass" :placeholder="$t('reInputPasswordTips')" type="password" clearable></Input>
         </FormItem>
       </Form>
       <template #footer>
@@ -69,203 +69,218 @@
 </template>
 
 
-<script>
+<script setup>
   //
+  import { ref, reactive, onMounted, getCurrentInstance } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import user from '@/api/user'
   import util from '@/libs/util'
-
-  export default {
-    data () {
-      const valideRePassword = (rule, value, callback) => {
-        if (this.editForm.pass !== this.editForm.rePass) {
-          callback(new Error(this.$t('passwordNotSame')))
-        } else {
-          callback()
-        }
-      }
-      return {
-        currentUser: sessionStorage.getItem('user'),
-        // 用户表
-        currentPage: 1,
-        pagesize: 10,
-        pagenumber: 1,
-        usercolumns: [
-          {
-            title: this.$t('username'),
-            key: 'username',
-            sortable: true,
-            minWidth: 400
-          },
-          {
-            title: this.$t('operation'),
-            slot: 'operation',
-            width: 400,
-            align: 'center',
-          }
-        ],
-        userdata: [],
-        notEdit: true,
-        modelTitle: '',
-        editModal: false,
-        editForm: {
-          username: '',
-          pass: '',
-          rePass: ''
-        },
-        saveLoading: false,
-        editValidate: {
-          username: [{
-            required: true,
-            message: this.$t('inputUsernameTips'),
-            trigger: 'blur'
-          }],
-          pass: [
-            {
-              required: true,
-              message: this.$t('inputPasswordTips'),
-              trigger: 'blur'
-            },
-            {
-              min: 6,
-              message: this.$t('inputPasswordTips'),
-              trigger: 'blur'
-            },
-            {
-              max: 32,
-              message: this.$t('max32Chars'),
-              trigger: 'blur'
-            }
-          ],
-          rePass: [
-            {
-              required: true,
-              message: this.$t('reInputPasswordTips'),
-              trigger: 'blur'
-            },
-            {
-              validator: valideRePassword,
-              trigger: 'blur'
-            }
-          ]
-        },
-        // 删除用户
-        username: '',
-        confirmuser: '',
-        deluserModal: false
-      }
+  
+  const { t } = useI18n()
+  const { proxy } = getCurrentInstance()
+  
+  const currentUser = ref(sessionStorage.getItem('user'))
+  const currentPage = ref(1)
+  const pagesize = ref(10)
+  const pagenumber = ref(1)
+  const usercolumns = ref([
+    {
+      title: t('username'),
+      key: 'username',
+      sortable: true,
+      minWidth: 400
     },
-    methods: {
-      realAddUser () {
-        user.postUserinfo({'username': this.editForm.username, 'password': this.editForm.pass})
-          .then(res => {
-            this.editModal = false
-            this.saveLoading = false
-            this.refreshuser()
-            if (res.data['status'] === 1) {
-              util.notice(this, res.data['msg'], 'success')
-            } else {
-              util.notice(this, res.data['msg'], 'error')
-            }
-            this.$refs['editForm'].resetFields()
-          })
-          .catch(error => {
-            this.loading = false
-            util.notice(this, error, 'error')
-          })
-      },
-      refreshuser (vl = 1) {
-        user.getUserinfo(vl,this.pagesize)
-          .then(res => {
-            this.userdata = res.data['data']
-            this.pagenumber = parseInt(res.data['page'])
-          })
-          .catch(error => {
-            util.notice(this, error, 'error')
-          })
-      },
-      splicpage (page) {
-        this.refreshuser(page)
-      },
-      addUser () {
-        this.notEdit = true
-        this.editModal = true
-        this.modelTitle = this.$t('addUser')
-      },
-      editPass (params) {
-        this.editForm['username'] = params.username
-        this.notEdit = false
-        this.editModal = true
-        this.modelTitle = this.$t('chanePassword')
-      },
-      cancelEdit () {
-        this.$refs['editForm'].resetFields()
-        this.editModal = false
-      },
-      commit () {
-        this.$refs['editForm'].validate((valid) => {
-          if (valid) {
-            this.$Message.success(this.$t('commitBegin'))
-            this.saveLoading = true
-            if (this.notEdit) {
-              this.realAddUser()
-            } else {
-              this.saveEdit()
-            }
-          } else {
-            this.$Message.error(this.$t('form.checkErr'))
-          }
-        })
-        
-      },
-      saveEdit () {
-        user.putUserinfo({'username': this.editForm.username,'new': this.editForm.pass})
-          .then(res => {
-            if (this, res.data['status'] === 1) {
-            util.notice(this, res.data['data'], 'success')
-              this.editModal = false
-              this.saveLoading = false
-              this.$refs['editForm'].resetFields()
-            } else {
-              util.notice(this, res.data['msg'], 'error')
-            }
-          })
-          .catch(error => {
-            util.notice(this, error, 'error')
-          })
-      },
-      deleteUser (params) {
-        this.deluserModal = true
-        this.username = params.username
-      },
-      delUser () {
-        if (this.username === this.confirmuser) {
-          this.$Message.success(this.$t('commitBegin'))
-          user.deleteUserinfo(this.username)
-            .then(res => {
-              if (this, res.data['status'] === 1) {
-                util.notice(this, res.data['data'], 'success')
-                this.deluserModal = false
-                this.confirmuser = ''
-                this.currentPage = 1
-                this.refreshuser()
-              } else {
-                util.notice(this, res.data['msg'], 'error')
-              }
-            })
-            .catch(error => {
-              util.notice(this, error, 'error')
-            })
-        } else {
-          this.$Message.error(this.$t('usernameNotSame'))
-        }
-      },
-      cancelDelUser () {
-        this.deluserModal = false
-        this.confirmuser = ''
-      }
-    },
-    mounted () {
-      this.refreshuser()
+    {
+      title: t('operation'),
+      slot: 'operation',
+      width: 400,
+      align: 'center'
+    }
+  ])
+  const userdata = ref([])
+  const notEdit = ref(true)
+  const modelTitle = ref('')
+  const editModal = ref(false)
+  const editFormData = reactive({
+    username: '',
+    pass: '',
+    rePass: ''
+  })
+  const saveLoading = ref(false)
+  
+  // 自定义验证规则
+  const valideRePassword = (rule, value, callback) => {
+    if (editFormData.pass !== editFormData.rePass) {
+      callback(new Error(t('passwordNotSame')))
+    } else {
+      callback()
     }
   }
+  
+  const editValidate = reactive({
+    username: [{
+      required: true,
+      message: t('inputUsernameTips'),
+      trigger: 'blur'
+    }],
+    pass: [
+      {
+        required: true,
+        message: t('inputPasswordTips'),
+        trigger: 'blur'
+      },
+      {
+        min: 6,
+        message: t('inputPasswordTips'),
+        trigger: 'blur'
+      },
+      {
+        max: 32,
+        message: t('max32Chars'),
+        trigger: 'blur'
+      }
+    ],
+    rePass: [
+      {
+        required: true,
+        message: t('reInputPasswordTips'),
+        trigger: 'blur'
+      },
+      {
+        validator: valideRePassword,
+        trigger: 'blur'
+      }
+    ]
+  })
+  
+  // 删除用户相关
+  const username = ref('')
+  const confirmuser = ref('')
+  const deluserModal = ref(false)
+  
+  // 表单
+  const editForm = ref(null)
+  
+  const realAddUser = () => {
+    user.postUserinfo({'username': editFormData.username, 'password': editFormData.pass})
+      .then(res => {
+        editModal.value = false
+        saveLoading.value = false
+        refreshuser()
+        if (res.data['status'] === 1) {
+          util.notice(proxy, res.data['msg'], 'success')
+        } else {
+          util.notice(proxy, res.data['msg'], 'error')
+        }
+        editForm.value.resetFields()
+      })
+      .catch(error => {
+        saveLoading.value = false
+        util.notice(proxy, error, 'error')
+      })
+  }
+  
+  const refreshuser = (vl = 1) => {
+    user.getUserinfo(vl, pagesize.value)
+      .then(res => {
+        userdata.value = res.data['data']
+        pagenumber.value = parseInt(res.data['page'])
+      })
+      .catch(error => {
+        util.notice(proxy, error, 'error')
+      })
+  }
+  
+  const splicpage = (page) => {
+    refreshuser(page)
+  }
+  
+  const addUser = () => {
+    notEdit.value = true
+    editModal.value = true
+    modelTitle.value = t('addUser')
+  }
+  
+  const editPass = (params) => {
+    editFormData.username = params.username
+    notEdit.value = false
+    editModal.value = true
+    modelTitle.value = t('chanePassword')
+  }
+  
+  const cancelEdit = () => {
+    editForm.value.resetFields()
+    editModal.value = false
+  }
+  
+  const commit = () => {
+    editForm.value.validate((valid) => {
+      if (valid) {
+        proxy.$Message.success(t('commitBegin'))
+        saveLoading.value = true
+        if (notEdit.value) {
+          realAddUser()
+        } else {
+          saveEdit()
+        }
+      } else {
+        proxy.$Message.error(t('form.checkErr'))
+      }
+    })
+  }
+  
+  const saveEdit = () => {
+    user.putUserinfo({'username': editFormData.username, 'new': editFormData.pass})
+      .then(res => {
+        if (res.data['status'] === 1) {
+          util.notice(proxy, res.data['data'], 'success')
+          editModal.value = false
+          saveLoading.value = false
+          // 重置表单
+          editForm.value.resetFields()
+        } else {
+          util.notice(proxy, res.data['msg'], 'error')
+        }
+      })
+      .catch(error => {
+        util.notice(proxy, error, 'error')
+      })
+  }
+  
+  const deleteUser = (params) => {
+    deluserModal.value = true
+    username.value = params.username
+  }
+  
+  const delUser = () => {
+    if (username.value === confirmuser.value) {
+      proxy.$Message.success(t('commitBegin'))
+      user.deleteUserinfo(username.value)
+        .then(res => {
+          if (res.data['status'] === 1) {
+            util.notice(proxy, res.data['data'], 'success')
+            deluserModal.value = false
+            confirmuser.value = ''
+            currentPage.value = 1
+            refreshuser()
+          } else {
+            util.notice(proxy, res.data['msg'], 'error')
+          }
+        })
+        .catch(error => {
+          util.notice(proxy, error, 'error')
+        })
+    } else {
+      proxy.$Message.error(t('usernameNotSame'))
+    }
+  }
+  
+  const cancelDelUser = () => {
+    deluserModal.value = false
+    confirmuser.value = ''
+  }
+  
+  onMounted(() => {
+    refreshuser()
+  })
 </script>

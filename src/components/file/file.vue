@@ -53,143 +53,124 @@
 
 </template>
 
-<script>
-//
-import file from '@/api/file'
-import util from '@/libs/util'
-import fileList from './components/fileList.vue'
-export default {
-  components: {
-    fileList
-  },
-  data () {
-    return {
-      baseurl: sessionStorage.getItem('baseurl'),
-      currentDirs: [],
-      currentFiles: [],
-      currentPath: '/',
-      fullCurrentPath: '',
-      createDirFlag: false,
-      createDirName: '',
-      myheader: {
-        'Authorization': sessionStorage.getItem('jwt')
-      },
-      defaultHeight: 600,
-      changeHeight: 0
-    }
-  },
-  computed: {
-    uploadUrl () {
-      return this.baseurl + '/file/?path=' + this.currentPath
-    },
-    // downloadUrlRoot () {
-    //   return this.baseurl + '/file/download?file=' + this.currentPath
-    // },
-  },
-  methods: {
-    // clearFiles () {
-    //   this.$refs.upload.clearFiles();
-    // },
-    refresh (f) {
-      util.notice(this, f.msg, 'info')
-      this.getFileInfo(this.currentPath)
-    },
-    realCreateDir () {
-      // this.createDirName = this.createDirName.trim()
-      if (this.createDirName === '') {
-        this.$Message.error(this.$t('shouldNotEmpty'))
-      } else if (util.existSpace(this.createDirName)) {
-        this.$Message.error(this.$t('shouldNoSpaceLR'))
-      } else {
-        this.createDirFlag = false
-        let path = this.currentPath + '/' + this.createDirName
-        path = path.replace('//','/')
-        this.$Message.success(this.$t('commitBegin'))
-        file.createPath(path)
-          .then(res => {
-            // console.log(res.data)
-            if (res.data['status'] > 0) {
-              this.getFileInfo(path)
-            } else {
-              util.notice(this, res.data['msg'], 'error')
-            }
-          }).catch(error => {
-            util.notice(this, error, 'error')
-          });
-      }
-    },
-    changedir (folder) {
-      this.currentPath = this.currentPath + '/' +folder
-      this.getFileInfo(this.currentPath)
-    },
-    copypath (filename) {
-      let fullpath = this.fullCurrentPath + '/' + filename
-      fullpath = fullpath.replace('///','/')
-      fullpath = fullpath.replace('//','/')
-      fullpath = fullpath.replace('/./','/')
-      util.copy(this,fullpath)
-    },
-    download(filename) {
-      //file.download(this.currentPath+'/'+filename)
-      //  .then(res => {
-      //    util.notice(this, filename+' downloading...', 'fast')
-      //    let blob = new Blob([res.data])
-      //    util.downloadBlob(blob,filename)
-      //  }).catch(error => {
-      //    util.notice(this, error, 'error')
-      //  })
-      file.preDownload()
-        .then(res => {
-          util.notice(this, filename+' downloading...', 'fast')
-          if (res.data['status'] > 0 ) {
-            let downloadUrl = `${this.baseurl}/fileDownload?file=${this.currentPath}/${filename}&temp_token=${res.data['temp_token']}`
-            util.downloadUrl(downloadUrl)
-          } else {
-            util.notice(this, res.data['msg'], 'error')
-          }
-        }).catch(error => {
-          util.notice(this, error, 'error')
-        })
-    },
-    gobackdir () {
-      this.currentPath = this.currentPath
-      if (this.currentPath != '/' && this.currentPath != '') {
-        this.currentPath = util.getPrePath(this.currentPath)
-      } else {
-        util.notice(this, this.$t('noPreDirTips'), 'info')
-      }
-      this.getFileInfo(this.currentPath)
-    },
-    getFileInfo (path){
-      // let prePath = path
-      file.getFileList(path)
+<script setup>
+  //
+  import { ref, computed, onMounted, getCurrentInstance } from 'vue'
+  import { useI18n } from 'vue-i18n'
+  import file from '@/api/file'
+  import util from '@/libs/util'
+  import fileList from './components/fileList.vue'
+  
+  const { t } = useI18n()
+  const { proxy } = getCurrentInstance()
+  
+  const baseurl = ref(sessionStorage.getItem('baseurl'))
+  const currentDirs = ref([])
+  const currentFiles = ref([])
+  const currentPath = ref('/')
+  const fullCurrentPath = ref('')
+  const createDirFlag = ref(false)
+  const createDirName = ref('')
+  const myheader = ref({
+    'Authorization': sessionStorage.getItem('jwt')
+  })
+  const defaultHeight = ref(600)
+  const changeHeight = ref(0)
+  
+  const uploadUrl = computed(() => {
+    return baseurl.value + '/file/?path=' + currentPath.value
+  })
+  
+  const refresh = (f) => {
+    util.notice(proxy, f.msg, 'info')
+    getFileInfo(currentPath.value)
+  }
+  
+  const realCreateDir = () => {
+    if (createDirName.value === '') {
+      proxy.$Message.error(t('shouldNotEmpty'))
+    } else if (util.existSpace(createDirName.value)) {
+      proxy.$Message.error(t('shouldNoSpaceLR'))
+    } else {
+      createDirFlag.value = false
+      let path = currentPath.value + '/' + createDirName.value
+      path = path.replace('//','/')
+      proxy.$Message.success(t('commitBegin'))
+      file.createPath(path)
         .then(res => {
           if (res.data['status'] > 0) {
-            this.currentFiles = res.data['files']
-            this.currentDirs = res.data['dirs']
-            this.currentPath = path.replace('//','/')
-            sessionStorage.setItem('fileCurrentPath',this.currentPath)
-            this.fullCurrentPath = res.data['path']
-            this.changeHeight = (this.currentFiles.length+this.currentDirs.length)*32
-            // console.log(this.changeHeight)
+            getFileInfo(path)
           } else {
-            util.notice(this, res.data['msg'], 'error')
+            util.notice(proxy, res.data['msg'], 'error')
           }
         }).catch(error => {
-          // this.currentPath = prePath
-          util.notice(this, error, 'error')
-        });
+          util.notice(proxy, error, 'error')
+        })
     }
-  },
-  mounted () {
+  }
+  
+  const changedir = (folder) => {
+    currentPath.value = currentPath.value + '/' + folder
+    getFileInfo(currentPath.value)
+  }
+  
+  const copypath = (filename) => {
+    let fullpath = fullCurrentPath.value + '/' + filename
+    fullpath = fullpath.replace('///','/')
+    fullpath = fullpath.replace('//','/')
+    fullpath = fullpath.replace('/./','/')
+    // util.copy(proxy, fullpath)
+    util.copyData(fullpath)
+    proxy.$Message.info({'content': t('path copy success')})
+  }
+  
+  const download = (filename) => {
+    file.preDownload()
+      .then(res => {
+        util.notice(proxy, filename + ' downloading...', 'fast')
+        if (res.data['status'] > 0 ) {
+          let downloadUrl = `${baseurl.value}/fileDownload?file=${currentPath.value}/${filename}&temp_token=${res.data['temp_token']}`
+          util.downloadUrl(downloadUrl)
+        } else {
+          util.notice(proxy, res.data['msg'], 'error')
+        }
+      }).catch(error => {
+        util.notice(proxy, error, 'error')
+      })
+  }
+  
+  const gobackdir = () => {
+    if (currentPath.value != '/' && currentPath.value != '') {
+      currentPath.value = util.getPrePath(currentPath.value)
+    } else {
+      util.notice(proxy, t('noPreDirTips'), 'info')
+    }
+    getFileInfo(currentPath.value)
+  }
+  
+  const getFileInfo = (path) => {
+    file.getFileList(path)
+      .then(res => {
+        if (res.data['status'] > 0) {
+          currentFiles.value = res.data['files']
+          currentDirs.value = res.data['dirs']
+          currentPath.value = path.replace('//','/')
+          sessionStorage.setItem('fileCurrentPath', currentPath.value)
+          fullCurrentPath.value = res.data['path']
+          changeHeight.value = (currentFiles.value.length + currentDirs.value.length) * 32
+        } else {
+          util.notice(proxy, res.data['msg'], 'error')
+        }
+      }).catch(error => {
+        util.notice(proxy, error, 'error')
+      })
+  }
+  
+  onMounted(() => {
     let p = sessionStorage.getItem('fileCurrentPath')
     if ( p ){
-      this.currentPath = p
+      currentPath.value = p
     }
-    this.getFileInfo(this.currentPath)
-    // 页面渲染完成后的回调
-    // this.$nextTick(()=>{ 
-    // })
-  }
-};
+    getFileInfo(currentPath.value)
+  })
 </script>

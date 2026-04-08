@@ -26,43 +26,39 @@
           <Button type="dashed" long @click="handleAdd" >{{ $t('addField') }}</Button>
         </Col>
         <Col span="12">
-          <Button type="dashed" long @click="handleReset('safeform')" >{{ $t('reset') }}</Button>
+          <Button type="dashed" long @click="handleReset()" >{{ $t('reset') }}</Button>
         </Col>
       </Row>
     </div>
     <div :style="{height: buttonDivHeight}"> 
       <div :style="{'float': 'right', 'margin-top': buttonMarginTop}"> 
-        <Button style="margin-right: 5px" @click="secondClick('safeform')">{{_secondButtonName}}</Button>
-        <Button type="primary" @click="primaryClick('safeform')">{{_primaryButtonName}}</Button>
+        <Button style="margin-right: 5px" @click="secondClick()">{{_secondButtonName}}</Button>
+        <Button type="primary" @click="primaryClick()">{{_primaryButtonName}}</Button>
       </div>
     </div>
   </Form>
 </template>
 
-<script>
-import util from '@/libs/util'
-// import VueI18n from 'vue-i18n'
-
-export default {
-  name: 'safeForm',
-  props: {
+<script setup>
+  import { ref, reactive, computed, watch, getCurrentInstance } from 'vue'
+  import { useI18n } from 'vue-i18n'
+  import util from '@/libs/util'
+  
+  const { t } = useI18n()
+  const { proxy } = getCurrentInstance()
+  
+  const props = defineProps({
     formdata: {
       type: Array,
-      default: function () {
-        return []
-      }
+      default: () => []
     },
     formvalidate: {
       type: Object,
-      default: function () {
-        return {}
-      }
+      default: () => ({})
     },
     dynamicData: {
       type: Object,
-      default: function () {
-        return {}
-      }
+      default: () => ({})
     },
     labelwidth: Number,
     buttonDivHeight: {
@@ -96,126 +92,125 @@ export default {
     inputValueTips: {
       type: String,
       default: ''
-    },
-  },
-  data () {
-    return {
-      realLabelwidth: 0,
-      formValue: {},
-      formSelect: {},
-      formComment: {},
-      formLabel: {},
-      formDynamic: []
     }
-  },
-  methods: {
-    primaryClick (name) {
-      if (this.formdata.length != 0){
-        this.$refs[name].validate((valid) => {
-          let spaceStr = util.isDictNoSpace(this.allValue)
-          if (spaceStr != '') {
-            this.$Message.error(this.$t('form.checkErr')+" :["+spaceStr+"]")
-          } else {
-            if (valid) {
-                this.$Message.success(this.$t('commitBegin'))
-                this.$emit('primaryClick', this.allValue)
-                this.handleReset(name)
-            } else {
-                this.$Message.error(this.$t('form.checkErr'))
-            }              
-          }
-        })
-      } else {
-        this.$Message.success(this.$t('commitBegin'))
-        this.$emit('primaryClick', this.allValue)
-        this.handleReset(name)
-      }
-    },
-    secondClick (name) {
-      if (this.secondCheck) {
-        this.$refs[name].validate((valid) => {
+  })
+  
+  const emit = defineEmits(['primaryClick', 'secondClick'])
+  
+  const realLabelwidth = ref(0)
+  const formValue = ref({})
+  const formSelect = ref({})
+  const formComment = ref({})
+  const formLabel = ref({})
+  const formDynamic = ref([])
+  
+  // 表单
+  const safeform = ref(null)
+  
+  const formKey = computed(() => {
+    return util.dictKeys(formValue.value)
+  })
+  
+  const allValue = computed(() => {
+    let info = util.dict2arry(formValue.value, 'key', 'value')
+    return util.arry2dict(util.listCombine(info, formDynamic.value), 'key', 'value')
+  })
+  
+  const _primaryButtonName = computed(() => {
+    if (props.primaryButtonName) {
+      return props.primaryButtonName
+    }
+    return t('confirm')
+  })
+  
+  const _secondButtonName = computed(() => {
+    if (props.secondButtonName) {
+      return props.secondButtonName
+    }
+    return t('cancel')
+  })
+  
+  const _inputFieldTips = computed(() => {
+    if (props.inputFieldTips) {
+      return props.inputFieldTips
+    }
+    return t('inputFieldTips')
+  })
+  
+  const _inputValueTips = computed(() => {
+    if (props.inputValueTips) {
+      return props.inputValueTips
+    }
+    return t('inputValueTips')
+  })
+  
+  const primaryClick = () => {
+    if (props.formdata.length !== 0) {
+      safeform.value.validate((valid) => {
+        let spaceStr = util.isDictNoSpace(allValue.value)
+        if (spaceStr !== '') {
+          proxy.$Message.error(t('form.checkErr') + " :[" + spaceStr + "]")
+        } else {
           if (valid) {
-            // this.$Message.success('表单检查通过')
-            this.$emit('secondClick', this.allValue)
-            this.handleReset(name)
+            proxy.$Message.success(t('commitBegin'))
+            emit('primaryClick', allValue.value)
+            handleReset()            
           } else {
-            this.$Message.error(this.$t('form.checkErr'))
-          }
-        })
-      } else {
-        this.$emit('secondClick', this.allValue)
-        // this.$refs[name].resetFields()
-        this.handleReset(name)
-      }
-    },
-    handleReset (name) {
-      this.$refs[name].resetFields()
-      this.formDynamic = util.dict2arry(this.dynamicData, 'key', 'value')
-    },
-    handleRemove (index) {
-      this.formDynamic.splice(index, 1)
-    },
-    handleAdd () {
-      this.formDynamic.push({key: '', value: ''});
+            proxy.$Message.error(t('form.checkErr'))
+          } 
+        }
+      })  
+    } else {
+      proxy.$Message.success(t('commitBegin'))
+      emit('primaryClick', allValue.value)
+      handleReset()
     }
-  },
-  computed: {
-    formKey () {
-      return util.dictKeys(this.formValue)
-    },
-    allValue () {
-      let info = util.dict2arry(this.formValue, 'key', 'value')
-      return util.arry2dict(util.listCombine(info, this.formDynamic), 'key', 'value')
-    },
-    _primaryButtonName () {
-      if(this.primaryButtonName) {
-        return this.primaryButtonName
-      } 
-      return this.$t('confirm')
-    },
-    _secondButtonName () {
-      if(this.secondButtonName) {
-        return this.secondButtonName
-      } 
-      return this.$t('cancel')
-    },
-    _inputFieldTips () {
-      if(this.inputFieldTips) {
-        return this.inputFieldTips
-      }
-      return this.$t('inputFieldTips')
-    },
-    _inputValueTips () {
-      if (this.inputValueTips) {
-        return this.inputValueTips
-      }
-      return this.$t('inputValueTips')
-    }
-  },
-  watch:{
-    formdata: {
-      handler: function(val,oldval) {
-        this.formValue = util.arry2dict(this.formdata, 'key', 'value')
-        this.formSelect = util.arry2dict(this.formdata, 'key', 'select')
-        this.formComment = util.arry2dict(this.formdata, 'key', 'comment')
-        this.formLabel = util.arry2dict(this.formdata, 'key', 'label')
-        // 根据表单label的字符串弹性设置表单label长度，每个字符占8px
-        this.realLabelwidth = this.labelwidth
-        util.dictKeys(this.formValue).forEach((item,i) => {
-            if (this.realLabelwidth < item.length*8) {
-                this.realLabelwidth = item.length*8
-            }
-        })
-      },
-      deep: true
-    },
-    dynamicData: {
-      handler: function(val,oldval) {
-        this.formDynamic = util.dict2arry(this.dynamicData, 'key', 'value')
-      }
-    }
-  },
-  mounted () {
   }
-};
+  
+  const secondClick = () => {
+    if (props.secondCheck) {
+      safeform.value.validate((valid) => {
+        if (valid) {
+          emit('secondClick', this.allValue)
+          handleReset()
+        } else {
+          peoxy.$Message.error(this.$t('form.checkErr'))
+        }
+      })
+    } else {
+      emit('secondClick', allValue.value)
+      handleReset()
+    }
+  }
+  
+  const handleReset = () => {
+    safeform.value.resetFields()
+    formDynamic.value = util.dict2arry(props.dynamicData, 'key', 'value')
+  }
+  
+  const handleRemove = (index) => {
+    formDynamic.value.splice(index, 1)
+  }
+  
+  const handleAdd = () => {
+    formDynamic.value.push({ key: '', value: '' })
+  }
+  
+  watch(() => props.formdata, (val, oldval) => {
+    formValue.value = util.arry2dict(val, 'key', 'value')
+    formSelect.value = util.arry2dict(val, 'key', 'select')
+    formComment.value = util.arry2dict(val, 'key', 'comment')
+    formLabel.value = util.arry2dict(val, 'key', 'label')
+    // 根据表单label的字符串弹性设置表单label长度，每个字符占8px
+    realLabelwidth.value = props.labelwidth
+    util.dictKeys(formValue.value).forEach((item, i) => {
+      if (realLabelwidth.value < item.length * 8) {
+        realLabelwidth.value = item.length * 8
+      }
+    })
+  }, { deep: true })
+  
+  watch(() => props.dynamicData, (val, oldval) => {
+    formDynamic.value = util.dict2arry(val, 'key', 'value')
+  })
 </script>

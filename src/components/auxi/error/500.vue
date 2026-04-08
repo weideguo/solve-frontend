@@ -19,20 +19,19 @@
   </div>
 </template>
 
-<script>
-  // import VueI18n from 'vue-i18n'
-
-  export default {
-    name: 'Error500',
-    methods: {
-      backPage () {
-        this.$router.go(-1)
-      },
-      goHome () {
-        this.$router.push({
-          'path': '/'
-        })
-      }
-    }
+<script setup>
+  //
+  import { useRouter } from 'vue-router'
+  
+  const router = useRouter()
+  
+  const backPage = () => {
+    router.go(-1)
+  }
+  
+  const goHome = () => {
+    router.push({
+      path: '/'
+    })
   }
 </script>

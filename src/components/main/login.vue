@@ -93,209 +93,222 @@
   </div>
 </template>
 
-<script>
+<script setup>
+  import { ref, reactive, onMounted, getCurrentInstance } from 'vue'
+  import { useRoute } from 'vue-router'
+  import { useI18n } from 'vue-i18n'
   import login from '@/api/login'
   import util from '@/libs/util'
   import config from '@/config/config'
-  // import VueI18n from 'vue-i18n'
-  //
-  export default {
-    name: 'login',
-    data () {
-      return {
-        title: this.$t('title'),
-        titleCAS: this.$t('title')+'-cas',
-        languageList: [],
-        baseurlConfig: [[]],
-        formInline: {
-          user: '',
-          password: '',
-          baseurl: JSON.stringify(config.baseurl[0])
-        },
-        ruleInline: {
-          user: [{
-            required: true,
-            message: this.$t('form.userEmpty'),
-            trigger: 'blur'
-          }],
-          password: [{
-            required: true,
-            message: this.$t('form.passwordEmpty'),
-            trigger: 'blur'
-          },
-          {
-            type: 'string',
-            min: 6,
-            message: this.$t('form.passwordTooShort'),
-            trigger: 'blur'
-          }
-          ],
-          baseurl: [{
-            type: 'string',
-            required: true,
-            message: this.$t('form.projectEmpty'),
-            trigger: 'blur'
-          }],
-        },
-        ruleCAS: {
-          baseurl: [{
-            type: 'string',
-            required: true,
-            message: this.$t('form.projectEmpty'),
-            trigger: 'blur'
-          }],
-        }
-      }
+  
+  // 初始化 Hooks
+  const route = useRoute()
+  const { t } = useI18n()
+  const { proxy } = getCurrentInstance()
+  
+  // 响应式数据
+  const title = ref(t('title'))
+  const titleCAS = ref(t('title') + '-cas')
+  const languageList = ref([])
+  const baseurlConfig = ref([[]])
+  const service = ref('')
+  const project = ref('')
+  const baseurl = ref('')
+  
+  // 表单数据
+  const formInline = reactive({
+    user: '',
+    password: '',
+    baseurl: JSON.stringify(config.baseurl[0])
+  })
+  
+  // 表单验证规则
+  const ruleInline = reactive({
+    user: [{
+      required: true,
+      message: t('form.userEmpty'),
+      trigger: 'blur'
+    }],
+    password: [{
+      required: true,
+      message: t('form.passwordEmpty'),
+      trigger: 'blur'
     },
-    computed: {
-      ticket () {
-        // let result=this.parseUrlParams()
-        let result=util.parseUrlParams(window.location)
-        return result["ticket"]
-      },
-    },
-    methods: {
-      languageSet(lang) {
-        console.log(lang)
-        localStorage.setItem('language',lang)
-        window.location = '/'
-      },
-      authdata () {
-        this.$refs['formLogin'].validate((valid) => {
-          if (valid) {
-            let project = JSON.parse(this.formInline.baseurl)[0]
-            let baseurl = JSON.parse(this.formInline.baseurl)[1]
-            sessionStorage.setItem('baseurl', baseurl)
-            sessionStorage.setItem('project', project)
-            login.login({'username': this.formInline.user, 'password': this.formInline.password})
-              .then(res => {
-                if (res.data['token']) {
-                  sessionStorage.setItem('jwt', `Bearer ${res.data['token']}`)
-                  sessionStorage.setItem('hasLogin', 1)
-                  sessionStorage.setItem('user', this.formInline.user)
-                  sessionStorage.setItem('loginTimestamp', (new Date().getTime()) / 1000)
-                  // this.$router.push({
-                  //   name: 'home_index'
-                  // })
-                  // 使用push可能导致session未设置前已经加载下一个页面 故而不用
-                  window.location = '/'
-                } else {
-                  util.notice(this, res.data['msg'], 'warning')
-                }
-              })
-              .catch(error => {
-                util.notice(this, error, 'error')
-              })                
-          } else {
-            this.$Message.error(this.$t('form.checkErr'))
-          }
-        })
-      },
-      // 以下是CAS使用
-      login () {
-        this.project = JSON.parse(this.formInline.baseurl)[0]
-        this.baseurl = JSON.parse(this.formInline.baseurl)[1]
-        sessionStorage.setItem('project',this.project)
-        sessionStorage.setItem('baseurl',this.baseurl)
-        localStorage.setItem('project',this.project)
-        localStorage.setItem('baseurl',this.baseurl)
-        login.loginCAS(this.service)
+    {
+      type: 'string',
+      min: 6,
+      message: t('form.passwordTooShort'),
+      trigger: 'blur'
+    }
+    ],
+    baseurl: [{
+      type: 'string',
+      required: true,
+      message: t('form.projectEmpty'),
+      trigger: 'blur'
+    }],
+  })
+  
+  const ruleCAS = reactive({
+    baseurl: [{
+      type: 'string',
+      required: true,
+      message: t('form.projectEmpty'),
+      trigger: 'blur'
+    }],
+  })
+  
+  
+  const ticket = util.parseUrlParams(window.location)['ticket']
+  
+  // 方法
+  const languageSet = (lang) => {
+    console.log(lang)
+    localStorage.setItem('language', lang)
+    window.location = '/'
+  }
+  
+  // 定义表单引用
+  const formX = ref(null)
+  const formLogin = ref(null)
+  const formLoginCAS = ref(null)
+  
+  // 重新定义 authdata 以使用 formLogin ref
+  const authdata = () => {
+    formLogin.value.validate((valid) => {
+      if (valid) {
+        let projectVal = JSON.parse(formInline.baseurl)[0]
+        let baseurlVal = JSON.parse(formInline.baseurl)[1]
+        sessionStorage.setItem('baseurl', baseurlVal)
+        sessionStorage.setItem('project', projectVal)
+        
+        login.login({ 'username': formInline.user, 'password': formInline.password })
           .then(res => {
-            if (res.data['status'] === 1) {
-              window.location = res.data['cas_login_url']
-            } else {
-              util.notice(this, res.data['msg'], 'error')
-            }
-          })
-          .catch(error => {
-            // console.log(error)
-            util.notice(this, error, 'error')
-          })
-      },
-      vertify () {
-        sessionStorage.setItem('baseurl', this.baseurl)
-        sessionStorage.setItem('project', this.project)
-        login.casServiceValidate(this.ticket,this.service)
-          .then(res => {
-            // this.jwt = 'JWT '+res.data['token']
             if (res.data['token']) {
               sessionStorage.setItem('jwt', `Bearer ${res.data['token']}`)
               sessionStorage.setItem('hasLogin', 1)
-              sessionStorage.setItem('user', res.data['user'])
+              sessionStorage.setItem('user', formInline.user)
               sessionStorage.setItem('loginTimestamp', (new Date().getTime()) / 1000)
-              sessionStorage.setItem('cas', 1)
-              // 使用push会导致url携带ticket,故而不用
               window.location = '/'
             } else {
-              util.notice(this, res.data['msg'], 'warning')
+              util.notice(proxy, res.data['msg'], 'warning')
             }
           })
           .catch(error => {
-            util.notice(this, error, 'error');
-            // console.log(error)
-          });
-      },
-      authCAS () {
-        this.$refs['formLoginCAS'].validate((valid) => {
-          if (valid) {
-            this.login()
-          }
-        })
-      },
-      logout () {
-        login.logout(this.service)
-          .then(res => {
-            // util.notice(this, res.data, 'info');
-            // console.log(res.data)
-            if (res.data['status'] === 1) {
-              window.location = res.data['cas_logout_url'] 
-            }
-            sessionStorage.clear()
+            util.notice(proxy, error, 'error')
           })
-          .catch(error => {
-            util.notice(this, error, 'error');
-            // console.log(error)
-          });
-      },
-    },
-    mounted () {
-      document.onkeydown = (e) => {
-        if(e.keyCode == 13 && this.$route.name === 'login') {
-            if(this.$refs['formX'].activeKey === 'simple'){
-              this.authdata()
-            } else if (this.$refs['formX'].activeKey === 'cas') {
-              this.authCAS()
-            }
-        }
-      }
-      if ( window.location.search.length === 0 ) {
-        this.service = window.location.href
-        this.service = this.service.replace('#','%23')
-        if (sessionStorage.getItem('jwt')) {
-          this.baseurl = localStorage.getItem('baseurl')
-          if (sessionStorage.getItem('cas')) {
-            // 因为异步 所有后面也可以被执行？
-            this.logout()
-          } else{
-            sessionStorage.clear()
-          }
-        }
-        localStorage.setItem('loginUrl',this.service)
-        localStorage.removeItem('project')
-        localStorage.removeItem('baseurl')
       } else {
-        this.service = localStorage.getItem('loginUrl')
-        this.service = this.service.replace('#','%23')
-        this.project = localStorage.getItem('project')
-        this.baseurl = localStorage.getItem('baseurl')
-        if (this.ticket) {
-          this.vertify()
+        proxy.$Message.error(t('form.checkErr')) 
+      }
+    })
+  }
+  
+  // CAS 相关方法
+  const loginCAS = () => {
+    project.value = JSON.parse(formInline.baseurl)[0]
+    baseurl.value = JSON.parse(formInline.baseurl)[1]
+    sessionStorage.setItem('project', project.value)
+    sessionStorage.setItem('baseurl', baseurl.value)
+    localStorage.setItem('project', project.value)
+    localStorage.setItem('baseurl', baseurl.value)
+    
+    login.loginCAS(service.value)
+      .then(res => {
+        if (res.data['status'] === 1) {
+          window.location = res.data['cas_login_url']
+        } else {
+          util.notice(proxy, res.data['msg'], 'error')
+        }
+      })
+      .catch(error => {
+        util.notice(proxy, error, 'error')
+      })
+  }
+  
+  const vertify = () => {
+    sessionStorage.setItem('baseurl', baseurl.value)
+    sessionStorage.setItem('project', project.value)
+    
+    login.casServiceValidate(ticket, service.value)
+      .then(res => {
+        if (res.data['token']) {
+          sessionStorage.setItem('jwt', `Bearer ${res.data['token']}`)
+          sessionStorage.setItem('hasLogin', 1)
+          sessionStorage.setItem('user', res.data['user'])
+          sessionStorage.setItem('loginTimestamp', (new Date().getTime()) / 1000)
+          sessionStorage.setItem('cas', 1)
+          window.location = '/'
+        } else {
+          util.notice(proxy, res.data['msg'], 'warning')
+        }
+      })
+      .catch(error => {
+        util.notice(proxy, error, 'error')
+      })
+  }
+  
+  const authCAS = () => {
+    formLoginCAS.value.validate((valid) => {
+      if (valid) {
+        loginCAS()
+      }
+    })
+  }
+  
+  const logout = () => {
+    login.logout(service.value)
+      .then(res => {
+        if (res.data['status'] === 1) {
+          window.location = res.data['cas_logout_url']
+        }
+        sessionStorage.clear()
+      })
+      .catch(error => {
+        util.notice(proxy, error, 'error')
+      })
+  }
+  
+  
+  onMounted(() => {
+    document.onkeydown = (e) => {
+      if(e.keyCode == 13 && route.name === 'login') {
+          // if(proxy.$refs['formX'].activeKey === 'simple'){
+          if(formX.value.activeKey === 'simple'){
+            authdata()
+          } else if (formX.value.activeKey === 'cas') {
+            authCAS()
+          }
+      }
+    }
+  
+    if (window.location.search.length === 0) {
+      service.value = window.location.href
+      service.value = service.value.replace('#', '%23')
+      
+      if (sessionStorage.getItem('jwt')) {
+        baseurl.value = localStorage.getItem('baseurl')
+        if (sessionStorage.getItem('cas')) {
+          logout()
+        } else {
+          sessionStorage.clear()
         }
       }
-    },
-    created () {
-      this.baseurlConfig = config.baseurl
-      this.languageList = JSON.parse(sessionStorage.getItem('languageList'))
+      localStorage.setItem('loginUrl', service.value)
+      localStorage.removeItem('project')
+      localStorage.removeItem('baseurl')
+    } else {
+      service.value = localStorage.getItem('loginUrl')
+      service.value = service.value.replace('#', '%23')
+      project.value = localStorage.getItem('project')
+      baseurl.value = localStorage.getItem('baseurl')
+      
+      if (ticket) {
+        vertify()
+      }
     }
-  }
+  })
+  
+  // created 钩子逻辑直接执行
+  baseurlConfig.value = config.baseurl
+  languageList.value = JSON.parse(sessionStorage.getItem('languageList'))
 </script>

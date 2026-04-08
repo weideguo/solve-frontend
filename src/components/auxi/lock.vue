@@ -28,53 +28,56 @@
     </transition>
   </div>
 </template>
-//
-<script>
+
+<script setup>
   //
+  import { ref, onMounted, getCurrentInstance } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useI18n } from 'vue-i18n'
   import util from '@/libs/util'
   import login from '@/api/login'
-
-  export default {
-    data () {
-      return {
-        avatorLeft: '0px',
-        inputLeft: '400px',
-        password: '',
-        showUnlock: true,
-        currentUser: sessionStorage.getItem('user')
-      }
-    },
-    methods: {
-      handleClickAvator () {
-        if (this.showUnlock) {
-          this.avatorLeft = '-180px'
-          this.inputLeft = '0px'
-          this.$refs.inputEle.focus()
-          this.showUnlock = false
-        } else {
-          this.avatorLeft = '0px'
-          this.inputLeft = '400px'
-          this.showUnlock = true
-        }
-      },
-      handleUnlock () {
-        login.login({'username': sessionStorage.getItem('user'),'password': this.password})
-          .then(res => {
-            if (res.data['token']) {
-              sessionStorage.setItem('locking', '0')
-              this.$router.push({
-                name: sessionStorage.getItem('lastPageName')
-              })
-            } else {
-              util.notice(this, this.$t('passwordError'), 'warning')
-            }
-          }).catch(error => {
-            util.notice(this, error, 'error')
-          })
-      }
-    },
-    mounted () {
-      sessionStorage.setItem('locking', '1')
+  
+  const router = useRouter()
+  const { t } = useI18n()
+  const { proxy } = getCurrentInstance()
+  
+  const avatorLeft = ref('0px')
+  const inputLeft = ref('400px')
+  const password = ref('')
+  const showUnlock = ref(true)
+  const currentUser = ref(sessionStorage.getItem('user'))
+  const inputEle = ref(null)
+  
+  const handleClickAvator = () => {
+    if (showUnlock.value) {
+      avatorLeft.value = '-180px'
+      inputLeft.value = '0px'
+      inputEle.value.focus()
+      showUnlock.value = false
+    } else {
+      avatorLeft.value = '0px'
+      inputLeft.value = '400px'
+      showUnlock.value = true
     }
   }
+  
+  const handleUnlock = () => {
+    login.login({'username': sessionStorage.getItem('user'), 'password': password.value})
+      .then(res => {
+        if (res.data['token']) {
+          sessionStorage.setItem('locking', '0')
+          router.push({
+            name: sessionStorage.getItem('lastPageName')
+          })
+        } else {
+          util.notice(proxy, t('passwordError'), 'warning')
+        }
+      }).catch(error => {
+        util.notice(proxy, error, 'error')
+      })
+  }
+  
+  onMounted(() => {
+    sessionStorage.setItem('locking', '1')
+  })
 </script>

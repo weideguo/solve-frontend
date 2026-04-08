@@ -52,47 +52,36 @@
   </div>
 </template>
 
-<script>
+<script setup>
+  import { ref, onMounted } from 'vue'
   import home from '@/api/home'
   import util from '@/libs/util'
-  import config from '@/config/config'
   import toDoList from './components/toDoList.vue'
   import infoCard from './components/infoCard.vue'
   import dataChart from './components/dataChart.vue'
   
-
-  export default {
-    components: {
-      toDoList,
-      infoCard,
-      dataChart
-    },
-    data () {
-      return {
-        count: {
-          user: 0,
-          order: 0,
-          exec: 0,
-          target: 0,
-          realhost: 0
-        },
-        time: util.formatDate(sessionStorage.getItem('loginTimestamp')),
-        username: sessionStorage.getItem('user')
-      }
-    },
-    methods: {
-      getHomeinfo () {
-        home.getHomeInfo()
-          .then(res => {
-            this.count = res.data
-          })
-          .catch(error => {
-            util.notice(this, error, 'error')
-          })
-      }
-    },
-    mounted () {
-      this.getHomeinfo()
-    }
+  const count = ref({
+    user: 0,
+    order: 0,
+    exec: 0,
+    target: 0,
+    realhost: 0
+  })
+  
+  const time = ref(util.formatDate(sessionStorage.getItem('loginTimestamp')))
+  const username = ref(sessionStorage.getItem('user'))
+  
+  const getHomeinfo = () => {
+    home.getHomeInfo()
+      .then(res => {
+        count.value = res.data
+      })
+      .catch(error => {
+        util.notice(null, error, 'error')
+      })
   }
+  
+  onMounted(() => {
+    getHomeinfo()
+  })
 </script>

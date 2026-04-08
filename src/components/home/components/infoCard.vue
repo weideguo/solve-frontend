@@ -18,16 +18,10 @@
   </Card>
 </template>
 
-<script>
-//
-import countUp from './countUp.vue';
-
-export default {
-  name: 'infoCard',
-  components: {
-    countUp
-  },
-  props: {
+<script setup>
+  import countUp from './countUp.vue';
+  
+  defineProps({
     idName: String,
     endVal: Number,
     color: String,
@@ -45,6 +39,5 @@ export default {
       type: Number,
       default: 40
     }
-  }
-};
+  });
 </script>

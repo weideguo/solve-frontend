@@ -35,62 +35,56 @@
   </div>
 </template>
 
-<script>
-  // import VueI18n from 'vue-i18n'
-  import { useAppStore } from '@/store' 
-
-  export default {
-    name: 'tagsPageOpened',
-    setup() {
-      const appStore = useAppStore()
-      return { appStore }
-    },
-    data () {
-      return {
-        currentPageName: this.$route.name
-        // tagBodyLeft: 0
-      }
-    },
-    props: {
-      pageTagsList: Array
-    },
-    computed: {
-    },
-    methods: {
-      closePage (event, name) {
-        this.appStore.removeTag(name)
-        if (this.currentPageName === name) {
-          let lastPageName = this.appStore.pageOpenedList[this.appStore.pageOpenedList.length - 1].name
-          this.$router.push({
-            name: lastPageName
-          })
-          this.appStore.setBreadcrumb(lastPageName)
-          this.appStore.currentPageName = lastPageName
-        }
-      },
-      linkTo (name) {
-        this.$router.push({
-          name: name
-        })
-        this.appStore.setBreadcrumb(name)
-        this.appStore.currentPageName = name
-      },
-      handleTagsOption (type) {
-        if (type === 'clearAll') {
-          this.appStore.clearAllTags()
-          this.$router.push({
-            name: this.appStore.pageOpenedList[0].name
-          })
-        } else {
-          let currentName = this.$route.name
-          this.appStore.clearOtherTags(currentName)
-        }
-      }
-    },
-    watch: {
-      '$route' (to) {
-        this.currentPageName = to.name
-      }
+<script setup>
+  import { ref, watch } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import { useAppStore } from '@/store'
+  
+  const props = defineProps({
+    pageTagsList: {
+      type: Array,
+      default: () => []
+    }
+  })
+  
+  const router = useRouter()
+  const route = useRoute()
+  const appStore = useAppStore()
+  
+  const currentPageName = ref(route.name)
+  
+  const closePage = (event, name) => {
+    appStore.removeTag(name)
+    if (currentPageName.value === name) {
+      const lastPageName = appStore.pageOpenedList[appStore.pageOpenedList.length - 1].name
+      router.push({ name: lastPageName })
+      appStore.setBreadcrumb(lastPageName)
+      appStore.currentPageName = lastPageName
+      currentPageName.value = lastPageName
     }
   }
+  
+  const linkTo = (name) => {
+    router.push({ name })
+    appStore.setBreadcrumb(name)
+    appStore.currentPageName = name
+    currentPageName.value = name
+  }
+  
+  const handleTagsOption = (type) => {
+    if (type === 'clearAll') {
+      appStore.clearAllTags()
+      router.push({ name: appStore.pageOpenedList[0].name })
+    } else {
+      const currentName = route.name
+      appStore.clearOtherTags(currentName)
+    }
+  }
+  
+  watch(
+    () => route.name,
+    (newName) => {
+      currentPageName.value = newName
+    }
+  )
 </script>

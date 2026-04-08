@@ -76,38 +76,27 @@
   </div>
 </template>
 
-<script>
-  //
-  import util from '@/libs/util'
-  import { useAppStore } from '@/store' 
-
-  export default {
-    name: 'sidebarMenuShrink',
-    props: {
-      menuList: {
-        type: Array
-      },
-      iconColor: {
-        type: String,
-        default: 'white'
-      }
+<script setup>
+  import { useRoute, useRouter } from 'vue-router'
+  import { useAppStore } from '@/store'
+  
+  const props = defineProps({
+    menuList: {
+      type: Array,
+      default: () => []
     },
-    setup() {
-      const appStore = useAppStore()
-      return { appStore }
-    },
-    data () {
-      return {
-        currentPageName: this.$route.name
-      }
-    },
-    methods: {
-      currentPageTab (val) {
-        this.$router.push({name: val})
-        this.appStore.setTagBreadBeforeOpen(val)
-      }
-    },
-    created () {
+    iconColor: {
+      type: String,
+      default: 'white'
     }
+  })
+  
+  const router = useRouter()
+  const route = useRoute()
+  const appStore = useAppStore()
+  
+  const currentPageTab = (val) => {
+    router.push({ name: val })
+    appStore.setTagBreadBeforeOpen(val)
   }
 </script>

@@ -13,32 +13,28 @@
   </div>
 </template>
 
-<script>
-  import axios from 'axios'
+<script setup>
+  import { ref, onMounted, onBeforeMount, getCurrentInstance } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import util from '@/libs/util'
-  // import VueI18n from 'vue-i18n'
   import request from '@/api/request'
-
-  export default {
-    name: 'test',
-    data () {
-      return {
-        title: 'aaa',
-        playbook: this.$t("i.select.placeholder"),
-      }
-    },
-    mounted () {
-      console.log(this.$t("message.title"))
-    },
-    created () {
-      //axios.get("http://192.168.253.128:8000/api/v1/test/")
-      request.get("http://192.168.253.128:8000/api/v1/config/?key=job_typesx")
-        .then(res => {
-          // this.title=res.data['path']
-          console.log(res.data)
-        }).catch(error => {
-          util.notice(this, error, 'error')
-        })
-    }
-  }
+  
+  const { t } = useI18n()
+  const { proxy } = getCurrentInstance()
+  
+  const title = ref('aaa')
+  const playbook = ref(t("i.select.placeholder"))
+  
+  onBeforeMount(() => {
+    request.get("http://192.168.85.128:8000/api/v1/config/?key=job_type")
+      .then(res => {
+        console.log(res.data)
+      }).catch(error => {
+        util.notice(proxy, error, 'error')
+      })
+  })
+  
+  onMounted(() => {
+    console.log(t("message.title"))
+  })
 </script>

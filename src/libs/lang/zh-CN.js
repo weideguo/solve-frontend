@@ -269,6 +269,7 @@ const lang = {
     lineFormatRegexp: '行的正则表达式',
     lineFormatRegexpComment: '已经去除行的左右空格，按照分组进行分割成列，如\n^(.*)\\|(.*)$    (\\S*)\\s+(\\S*)',
     tableColumnNamesGenerate: '第一行当成字段名',
+    'path copy success': '路径复制成功',
 }
 
 export default lang;

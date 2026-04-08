@@ -6,30 +6,29 @@
     </div>
     <div v-else>
       <Button type="text" @click="download"><Icon type="md-document" /></Button>
-      <!--<Button type="text" @click="download" icon="md-document"></Button>-->
       <Button type="text" @click="copypath">{{introText}}</Button>
     </div>
 </template>
 
-<script>
-import util from '@/libs/util'
-export default {
-  name: 'fileList',
-  props: {
+<script setup>
+  //
+  
+  const props = defineProps({
     introText: String,
     listType: String
-  },
-  methods: {
-    changedir () {
-      this.$emit('changedir', this.introText) 
-    },
-    copypath () {
-      this.$emit('copypath', this.introText) 
-    },
-    download () {
-      //util.download(this, this.url + '/' + this.introText, this.introText)
-      this.$emit('download', this.introText) 
-    }
+  })
+  
+  const emit = defineEmits(['changedir', 'copypath', 'download'])
+  
+  const changedir = () => {
+    emit('changedir', props.introText)
   }
-};
+  
+  const copypath = () => {
+    emit('copypath', props.introText)
+  }
+  
+  const download = () => {
+    emit('download', props.introText)
+  }
 </script>

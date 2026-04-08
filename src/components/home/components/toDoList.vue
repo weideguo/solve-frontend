@@ -40,105 +40,109 @@
 </template>
 
 
-<script>
-export default {
-  name: 'toDoList',
-  data () {
-    return {
-      toDoList: [],
-      todoitem: false,
-      showAddNewTodo: false,
-      newToDoItemValue: ''
-    };
-  },
-  props: {
+<script setup>
+  //
+  import { ref, onMounted, getCurrentInstance } from 'vue'
+  import { useI18n } from 'vue-i18n'
+  
+  const props = defineProps({
     cardHeight: {
       type: String,
       default: '300px'
     }
-  },
-  methods: {
-    getTodo () {
-      this.toDoList = [{'title': ''}];  // 如果为空 从零添加会导致首次渲染异常
-      let todos = JSON.parse(localStorage.getItem('todolist'))
-      if (todos && Array.isArray(todos)) {
-        todos.forEach((title, index) => {
-          if (title != '') {
-            this.toDoList.push({'title': title, 'status':false})
-          }
-        })
-      }
-      this.toDoList.splice(0, 1)
-    },
-    addTodo () {
-      if (this.newToDoItemValue.length !== 0) {
-        let todolist = JSON.parse(localStorage.getItem('todolist'));
-        if (todolist === null) {
-          todolist = []
+  })
+  
+  const { t } = useI18n()
+  const { proxy } = getCurrentInstance()
+  
+  const toDoList = ref([])
+  const todoitem = ref(false)
+  const showAddNewTodo = ref(false)
+  const newToDoItemValue = ref('')
+  
+  const getTodo = () => {
+    toDoList.value = [{'title': ''}]
+    let todos = JSON.parse(localStorage.getItem('todolist'))
+    if (todos && Array.isArray(todos)) {
+      todos.forEach((title, index) => {
+        if (title != '') {
+          toDoList.value.push({'title': title, 'status': false})
         }
-        todolist = [this.newToDoItemValue].concat(todolist);
-        localStorage.setItem('todolist', JSON.stringify(todolist))
-        this.toDoList.unshift({
-          title: this.newToDoItemValue
-        })
-        this.getTodo()
-      } else {
-        this.$Message.error(this.$t('inputNotNull'))
-      }
-    },
-    delTodo (item) {
-      let todolist = []
-      if (item.status) {
-        JSON.parse(localStorage.getItem('todolist')).forEach((title, index) => {
-          if (title !== item.title) {
-            todolist.push(title)
-          }
-        })
-        localStorage.setItem('todolist', JSON.stringify(todolist));
-        this.getTodo();
-      }
-    },
-    todoUp () {
-        this.todoMove(false) 
-    },
-    todoDown () {
-        this.todoMove(true) 
-    },
-    todoMove (isDown) {
-        // isDown=true 实现反向操作
-        let oldTodolist = JSON.parse(localStorage.getItem('todolist'))
-        let todolistShow = this.toDoList
-        if (isDown) { 
-            oldTodolist = oldTodolist.reverse() 
-            todolistShow = todolistShow.reverse() 
-        }
-        let newTodolist = []
-        oldTodolist.forEach((title, index) => {
-            let isMatch = false
-            todolistShow.forEach((item, i) => {
-                if (title === item.title &&  item.status) {
-                    let preTitle = newTodolist[newTodolist.length-1]
-                    newTodolist = newTodolist.slice(0,-1)
-                    newTodolist.push(title)
-                    if (preTitle != undefined) {
-                        newTodolist.push(preTitle)
-                    }
-                    isMatch  = true
-                }
-            })
-            if (!isMatch) {
-                newTodolist.push(title)
-            }
-            
-        })
-        if (isDown) { newTodolist = newTodolist.reverse() }
-        localStorage.setItem('todolist', JSON.stringify(newTodolist))
-        this.getTodo()
-    },
-  },
-  mounted () {
-    this.getTodo()
+      })
+    }
+    toDoList.value.splice(0, 1)
   }
-};
+  
+  const addTodo = () => {
+    if (newToDoItemValue.value.length !== 0) {
+      let todolist = JSON.parse(localStorage.getItem('todolist'))
+      if (todolist === null) {
+        todolist = []
+      }
+      todolist = [newToDoItemValue.value].concat(todolist)
+      localStorage.setItem('todolist', JSON.stringify(todolist))
+      toDoList.value.unshift({
+        title: newToDoItemValue.value
+      })
+      getTodo()
+    } else {
+      proxy.$Message.error(t('inputNotNull'))
+    }
+  }
+  
+  const delTodo = (item) => {
+    let todolist = []
+    if (item.status) {
+      JSON.parse(localStorage.getItem('todolist')).forEach((title, index) => {
+        if (title !== item.title) {
+          todolist.push(title)
+        }
+      })
+      localStorage.setItem('todolist', JSON.stringify(todolist))
+      getTodo()
+    }
+  }
+  
+  const todoUp = () => {
+    todoMove(false)
+  }
+  
+  const todoDown = () => {
+    todoMove(true)
+  }
+  
+  const todoMove = (isDown) => {
+    let oldTodolist = JSON.parse(localStorage.getItem('todolist'))
+    let todolistShow = toDoList.value
+    if (isDown) {
+      oldTodolist = oldTodolist.reverse()
+      todolistShow = todolistShow.reverse()
+    }
+    let newTodolist = []
+    oldTodolist.forEach((title, index) => {
+      let isMatch = false
+      todolistShow.forEach((item, i) => {
+        if (title === item.title && item.status) {
+          let preTitle = newTodolist[newTodolist.length - 1]
+          newTodolist = newTodolist.slice(0, -1)
+          newTodolist.push(title)
+          if (preTitle != undefined) {
+            newTodolist.push(preTitle)
+          }
+          isMatch = true
+        }
+      })
+      if (!isMatch) {
+        newTodolist.push(title)
+      }
+    })
+    if (isDown) { newTodolist = newTodolist.reverse() }
+    localStorage.setItem('todolist', JSON.stringify(newTodolist))
+    getTodo()
+  }
+  
+  onMounted(() => {
+    getTodo()
+  })
 </script>
 

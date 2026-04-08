@@ -24,7 +24,7 @@
           <!--折叠左边按钮-->
           <div  @click="hideMenuText=!hideMenuText" style="float:left;margin-top: 15px;margin-left: 10px">
             <a>
-              <Icon type="md-menu" size="32" :style="{transform: this.hideMenuText ? 'rotateZ(90deg)' : 'rotateZ(0deg)'}"></Icon>
+              <Icon type="md-menu" size="32" :style="{transform: hideMenuText ? 'rotateZ(90deg)' : 'rotateZ(0deg)'}"></Icon>
             </a>
           </div>
           
@@ -42,8 +42,8 @@
               <span style="font-weight:800;font-size:18px">{{project}}</span>
             </div-->
             <div @click="handleFullScreen" style="float:left;margin-left:20px">
-              <Tooltip :content="this.isFullScreen ? $t('exitFullScreen') : $t('fullScreen')" placement="bottom">
-                <Icon :type="this.isFullScreen ? 'md-contract' : 'md-expand'" :size="23"></Icon>
+              <Tooltip :content="isFullScreen ? $t('exitFullScreen') : $t('fullScreen')" placement="bottom">
+                <Icon :type="isFullScreen ? 'md-contract' : 'md-expand'" :size="23"></Icon>
               </Tooltip>
             </div>
   
@@ -94,7 +94,10 @@
 </template>
 
 
-<script>
+<script setup>
+  //
+  import { ref, computed, onMounted, getCurrentInstance  } from 'vue'
+  import { useRouter } from 'vue-router'
   import sidebarMenu from './components/sidebarMenu.vue'
   import sidebarMenuShrink from './components/sidebarMenuShrink.vue'
   import tagsPageOpened from './components/tagsPageOpened.vue'
@@ -102,69 +105,53 @@
   import custom from '@/config/custom'
   import { useAppStore } from '@/store' 
 
-  export default {
-    components: {
-      sidebarMenu,
-      sidebarMenuShrink,
-      tagsPageOpened
-    },
-    setup() {
-      const appStore = useAppStore()
-      return { appStore }
-    },
-    data () {
-      return {
-        project: sessionStorage.getItem('project'),
-        hideMenuText: false,
-        userName: sessionStorage.getItem('user'),
-        isFullScreen: false
-      }
-    },
-    computed: {
-      menuList () {
-        return this.appStore.menuList
-      },
-      pageTagsList () {
-        // 打开的页面的页面对象
-        return this.appStore.pageOpenedList
-      },
-      currentPath () {
-        // 当前路径数组
-        return this.appStore.currentPath
-      },
-      // isFullScreen () {
-      //   return document.isFullScreen || document.mozIsFullScreen || document.webkitIsFullScreen
-      // }
-    },
-    methods: {
-      logout (name) {
-        this.$router.push({name: 'login'})
+  // 路由 与 store
+  const router = useRouter()
+  const appStore = useAppStore()
+  
+  const { proxy } = getCurrentInstance()
 
-      },
-      // 全屏 兼容其他浏览器
-      handleFullScreen () {
-        let body = document.getElementsByTagName('html')[0]
-        if (this.isFullScreen) {
-          // this.isFullScreen = false
-          document.exitFullscreen()
-        } else {
-          // this.isFullScreen = true
-          body.requestFullscreen()
-        }
-      },
-      // 锁屏
-      lockScreen () {
-        sessionStorage.setItem('lastPageName', this.$route.name)              // 本地存储锁屏之前打开的页面以便解锁后打开
-        this.$router.push({name: 'locking'})
-      }
-    },
-    mounted () {
-      custom.greeting(this)
-      window.onresize = () => {
-        this.isFullScreen = document.isFullScreen || document.mozIsFullScreen || document.webkitIsFullScreen
-      }
-    },
-    created () {
+  // 响应式数据
+  const project = ref(sessionStorage.getItem('project'))
+  const hideMenuText = ref(false)
+  const userName = ref(sessionStorage.getItem('user'))
+  const isFullScreen = ref(false)
+
+  // 计算属性
+  const menuList = computed(() => appStore.menuList)
+  const pageTagsList = computed(() => appStore.pageOpenedList)
+  const currentPath = computed(() => appStore.currentPath)
+
+  // 方法
+  const logout = (name) => {
+    router.push({ name: 'login' })
+  }
+
+  // 全屏 - 兼容其他浏览器
+  const handleFullScreen = () => {
+    //
+    let body = document.getElementsByTagName('html')[0]
+    
+    if (isFullScreen.value) {
+      document.exitFullscreen()
+    } else {
+      body.requestFullscreen()
     }
   }
+
+  // 锁屏
+  const lockScreen = () => {
+    sessionStorage.setItem('lastPageName', router.currentRoute.value.name)
+    router.push({ name: 'locking' })
+  }
+
+  //
+  onMounted(() => {
+    custom.greeting(proxy)    
+    // 监听窗口变化以更新全屏状态
+    window.onresize = () => {
+      isFullScreen.value = !!(document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement)
+    }
+  })
 </script>
+

@@ -54,37 +54,32 @@
     </MenuItem>
   </Menu>
 </template>
-<script>
-  //
-  import util from '@/libs/util'
-  import { useAppStore } from '@/store' 
 
-  export default {
-    name: 'sidebarMenu',
-    props: {
-      menuList: Array,
-      iconSize: Number
+<script setup>
+  //
+  import { computed } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import { useAppStore } from '@/store'
+  
+  const props = defineProps({
+    menuList: {
+      type: Array,
+      default: () => []
     },
-    setup() {
-      const appStore = useAppStore()
-      return { appStore }
-    },
-    data () {
-      return {
-      }
-    },
-    computed: {
-      currentPageName () {
-        return this.appStore.currentPageName
-      }
-    },
-    methods: {
-      currentPageTab (val) {
-        this.$router.push({name: val})
-        this.appStore.setTagBreadBeforeOpen(val)
-      }
-    },
-    created () {
+    iconSize: {
+      type: Number,
+      default: 14
     }
+  })
+  
+  const router = useRouter()
+  const route = useRoute()
+  const appStore = useAppStore()
+  
+  const currentPageName = computed(() => appStore.currentPageName)
+  
+  const currentPageTab = (val) => {
+    router.push({ name: val })
+    appStore.setTagBreadBeforeOpen(val)
   }
 </script>
