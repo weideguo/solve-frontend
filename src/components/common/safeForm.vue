@@ -171,10 +171,10 @@
     if (props.secondCheck) {
       safeform.value.validate((valid) => {
         if (valid) {
-          emit('secondClick', this.allValue)
+          emit('secondClick', allValue.value)
           handleReset()
         } else {
-          peoxy.$Message.error(this.$t('form.checkErr'))
+          peoxy.$Message.error(t('form.checkErr'))
         }
       })
     } else {
