@@ -11,7 +11,12 @@
           <Button type="primary" shape="circle" icon="md-cloud-upload" ghost @click.native="commit()"></Button>
         </Tooltip>
       </template>
-      <Form :label-width="100" ref="formExecutionSetting" :model="formExecutionSetting":rules="ruleExecutionSetting">
+      <Form :label-width="100" ref="formExecutionSetting" 
+        :model="formItem.reduce((acc, cur) => {
+                  acc[cur.key] = cur.value
+                  return acc
+                }, {})"
+        :rules="ruleExecutionSetting">
         <FormItem label="target_type" prop="target_type" >
           <Input v-model="target_type" disabled></Input> 
         </FormItem>
@@ -35,201 +40,191 @@
   </div>
 </template>
 
-<script>
+<script setup>
+  import { ref, reactive, computed, watch, getCurrentInstance, onMounted, onBeforeMount } from 'vue'
+  import { useRouter, useRoute } from 'vue-router'
+  import { useI18n } from 'vue-i18n'
   import exec from '@/api/exec'
   import target from '@/api/target'
   import util from '@/libs/util'
-
-  //
-  export default {
-    data () {
-      return {
-        target_type: '',
-        openswitchAdd: false,
-        fromData: {},
-        formItem: [],
-        formItemSort: ['name', 'tmpl', 'target','comment'],
-        formExecutionSetting: {},
-        treeData: [],
-        tmplList: [],
-        title: '',
-        playbook: '',
-        name_o: '',
-        ruleExecutionSetting: {
-          name: [
-            { required: true, message: 'name'+this.$t('shouldNotEmpty') }
-          ],
-        },
+  
+  const { t } = useI18n()
+  const { proxy } = getCurrentInstance()
+  const router = useRouter()
+  const route = useRoute()
+  
+  const target_type = ref('')
+  const openswitchAdd = ref(false)
+  const fromData = ref({})
+  const formItem = ref([])
+  const formItemSort = ['name', 'tmpl', 'target', 'comment']
+  const treeData = ref([])
+  const tmplList = ref([])
+  const title = ref('')
+  const playbook = ref('')
+  const name_o = ref('')
+  const ruleExecutionSetting = reactive({
+    name: [
+      { required: true, message: 'name' + t('shouldNotEmpty') }
+    ],
+  })
+  
+  const info = computed(() => {
+    let x = util.arry2dict(formItem.value, 'key', 'value')
+    x['name'] = 'exec:' + x['name']
+    return x
+  })
+  
+  const tmpl = computed(() => {
+    return util.arry2dict(formItem.value, 'key', 'value')['tmpl']
+  })
+  
+  const playbookDetial = () => {
+    let name = info.value['name'].split('exec:')[1]
+    let path = router.resolve({ path: '/playbook', query: { playbook: playbook.value, title: name } }).href
+    console.log(path)
+    window.open(path, "_blank", "scrollbars=yes,resizable=1,modal=false,alwaysRaised=yes")
+  }
+  
+  const commit = () => {
+    if (util.existSpace(info.value['name'])) {
+      proxy.$Message.error('name' + t('shouldNoSpaceLR'))
+    } else if (info.value['name'] === 'exec:') {
+      proxy.$Message.error('name' + t('shouldNotEmpty'))
+    } else if (info.value['target'] != '' && info.value['target'].search(new RegExp(target_type.value.replaceAll('.', '\\.').replaceAll('*', '.*').replaceAll('?', '.'))) != 0) {
+      proxy.$Message.error(t('templateNotMatchTips'))
+    } else {
+      if (info.value['target']) {
+        info.value['number'] = info.value['target'].split(',').length
+      } else {
+        info.value['number'] = 0
       }
-    },
-    computed: {
-      info: {
-        get () {
-          let x = util.arry2dict(this.formItem, 'key', 'value')
-          x['name'] = 'exec:' + x['name']
-          return x 
-        },
-        set (val) {
-        }
-      },
-      tmpl () {
-        return util.arry2dict(this.formItem, 'key', 'value')['tmpl']
-      },
-      formExecutionSetting() {
-        let x = {}
-        this.formItem.forEach((item,i) => {
-          x[item['key']] = item['value']
-        })
-        return x
-      }
-    },
-    watch: {
-      tmpl: {
-        handler: function(val,oldval) {
-          if (this.info['tmpl'] === '') {
-            this.target_type = ''
-          } else {
-            exec.getExecutionInfo(`${this.info['tmpl']}`)
-              .then(res => {
-                try {
-                  let r = res.data['data'][0]
-                  this.target_type = r['target_type']
-                  this.playbook = r['playbook']
-                } catch (err) {
-                  util.notice(this, this.$t('getTemplateFailedTips'), 'warning')
-                }
-              })
-              .catch(error => {
-                util.notice(this, error, 'error')
-              }) 
-          }
-          
-        }
-      }
-    },
-    methods: {
-      playbookDetial () {
-        // 使用新的非tab页面显示playbook
-        // console.log(this.info)
-        // console.log(this.playbook)
-        let name = this.info['name'].split('exec:')[1]
-        // let path = "/playbook?playbook="+this.playbook+"&title="+name
-        let path = this.$router.resolve({ path: '/playbook', query: {  playbook: this.playbook, title: name } }).href
-        console.log(path)
-        window.open(path, "_blank", "scrollbars=yes,resizable=1,modal=false,alwaysRaised=yes")
-      },
-      commit () {
-        if (util.existSpace(this.info['name'])) {
-          this.$Message.error('name'+this.$t('shouldNoSpaceLR'))
-        } else if (this.info['name'] === 'exec:') {
-          this.$Message.error('name'+this.$t('shouldNotEmpty'))
-        //} else if (this.info['target'].indexOf(this.target_type) != 0 && this.info['target'] != '') {
-        } else if (this.info['target'] != '' && this.info['target'].search(new RegExp(this.target_type.replaceAll('.','\\.').replaceAll('*','.*').replaceAll('?','.'))) != 0 ) {
-          // this.target_type 为redis的通配符格式，因此需要转换后才能使用正则
-          // * ? []
-          this.$Message.error(this.$t('templateNotMatchTips'))
-        } else {
-          if (this.info['target']) {
-            this.info['number'] = this.info['target'].split(',').length
-          } else {
-            this.info['number'] = 0
-          }
-          this.$Message.success(this.$t('commitBegin'))
-          this.info['name_o'] = this.name_o
-          console.log(this.info)
-          this.addinfo(this.info)
-        }
-      },
-      addinfo (info) {
-        try {
-          exec.postExecutionInfo(info)
-            .then(res => {
-              if (res.data['status'] >= 1) {
-                util.notice(this, `${info['name']} ${res.data['msg']}`, 'success');
-              } else {
-                util.notice(this, res.data['msg'], 'warning');
-              }
-            }).catch(error => {
-              util.notice(this, error, 'error');
-            });
-        } catch (err) {
-          util.notice(this, err, 'error');
-        }
-      },
-      getCurrentPage () {
-        let tag =''
-        console.log(this.$route.query['row'])
-        if (this.$route.query['row']) {
-          this.fromData = JSON.parse(this.$route.query['row'])
-          tag = this.$route.query['tag']
-          sessionStorage.setItem('exe_data', this.$route.query['row'])
-          sessionStorage.setItem('exe_data_is_add',this.$route.query['tag'])
-        } else {
-          this.fromData = JSON.parse(sessionStorage.getItem('exe_data'))
-          tag = sessionStorage.getItem('exe_data_is_add')
-        }
-        try {
-          let x = ['_index','_rowKey','number']
-          x.forEach((item,i) => {
-            delete this.fromData[item]
-          })
-        } finally {
-          this.formItem = util.dict2arry(this.fromData, 'key', 'value', this.formItemSort)
-        }
-        console.log(this.formItem )
-        console.log(tag)
-        if (tag === 'add') {
-          this.name_o = ''
-          this.title = this.$t('addJob')
-        } else {
-          this.title = this.$t('modifyJob')
-          this.formItem.forEach((item,i) => {
-            if (item['key'] === 'name') {
-              this.name_o = 'exec:' + item['value']
-            }
-          })
-        }
-      },
-      clusterAdd () {
-        console.log(this.target_type)
-        if (this.target_type != '') {
-          this.openswitchAdd = !this.openswitchAdd
-          let formdata = util.arry2dict(this.formItem, 'key', 'value')
-          let selectedItem = (formdata['target']).split(',');
-          target.getNameList(`${this.target_type}*`)
-            .then(res => {
-              this.treeData = []
-              this.treeData.push(util.formateTreeData(res.data['data'], selectedItem));
-            })
-            .catch(error => {
-              util.notice(this, error, 'error');
-            })
-        } else {
-          this.$Message.error(this.$t('setTemplateTips'))
-        }
-      },
-      commitinfoAdd () {
-        let checkedleaf = util.getCheckedLeaf(this.treeData);
-        this.formItem.forEach((item) => {
-          if (item.key === 'target') {
-            item.value = checkedleaf.toString();
-          }
-        });
-      },
-      reflashTmpl () {
-        exec.getNameList('tmpl*')
-          .then(res => {
-            this.tmplList = res.data['data']
-          }).catch(error => {
-            util.notice(this, error, 'error');
-          })
-      }
-    },
-    mounted () {
-      this.getCurrentPage();
-    },
-    created () {
-      this.reflashTmpl()
+      proxy.$Message.success(t('commitBegin'))
+      info.value['name_o'] = name_o.value
+      console.log(info.value)
+      addinfo(info.value)
     }
   }
+  
+  // 添加信息
+  const addinfo = (info) => {
+    try {
+      exec.postExecutionInfo(info)
+        .then(res => {
+          if (res.data['status'] >= 1) {
+            util.notice(proxy, `${info['name']} ${res.data['msg']}`, 'success')
+          } else {
+            util.notice(proxy, res.data['msg'], 'warning')
+          }
+        }).catch(error => {
+          util.notice(proxy, error, 'error')
+        })
+    } catch (err) {
+      util.notice(proxy, err, 'error')
+    }
+  }
+  
+  
+  const getCurrentPage = () => {
+    let tag = ''
+    console.log(route.query['row'])
+    if (route.query['row']) {
+      fromData.value = JSON.parse(route.query['row'])
+      tag = route.query['tag']
+      sessionStorage.setItem('exe_data', route.query['row'])
+      sessionStorage.setItem('exe_data_is_add', route.query['tag'])
+    } else {
+      fromData.value = JSON.parse(sessionStorage.getItem('exe_data'))
+      tag = sessionStorage.getItem('exe_data_is_add')
+    }
+    try {
+      let x = ['_index', '_rowKey', 'number']
+      x.forEach((item, i) => {
+        delete fromData.value[item]
+      })
+    } finally {
+      formItem.value = util.dict2arry(fromData.value, 'key', 'value', formItemSort)
+    }
+    
+    console.log(formItem.value)
+    console.log(tag)
+    if (tag === 'add') {
+      name_o.value = ''
+      title.value = t('addJob')
+    } else {
+      title.value = t('modifyJob')
+      formItem.value.forEach((item, i) => {
+        if (item['key'] === 'name') {
+          name_o.value = 'exec:' + item['value']
+        }
+      })
+    }
+  }
+  
+  const clusterAdd = () => {
+    console.log(target_type.value)
+    if (target_type.value != '') {
+      openswitchAdd.value = !openswitchAdd.value
+      let formdata = util.arry2dict(formItem.value, 'key', 'value')
+      let selectedItem = (formdata['target']).split(',')
+      target.getNameList(`${target_type.value}*`)
+        .then(res => {
+          treeData.value = []
+          treeData.value.push(util.formateTreeData(res.data['data'], selectedItem))
+        })
+        .catch(error => {
+          util.notice(proxy, error, 'error')
+        })
+    } else {
+      proxy.$Message.error(t('setTemplateTips'))
+    }
+  }
+  
+  const commitinfoAdd = () => {
+    let checkedleaf = util.getCheckedLeaf(treeData.value)
+    formItem.value.forEach((item) => {
+      if (item.key === 'target') {
+        item.value = checkedleaf.toString()
+      }
+    })
+  }
+  
+  const reflashTmpl = () => {
+    exec.getNameList('tmpl*')
+      .then(res => {
+        tmplList.value = res.data['data']
+      }).catch(error => {
+        util.notice(proxy, error, 'error')
+      })
+  }
+  
+  watch(tmpl, (val, oldval) => {
+    if (info.value['tmpl'] === '' || info.value['tmpl'] === undefined) {
+      target_type.value = ''
+    } else {
+      exec.getExecutionInfo(`${info.value['tmpl']}`)
+        .then(res => {
+          try {
+            let r = res.data['data'][0]
+            target_type.value = r['target_type']
+            playbook.value = r['playbook']
+          } catch (err) {
+            console.error(err)
+            util.notice(proxy, t('getTemplateFailedTips'), 'warning')
+          }
+        })
+        .catch(error => {
+          util.notice(proxy, error, 'error')
+        })
+    }
+  }, { immediate: true })
+  
+  
+  onBeforeMount(() => {
+    reflashTmpl()
+  })
+  
+  onMounted(() => {
+    getCurrentPage()
+  })
 </script>

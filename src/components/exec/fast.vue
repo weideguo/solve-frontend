@@ -74,163 +74,162 @@
 </template>
 
 
-<script>
-  // 
+<script setup>
+  import { ref, reactive, onMounted, getCurrentInstance } from 'vue'
   import util from '@/libs/util'
   import exec from '@/api/exec'
-  // import VueI18n from 'vue-i18n'
+  import { useI18n } from 'vue-i18n'
+  
+  const { t } = useI18n()
+  const { proxy } = getCurrentInstance()
 
-  export default {
-    data () {
-      const playbookCheck =  (rule, value, callback) => {
-        let v=value.split('\n')
-        for(var i=0;i<v.length;i++){
-          // 跳过以"#"开头的注释行
-          let reg = new RegExp('^( )*?#.*( )*$')
-          if ( v[i].search(reg) >= 0 ) {
-            continue
-          } 
-          // 跳过所有以空行
-          let reg0 = new RegExp('^( )*$')
-          if ( v[i].search(reg0) >= 0 ) {
-            continue
-          } 
-          // console.log("X"+v[i]+"X")
-          // 非空以及非注释的第一行应该如下
-          // [10.0.0.1]
-          let reg2 = new RegExp('^( )*(\\u005B).*?(\\u005D)( )*$')
-          if ( v[i].search(reg2) >= 0 ) {
-            callback()
-          } else {
-            callback(new Error(this.$t('playbookFistLineTips')))
-          }
-          // 只对非空以及非注释的第一行判断
-          break
-        }
-        callback(new Error(this.$t('playbookNotEmptyTips')))
-      };
-      const validatePass = (rule, value, callback) => {
-        callback(new Error('Please enter your password'));
-      };
-      return {
-        debugRun: false,
-        formItem: {
-                    spliter: '|',
-                    parallel: true,
-                    comment: '',
-                    exeinfo: '',
-                    playbook: ''
-                  },
-        originFormItem: {},
-        spliterList: ['|','#',':::','*'],
-        formItemValidate: {
-          exeinfo: [
-            {
-              required: true,
-              message: this.$t('inputConfigTips'),
-              trigger: 'blur'
-            },
-          ],
-          playbook: [
-            {
-              required: true,
-              message: this.$t('inputPlaybookTips'),
-              trigger: 'blur'
-            },
-            {
-              validator: playbookCheck,
-              trigger: 'blur'
-            }
-          ],
-        },
-        commitConfirm: false,
-        exeinfoDemo: this.$t('exeinfoDemo'),
-        playbookDemo: this.$t('playbookDemo')
+  const debugRun = ref(false)
+  const commitConfirm = ref(false)
+  
+  const formItem = reactive({
+    spliter: '|',
+    parallel: true,
+    comment: '',
+    exeinfo: '',
+    playbook: ''
+  })
+  
+  const originFormItem = reactive({ ...formItem })
+  
+  const spliterList = ref(['|', '#', ':::', '*'])
+  const exeinfoDemo = ref(t('exeinfoDemo'))
+  const playbookDemo = ref(t('playbookDemo'))
+  
+  
+  const fastForm = ref(null)
+  const inputFile = ref(null)
+  
+  
+  const playbookCheck = (rule, value, callback) => {
+    let v = value.split('\n')
+    for (var i = 0; i < v.length; i++) {
+      // 跳过以"#"开头的注释行
+      let reg = new RegExp('^( )*?#.*( )*$')
+      if (v[i].search(reg) >= 0) {
+        continue
       }
-    },
-    methods: {
-      pushItem (k) {
-        this.spliterList.push(k)
-        // console.log(k)
-      },
-      reset () {
-        sessionStorage.removeItem("fastInfo")
-        this.formItem = util.dictDeepCopy(this.originFormItem)
-      },
-      commit(){
-        sessionStorage.setItem("fastInfo", JSON.stringify(this.formItem))
-        this.$refs['fastForm'].validate((valid) => {
-            if (valid) {
-              this.commitConfirm = true
-              // this.$Modal.confirm({'title': this.$t('commitTips') ,'onOk': this.realCommit, 'okText': this.$t('commit'), 'cancelText': this.$t('cancel')})
-            } else {
-              this.commitConfirm = false
-              this.$Message.error(this.$t('changeTips'))
-            }
-        })
-      },
-      realCommit() {
-        // console.log(this.formItem)
-        let debug=0
-        if (this.debugRun) {
-          debug=1
-        }
-        this.commitConfirm = false
-        exec.postFastExecution(this.formItem,debug)
-          .then(res => {
-            if (res.data['status'] > 0) {
-              util.notice(this, this.$t('fastJobBegin'), 'info')
-              // {"data":"job_2335ce026b4311ea8fd6000c295dd589","status":1}
-              let path = this.$router.resolve({ path: '/orderInfo', query: {  workid: res.data['data'] } }).href
-              window.open(path, "_blank", "scrollbars=yes,resizable=1,modal=false,alwaysRaised=yes")
-            } else {
-              util.notice(this, res.data['msg'], 'error')
-            }
-          })
-          .catch(error => {
-            util.notice(this, error, 'error')
-          })
-      },
-      save () {
-        // let filename = 'fast_'+util.formatDate((new Date().getTime()) / 1000).replaceAll('-','').replaceAll(':','').replaceAll(' ','_')+'.txt'
-        // 有些浏览器不支持replaceAll
-        let filename = 'fast_'+util.formatDate((new Date().getTime()) / 1000).replace(new RegExp('-','g'),'').replace(new RegExp(':','g'),'').replace(new RegExp(' ','g'),'_')+'.txt'
-        util.write(util.formatDict(this.formItem), filename)
-        // console.log('save done')
-      },
-      read (e) {
-        let fileElement =document.getElementById('uploadFile')
-        let file = fileElement.files[0]
-        // console.log(file)
-        util.read(file,['text/plain','text/x-sh']).then(res => {
-          // console.log(res)
-          this.formItem = util.parseString2Dict(res,['parallel'])
-          // console.log(this.formItem)
-          // console.log( util.parseString2Dict(res,['parallel']) )
-          fileElement.value=""
-        }).catch(err => {
-          // console.log(err)
-          this.$Message.error(err)
-        })
-      },
-      readClick () {
-        // console.log("yes click")
-        this.$refs['inputFile'].click()
+      // 跳过所有以空行
+      let reg0 = new RegExp('^( )*$')
+      if (v[i].search(reg0) >= 0) {
+        continue
       }
-    },
-    watch: {
-      // '$route': function () {
-      //   this.getCurrentPage();
-      // }
-    },
-    mounted () {
-      this.originFormItem = util.dictDeepCopy(this.formItem)
-      let fastInfo = sessionStorage.getItem('fastInfo') 
-      if (fastInfo != null) {
-        this.formItem = JSON.parse(fastInfo)
+      // console.log("X"+v[i]+"X")
+      // 非空以及非注释的第一行应该如下 
+      // [10.0.0.1]
+      let reg2 = new RegExp('^( )*(\\u005B).*?(\\u005D)( )*$')
+      if (v[i].search(reg2) >= 0) {
+        callback()
+        return
+      } else {
+        callback(new Error(t('playbookFistLineTips'))) 
+        return
       }
-    },
-    created () {
     }
+    callback(new Error(t('playbookNotEmptyTips'))) 
   }
+  
+  // 表单验证规则
+  const formItemValidate = reactive({
+    exeinfo: [
+      {
+        required: true,
+        message: t('inputConfigTips'),
+        trigger: 'blur'
+      },
+    ],
+    playbook: [
+      {
+        required: true,
+        message: t('inputPlaybookTips'),
+        trigger: 'blur'
+      },
+      {
+        validator: playbookCheck,
+        trigger: 'blur'
+      }
+    ],
+  })
+  
+  
+  const pushItem = (k) => {
+    spliterList.value.push(k)
+  }
+  
+  const reset = () => {
+    sessionStorage.removeItem("fastInfo")
+    Object.assign(formItem, util.dictDeepCopy(originFormItem))
+  }
+  
+  const commit = () => {
+    sessionStorage.setItem("fastInfo", JSON.stringify(formItem))
+    
+    fastForm.value.validate((valid) => {
+      if (valid) {
+        commitConfirm.value = true
+      } else {
+        commitConfirm.value = false
+        proxy.$Message.error(t('changeTips'))
+      }
+    })
+  }
+  
+  const realCommit = () => {
+    let debug = debugRun.value ? 1 : 0
+    commitConfirm.value = false
+    
+    exec.postFastExecution(formItem, debug)
+      .then(res => {
+        if (res.data['status'] > 0) {
+          util.notice(proxy, t('fastJobBegin'), 'info')
+          let path = `/orderInfo?workid=${res.data['data']}`
+          window.open(path, "_blank", "scrollbars=yes,resizable=1,modal=false,alwaysRaised=yes")
+        } else {
+          util.notice(proxy, res.data['msg'], 'error')
+        }
+      })
+      .catch(error => {
+        util.notice(proxy, error, 'error')
+      })
+  }
+  
+  const save = () => {
+    // 修复 replaceAll 兼容性问题，使用正则全局替换
+    let timeStr = util.formatDate((new Date().getTime()) / 1000)
+      .replace(/-/g, '')
+      .replace(/:/g, '')
+      .replace(/ /g, '_')
+      
+    let filename = `fast_${timeStr}.txt`
+    util.write(util.formatDict(formItem), filename)
+  }
+  
+  const read = (e) => {
+    //let fileElement = document.getElementById('uploadFile')
+    let fileElement = inputFile.value
+    let file = fileElement.files[0]
+  
+    util.read(file, ['text/plain', 'text/x-sh']).then(res => {
+      Object.assign(formItem, util.parseString2Dict(res, ['parallel']))
+      fileElement.value = ''
+    }).catch(err => {
+      proxy.$Message.error(err)
+    })
+  }
+  
+  const readClick = () => {
+    inputFile.value.click()
+  }
+  
+  onMounted(() => {
+    let fastInfo = sessionStorage.getItem('fastInfo')
+    if (fastInfo != null) {
+      const parsedInfo = JSON.parse(fastInfo)
+      Object.assign(formItem, parsedInfo)
+    }
+  })
 </script>

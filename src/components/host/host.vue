@@ -36,7 +36,7 @@
           </Col>
         </Row>
         <br>
-        <Page :total="pageNumber" @on-change="getCurrentPage" :page-size="this.pageSize" :model-value="this.currentPage" show-elevator show-total></Page>
+        <Page :total="pageNumber" @on-change="getCurrentPage" :page-size="pageSize" :model-value="currentPage" show-elevator show-total></Page>
       </Card>
     </Row>
 
@@ -53,357 +53,302 @@
   </div>
 </template>
 
-<script>
-  //
+<script setup>
+  import { ref, reactive, computed, onMounted, getCurrentInstance } from 'vue'
+  import { useI18n } from 'vue-i18n'
+  import { useRouter } from 'vue-router'
   import target from '@/api/target'
   import host from '@/api/host'
   import config from '@/api/config'
   import util from '@/libs/util'
   import safeForm from '@/components/common/safeForm.vue'
-
-  export default {
-    components: {
-      safeForm
-    },
-    data () {
-      return {
-        isOnline: false,
-        searchWord: '',
-        formItemValidate: {
-          ip: [
-            {
-              required: true,
-              message: this.$t('inputIpTips'),
-              trigger: 'blur'
-            },
-            {
-              validator: util.validatorGenerator(),
-              trigger: 'blur'
-            },
-          ],
-          user: [
-            {
-              required: true,
-              message: this.$t('inputUserTips'),
-              trigger: 'blur'
-            },
-            {
-              validator: util.validatorGenerator(),
-              trigger: 'blur'
-            },
-          ],
-          ssh_port: [
-            {
-              required: true,
-              message: this.$t('inputSshPortTips'),
-              trigger: 'blur'
-            },
-            {
-              validator: util.validatorGenerator('^\\d+$',this.$t('portMustBeNum')),
-              trigger: 'blur'
-            },
-          ],
-          passwd: [
-            {
-              validator: util.validatorGenerator('^$|^[^\\s]$|^[^\\s].*[^\\s]$',this.$t('emptyOrNoSpaceLeftRight')),
-              trigger: 'blur'
-            },
-          ],
-          proxy: [
-            {
-              validator: util.validatorGenerator('^$|^[^\\s]$|^[^\\s].*[^\\s]$',this.$t('emptyOrNoSpaceLeftRight')),
-              trigger: 'blur'
-            },
-          ]
-        }, 
-        formItem: [],
-        opentarget: '',
-        columns: [
-          {
-            title: 'name',
-            key: 'name',
-            minWidth: 400,
-            sortable: true
-          },
-          {
-            title: 'IP',
-            key: 'ip',
-            width: 400,
-            sortable: true
-          },
-          {
-            title: this.$t('sshPort'),
-            key: 'ssh_port',
-            width: 200,
-            sortable: true
-          },
-          {
-            title: this.$t('user'),
-            key: 'user',
-            align: 'center',
-            sortable: true,
-            width: 100
-          },
-          {
-            title: this.$t('operation'),
-            slot: 'operation',
-            align: 'center',
-            width: 200,
-          },
-          {
-            title: this.$t('detail'),
-            slot: 'detail',
-            align: 'center',
-            width: 200,
-          },
-          {
-            title: this.$t('delete'),
-            slot: 'delete',
-            align: 'center',
-            width: 100,
-          }
-        ],
-        tableData: [],
-        pageSize: 16,
-        pageNumber: 1,
-        currentPage: 1,
-        filter: '',
-        openswitch: false,
-        modelTitle: '',
-        isAdd: false,
-        // deleteConfirm: false,
-        // delname: ''
+  
+  const router = useRouter()
+  const { t } = useI18n()
+  const { proxy } = getCurrentInstance()
+  
+  const isOnline = ref(false)
+  const searchWord = ref('')
+  const formItemValidate = reactive({
+    ip: [
+      { required: true, message: t('inputIpTips'), trigger: 'blur' },
+      { validator: util.validatorGenerator(), trigger: 'blur' },
+    ],
+    user: [
+      { required: true, message: t('inputUserTips'), trigger: 'blur' },
+      { validator: util.validatorGenerator(), trigger: 'blur' },
+    ],
+    ssh_port: [
+      { required: true, message: t('inputSshPortTips'), trigger: 'blur' },
+      { validator: util.validatorGenerator('^\\d+$', t('portMustBeNum')), trigger: 'blur' },
+    ],
+    passwd: [
+      { validator: util.validatorGenerator('^$|^[^\\s]$|^[^\\s].*[^\\s]$', t('emptyOrNoSpaceLeftRight')), trigger: 'blur' },
+    ],
+    proxy: [
+      { validator: util.validatorGenerator('^$|^[^\\s]$|^[^\\s].*[^\\s]$', t('emptyOrNoSpaceLeftRight')), trigger: 'blur' },
+    ]
+  })
+  
+  const formItem = ref([])
+  const opentarget = ref('')
+  const columns = ref([
+    { title: 'name', key: 'name', minWidth: 400, sortable: true },
+    { title: 'IP', key: 'ip', width: 400, sortable: true },
+    { title: t('sshPort'), key: 'ssh_port', width: 200, sortable: true },
+    { title: t('user'), key: 'user', align: 'center', sortable: true, width: 100 },
+    { title: t('operation'), slot: 'operation', align: 'center', width: 200 },
+    { title: t('detail'), slot: 'detail', align: 'center', width: 200 },
+    { title: t('delete'), slot: 'delete', align: 'center', width: 100 },
+  ])
+  const tableData = ref([])
+  const pageSize = ref(16)
+  const pageNumber = ref(1)
+  const currentPage = ref(1)
+  const filter = ref('')
+  const openswitch = ref(false)
+  const modelTitle = ref('')
+  const isAdd = ref(false)
+  
+  let formItemOrigin = [] // 使用 let 以便在 reflashTmpl 中赋值
+  
+  
+  const itemSort = computed(() => {
+    return Object.keys(formItemValidate)
+  })
+  
+  
+  const formCommit = (data) => {
+    data['name'] = 'realhost_' + data['ip']
+    if (!isAdd.value) {
+      data['name_o'] = opentarget.value
+    }
+    console.log(data)
+    addTarget(data)
+    openswitch.value = false
+  }
+  
+  const optionOperate = (data) => {
+    if (!isAdd.value) {
+      console.log('is add')
+      data['name'] = 'realhost_' + data['ip']
+      if (data['name'] === opentarget.value) {
+        proxy.$Message.error(t('ipUniqueTips'))
+      } else {
+        addTarget(data)
+        openswitch.value = false
       }
-    },
-    methods: {
-      formCommit (data) {
-        // console.log(data)
-        data['name'] = 'realhost_' + data['ip']
-        if (!this.isAdd) {
-          data['name_o'] = this.opentarget
-        }
-        console.log(data)
-        this.addTarget(data)
-        this.openswitch = false
-      },
-      optionOperate (data) {
-        if (!this.isAdd) {
-          console.log('is add')
-          data['name'] = 'realhost_' + data['ip']
-          if (data['name'] === this.opentarget) {
-            this.$Message.error(this.$t('ipUniqueTips'))
-          } else {
-            this.addTarget(data)
-            this.openswitch = false
-          }
-        } else {
-          console.log('is cancel')
-          this.openswitch = false
-        }
-        console.log(data)
-      },
-      onlineFilter () {
-        this.isOnline = ! this.isOnline
-        if (this.isOnline) {
-          host.getOnlinedetail()
-            .then(res => {
-              res.data['data'].forEach((item) => {
-                 item['info'] = util.dictDeepCopy(item)
-              })
-              this.tableData = res.data['data']
-              this.pageNumber = res.data['page']
-            })
-            .catch(error => {
-              util.notice(this, error, 'error')
-            })
-        } else {
-          this.getCurrentPage()
-        }
-      },
-      search (vl = 1) {
-        let searchWord = ''
-        if (this.searchWord) {
-          searchWord = this.searchWord
-        } else {
-          searchWord = this.$route.name + '*'
-        }
-        searchWord = encodeURIComponent(searchWord)
-        target.getTarget(searchWord,vl,this.pageSize)
-          .then(res => {
-            host.getOnline()
-              .then(res2 => {
-                let onlinehost = [];
-                res.data['data'].forEach((item) => {
-                  res2.data['data'].forEach((item) => {
-                    if (item['is_conn']) {
-                      onlinehost.push(item['host'])
-                    }
-                  })
-                  if (onlinehost.indexOf(item['ip']) < 0) {
-                    item['is_conn'] = 0;
-                  } else {
-                    item['is_conn'] = 1;
-                  }
-                })
-                this.tableData = res.data['data']
-                this.pageNumber = parseInt(res.data['page'])
-              })
-              .catch(error2 => {
-              util.notice(this, error2, 'error')
-              })
+    } else {
+      console.log('is cancel')
+      openswitch.value = false
+    }
+    console.log(data)
+  }
+  
+  const onlineFilter = () => {
+    isOnline.value = !isOnline.value
+    if (isOnline.value) {
+      host.getOnlinedetail()
+        .then(res => {
+          res.data['data'].forEach((item) => {
+            item['info'] = util.dictDeepCopy(item)
           })
-          .catch(error => {
-            util.notice(this, error, 'error')
-          })
-      },
-      targetinfoDetail (params) {
-        let info = util.dictDeepCopy(params)
-        if (info['name'].search('^' + this.$route.name) > -1) {
-          this.openswitch = true
-          this.isAdd = false
-          this.modelTitle = this.$t('updateInfo')
-          this.opentarget = info['name']
-          let x = ['name','is_conn','_index','_rowKey']
-          x.forEach((item,i) => {
-            delete info[item]
-          })
-          this.formItemNew = util.dictDeepCopy(this.formItemOrigin)
-          this.formItemNew.forEach((item, i) => {
-            item['value'] = info[item['key']]
-          })
-          this.formItem = this.formItemNew
-        } else {
-          // util.notice(this, '当前项不在此查看详细', 'info')
-          this.$Message.info(this.$t('notUpdateTips'))
-        }
-      },
-      targetinfoAdd () {
-        this.openswitch = true;
-        this.isAdd = true
-        this.formItem = this.formItemOrigin
-        this.modelTitle = this.$t('addInfo')
-      },
-      getCurrentPage (vl) {
-        this.filter = this.$route.name;
-        if (!vl) {
-          vl = sessionStorage.getItem(`${this.filter}Currentpage`)
-        }
-        if (!vl) {
-          vl = 1
-        }
-        this.currentPage = parseInt(vl)
-        sessionStorage.setItem(`${this.filter}Currentpage`, vl);
-        this.search(vl)
-      },
-      delTarget (t) {
-        this.delname = t
-        // this.deleteConfirm = true
-        this.$Modal.confirm({'title': this.$t('confirmDelete')+` ${this.delname} ？`,'onOk': this.realDelTarget, 'okText':this.$t('delete'), 'cancelText': this.$t('cancel') , 'width': '700px'});
-      },
-      realDelTarget () {
-        // this.deleteConfirm = false
-        let t = this.delname
-        target.delTarget(t.replace('#','%23'))
-          .then(res => {
-            // console.log(res.data.status);
-            if (res.data['status'] === 1) {
-              this.getCurrentPage();
-              util.notice(this, `${t} `+this.$t('deleteSuccess'), 'success')
-            } else {
-              util.notice(this, `${t} `+this.$t('deleteFailed'), 'error')
-            }
-          })
-          .catch(error => {
-            util.notice(this, error, 'error')
-          });
-      },
-      addTarget (info) {
-        target.addTarget(info)
-          .then(res => {
-            if (res.data['status'] >= 1) {
-              util.notice(this, `${info['name']} ${res.data['msg']}`, 'success')
-              this.getCurrentPage();
-            } else {
-              util.notice(this, `${info['name']} ${res.data['msg']}`, 'warning')
-            }
-          }).catch(error => {
-            util.notice(this, error, 'error')
-          });
-      },
-      closeConn (row) {
-        if (row['ip']) {
-          row['is_conn'] = 2
-          host.kill(row['ip'])
-            .then(res => {
-              if (res.data['status'] === 1) {
-                row['is_conn'] = 0
-                util.notice(this, `${row['ip']} ${res.data['msg']}`, 'success')
-              } else {
-                row['is_conn'] = 1
-                util.notice(this, `${row['ip']} ${res.data['msg']}`, 'error')
-              }
-            })
-            .catch(error => {
-              util.notice(this, error, 'error')
-            })
-        } else {
-          this.$Message.info(this.$t('notCloseConnectTips'))
-        }    
-      },
-      createConn (row) {
-        if (row['ip']) {
-          row['is_conn'] = 3
-          host.conn(row['ip'])
-            .then(res => {
-              if (res.data['status'] === 1) {
-                row['is_conn'] = 1
-                util.notice(this, `${row['ip']} ${res.data['msg']}`, 'success')
-              } else {
-                row.is_conn = 0
-                util.notice(this, `${row['ip']} ${res.data['msg']}`, 'error')
-              }
-            })
-            .catch(error => {
-              util.notice(this, error, 'error')
-            })
-        } else {
-          this.$Message.info(this.$t('notCreateConnectTips'))
-        }
-      },
-      reflashTmpl() {
-        config.getKey(`tmpl_${this.$route.name}`)
-          .then(res => {
-            delete res.data['data']['name']
-            let keyInfo={}
-            if(res.data['data']) {
-              keyInfo=res.data['data']
-            }
-            // 后端不存在的字段说明时使用排序指定的key当成默认
-            this.itemSort.forEach((k, i) => {
-              if(!keyInfo[k]) {
-                keyInfo[k]=""
-              }
-            })
-            this.formItemOrigin = util.dict2arry(keyInfo, 'key', 'comment', this.itemSort)
-            this.formItemOrigin.forEach((item, i) => {
-              item['label'] = item['key']
-            })
-          })
-          .catch(error => {
-            util.notice(this, error, 'error')
-          })
-      }
-    },
-    computed: {
-      itemSort () {
-        return util.dictKeys(this.formItemValidate)
-      }
-    },
-    mounted () {
-      this.getCurrentPage()
-    },
-    created () {
-      this.reflashTmpl()
+          tableData.value = res.data['data']
+          pageNumber.value = res.data['page']
+        })
+        .catch(error => {
+          util.notice(proxy, error, 'error')
+        })
+    } else {
+      getCurrentPage()
     }
   }
+  
+  const search = (page = 1) => {
+    let searchWordVal = ''
+    if (searchWord.value) {
+      searchWordVal = searchWord.value
+    } else {
+      searchWordVal = router.currentRoute.value.name + '*'
+    }
+    searchWordVal = encodeURIComponent(searchWordVal)
+  
+    target.getTarget(searchWordVal, page, pageSize.value)
+      .then(res => {
+        // 处理为空的情况
+        if (res.data['data'].length === 0 && parseInt(page) > 1 ) {
+          getCurrentPage(parseInt(page)-1)
+          return
+        }
+
+        return host.getOnline().then(res2 => {
+          let onlinehost = []
+          res.data['data'].forEach((item) => {
+            res2.data['data'].forEach((hostItem) => {
+              if (hostItem['is_conn']) {
+                onlinehost.push(hostItem['host'])
+              }
+            })
+            if (onlinehost.indexOf(item['ip']) < 0) {
+              item['is_conn'] = 0
+            } else {
+              item['is_conn'] = 1
+            }
+          })
+          tableData.value = res.data['data']
+          pageNumber.value = parseInt(res.data['page'])
+        })
+      })
+      .catch(error => {
+        util.notice(proxy, error, 'error')
+      })
+  }
+  
+  const targetinfoDetail = (params) => {
+    let info = util.dictDeepCopy(params)
+    if (info['name'].search('^' + router.currentRoute.value.name) > -1) {
+      openswitch.value = true
+      isAdd.value = false
+      modelTitle.value = t('updateInfo')
+      opentarget.value = info['name']
+      const x = ['name', 'is_conn', '_index', '_rowKey']
+      x.forEach((item) => {
+        delete info[item]
+      })
+      // 假设 formItemOrigin 已在外部定义或通过其他方式获取
+      let formItemNew = util.dictDeepCopy(formItemOrigin)
+      formItemNew.forEach((item) => {
+        item['value'] = info[item['key']]
+      })
+      formItem.value = formItemNew
+    } else {
+      util.notice(proxy, t('notUpdateTips'), 'info')
+    }
+  }
+  
+  const targetinfoAdd = () => {
+    openswitch.value = true
+    isAdd.value = true
+    formItem.value = formItemOrigin
+    modelTitle.value = t('addInfo')
+  }
+  
+  const getCurrentPage = (page) => {
+    filter.value = router.currentRoute.value.name
+    if (!page) {
+      page = sessionStorage.getItem(`${filter.value}Currentpage`) || 1
+    }
+    currentPage.value = parseInt(page)
+    sessionStorage.setItem(`${filter.value}Currentpage`, page)
+    search(page)
+  }
+  
+  const delTarget = (targetName) => {
+    proxy.$Modal.confirm({'title': t('confirmDelete')+` ${targetName} ？`,'onOk': () => {realDelTarget(targetName)}, 'okText': t('delete'), 'cancelText': t('cancel') , 'width': '700px'})
+  }
+  
+  const realDelTarget = (targetName) => {
+    console.log(targetName)
+    target.delTarget(targetName.replace('#', '%23'))
+      .then(res => {
+        if (res.data['status'] === 1) {
+          getCurrentPage()
+          util.notice(proxy, `${targetName} `+ t('deleteSuccess'), 'success')
+        } else {
+          util.notice(proxy, `${targetName} `+ t('deleteFailed'), 'error')
+        }
+      })
+      .catch(error => {
+        util.notice(proxy, error, 'error')
+      })
+  }
+  
+  const addTarget = (info) => {
+    target.addTarget(info)
+      .then(res => {
+        if (res.data['status'] >= 1) {
+          util.notice(proxy, `${info['name']} ${res.data['msg']}`, 'success')
+          getCurrentPage()
+        } else {
+          util.notice(proxy, `${info['name']} ${res.data['msg']}`, 'warning')
+        }
+      })
+      .catch(error => {
+        util.notice(proxy, error, 'error')
+      })
+  }
+  
+  const closeConn = (row) => {
+    if (row['ip']) {
+      row['is_conn'] = 2
+      host.kill(row['ip'])
+        .then(res => {
+          if (res.data['status'] === 1) {
+            row['is_conn'] = 0
+            util.notice(proxy, `${row['ip']} ${res.data['msg']}`, 'success')
+          } else {
+            row['is_conn'] = 1
+            util.notice(proxy, `${row['ip']} ${res.data['msg']}`, 'error')
+          }
+        })
+        .catch(error => {
+          util.notice(proxy, error, 'error')
+        })
+    } else {
+      proxy.$Message.info(t('notCloseConnectTips'))
+    }
+  }
+  
+  const createConn = (row) => {
+    if (row['ip']) {
+      row['is_conn'] = 3
+      host.conn(row['ip'])
+        .then(res => {
+          if (res.data['status'] === 1) {
+            row['is_conn'] = 1
+            util.notice(proxy, `${row['ip']} ${res.data['msg']}`, 'success')
+          } else {
+            row.is_conn = 0
+            util.notice(proxy, `${row['ip']} ${res.data['msg']}`, 'error')
+          }
+        })
+        .catch(error => {
+          util.notice(proxy, error, 'error')
+        })
+    } else {
+      proxy.$Message.info(t('notCreateConnectTips'))
+    }
+  }
+  
+  const reflashTmpl = () => {
+    config.getKey(`tmpl_${router.currentRoute.value.name}`)
+      .then(res => {
+        delete res.data['data']['name']
+        let keyInfo = {}
+        if (res.data['data']) {
+          keyInfo = res.data['data']
+        }
+        // 后端不存在的字段说明时使用排序指定的key当成默认
+        itemSort.value.forEach((k) => {
+          if (!keyInfo[k]) {
+            keyInfo[k] = ""
+          }
+        })
+        formItemOrigin = util.dict2arry(keyInfo, 'key', 'comment', itemSort.value)
+        formItemOrigin.forEach((item) => {
+          item['label'] = item['key']
+        })
+      })
+      .catch(error => {
+        util.notice(proxy, error, 'error')
+      })
+  }
+  
+  
+  reflashTmpl()
+  
+  
+  onMounted(() => {
+    getCurrentPage()
+  })
 </script>

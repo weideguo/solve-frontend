@@ -222,11 +222,11 @@ const lang = {
 
     },
     exeinfoDemo: 
-                 '# 每一行通过分割符分割后当成一个对象使用playbook执行       \n'+
-                 '# 样例如：                                              \n'+
-                 '10.0.0.1  |  whoami  |  pwd                            \n'+
-                 '10.0.0.2  |  who     |  date                            \n'+
-                 '10.0.0.3  |  date    |  who                              ',
+                 '# 每一行通过分割符分割后当成一个对象使用playbook执行                    \n'+
+                 '# 样例如：                                                           \n'+
+                 '10.0.0.1  \\|  whoami  \\|  pwd                                     \n'+
+                 '10.0.0.2  \\|  who     \\|  date                                    \n'+
+                 '10.0.0.3  \\|  date    \\|  who                                       ',
     playbookDemo: 
                   '# 使用方式跟普通的playbook类似                                       \n'+
                   '# 不同之处为使用 _1 _2 _3 ... 接受单行配置信息分割后的对应参数         \n'+

@@ -57,352 +57,354 @@
   </div>
 </template>
 
-<script>
-  //
+<script setup>
+  import { ref, reactive, onMounted, getCurrentInstance } from 'vue'
+  import { useI18n } from 'vue-i18n'
+  import { useRoute, useRouter } from 'vue-router'
+  import { useAppStore } from '@/store'
   import exec from '@/api/exec'
   import vconfig from '@/api/config'
   import util from '@/libs/util'
   import config from '@/config/config'
   import safeForm from '@/components/common/safeForm.vue'
-  import { useAppStore } from '@/store' 
-
-  export default {
-    components: {
-      safeForm
+  
+  const appStore = useAppStore()
+  const route = useRoute()
+  const router = useRouter()
+  const { t } = useI18n()
+  const { proxy } = getCurrentInstance()
+  
+  // 表格与分页状态
+  const tableData = ref([])
+  const pagesize = ref(16)
+  const pageNumber = ref(1)
+  const currentPage = ref(1)
+  const pageSizeOpts = ref([10, 20, 40, 80, 100, 200])
+  
+  // 表单与模态框状态
+  const switchTmplType = ref(false)
+  const switchTmplDetail = ref(false)
+  const modelTitle = ref('')
+  const isAdd = ref(true)
+  const name_o = ref('')
+  
+  // 下拉选项数据
+  const jobType = ref([])
+  const targetType = ref([])
+  const jobTypeTmp = ref([])
+  const targetTypeTmp = ref([])
+  const jobTypeOld = ref([])
+  const targetTypeOld = ref([])
+  
+  // 表格列定义
+  const columns = ref([
+    { title: 'name', key: 'name_s', width: 250, sortable: true },
+    { 
+      title: 'target_type', 
+      key: 'target_type', 
+      align: 'center', 
+      width: 150, 
+      sortable: true,
+      filters: [], 
+      filterMethod (value, row) { return row.target_type === value } 
     },
-    setup() {
-      const appStore = useAppStore()
-      return { appStore }
+    { 
+      title: 'type', 
+      key: 'job_type', 
+      align: 'center', 
+      width: 100, 
+      sortable: true,
+      filters: [], 
+      filterMethod (value, row) { return row.job_type === value } 
     },
-    data () {
-      return {
-        modelTitle: '',
-        switchTmplType: false,
-        jobType: [],
-        targetType: [],
-        switchTmplDetail: false,
-        formItem: [],
-        formItemOrigin: [
-          {key: 'name', label: 'name', comment: this.$t('templateName')},
-          {key: 'target_type', label: 'target_type', comment: this.$t('targetType'), select: []},
-          {key: 'playbook', label: 'playbook', comment: 'playbook'},
-          {key: 'job_type', label: 'job_type', comment: this.$t('jobType'), select: []},
-          {key: 'comment', label: 'comment', comment: this.$t('comment')},
-        ],
-        formItemValidate: {
-          name: [
-            {
-              required: true,
-              message: this.$t('inputTemplateNameTips'),
-              trigger: 'blur'
-            },
-            {
-              validator: util.validatorGenerator(),
-              trigger: 'blur'
-            }
-          ],
-          target_type: [
-            {
-              required: true,
-              message: this.$t('selectTargetTypeTips'),
-              trigger: 'blur'
-            }
-          ],
-          playbook: [
-            {
-              required: true,
-              message: this.$t('inputPlaybookTips'),
-              trigger: 'blur'
-            },
-            {
-              validator: util.validatorGenerator(),
-              trigger: 'blur'
-            }
-          ],
-          job_type: [
-            {
-              required: true,
-              message: this.$t('selectJobTypeTips'),
-              trigger: 'blur'
-            }
-          ],
-          comment: [
-            {
-              required: true,
-              message: this.$t('inputCommentTips'),
-              trigger: 'blur'
-            }
-          ],
-        },
-        columns: [
-          {
-            title: 'name',
-            key: 'name_s',
-            width: 250,
-            sortable: true
-          },
-          {
-            title: 'target_type',
-            key: 'target_type',
-            align: 'center',
-            width: 150,
-            sortable: true,
-            // filters: [{label: 'all', value: 'all'}],
-            filters: [], 
-            filterMethod (value, row) { return row.target_type === value }
-          },
-          {
-            title: 'type',
-            key: 'job_type',
-            align: 'center',
-            width: 100,
-            sortable: true,
-            filters: [], 
-            filterMethod (value, row) { return row.job_type === value }
-          },
-          {
-            title: 'playbook',
-            key: 'playbook',
-            tooltip: true,
-            sortable: true,
-            minWidth: 300
-            // sortType: 'desc',
-          },
-          {
-            title: 'comment',
-            key: 'comment',
-            width: 250,
-            tooltip: true,
-            sortable: true
-          },
-          {
-            title: this.$t('operation'),
-            slot: 'operation',
-            align: 'center',
-            width: 450,
-          }
-        ],
-        tableData: [],
-        pagesize: 16,
-        pageNumber: 1,
-        currentPage: 1,
-        pageSizeOpts: [10,20,40,80,100,200],
-        filter: '',
-        jobTypeTmp: [],
-        targetTypeTmp: [],
-        isAdd: true,
-        // deleteConfirm: false,
-        // delname: ''
-      }
-    },
-    methods: {
-      cancelFormInfo () {
-        this.switchTmplType = false
-        this.jobType = util.dictDeepCopy(this.jobTypeOld)
-        this.jobTypeTmp = util.dictDeepCopy(this.jobTypeOld)
-        this.targetType = util.dictDeepCopy(this.targetTypeOld)
-        this.targetTypeTmp = util.dictDeepCopy(this.targetTypeOld)
-      },
-      putJobType (val) {
-        this.jobTypeTmp.push(val)
-      },
-      putTargetType (val) {
-        this.targetTypeTmp.push(val)
-      },
-      getJobTypes () {
-        vconfig.getKey('job_types')
-          .then(res => {
-            this.jobTypeOld=util.dictDeepCopy(res.data['data'])
-            this.jobTypeTmp=util.dictDeepCopy(res.data['data'])
-            this.jobType=util.dictDeepCopy(res.data['data'])
-            this.formItemOrigin.forEach((item, i) => {
-              if(item.key === 'job_type') {
-                item.select = res.data['data']
-              }
-            })
-            this.columns.forEach((item, i) => {
-              if(item.key === 'job_type') {     
-                item.filters = []
-                for ( let t of res.data['data'] ) { 
-                  item.filters.push({label: t, value: t}) 
-                }
-              }
-            })
-
-          })
-          .catch(error => {
-            util.notice(this, error, 'error')
-          });
-      },
-      getTargetTypes () {
-
-        vconfig.getKey('target_types')
-          .then(res => {
-            this.targetTypeOld = util.dictDeepCopy(res.data['data'])
-            this.targetTypeTmp = util.dictDeepCopy(res.data['data'])
-            this.targetType = util.dictDeepCopy(res.data['data'])
-            this.formItemOrigin.forEach((item, i) => {
-              if(item.key === 'target_type') {
-                item['select'] = res.data['data']
-              }
-            })
-            this.columns.forEach((item, i) => {
-              if(item.key === 'target_type') {   
-                item.filters = []
-                for ( let t of res.data['data'] ) { 
-                  item.filters.push({label: t, value: t}) 
-                }
-              }
-            })
-          })
-          .catch(error => {
-            util.notice(this, error, 'error')
-          });
-      },
-      commitFormInfo (){
-        this.switchTmplType = false
-        // console.log(this.jobType , this.jobTypeOld)
-        if ( this.jobType != this.jobTypeOld) {
-          // vconfig.postKey('job_types',this.job_type.split(','),'set')
-          vconfig.postKey('job_types',this.jobType,'set')
-            .then(res => {
-              if (res.data['status'] >= 1) {
-                util.notice(this, 'job_types '+this.$t('modifySuccess'), 'success')
-                this.getJobTypes()
-              } else {
-                util.notice(this, `job_types ${res.data['msg']}`, 'warning')
-              }
-            }).catch(error => {
-              util.notice(this, error, 'error')
-            })  
+    { title: 'playbook', key: 'playbook', tooltip: true, sortable: true, minWidth: 300 },
+    { title: 'comment', key: 'comment', width: 250, tooltip: true, sortable: true },
+    { 
+      title: t('operation'), 
+      slot: 'operation', 
+      align: 'center', 
+      width: 450 
+    }
+  ])
+  
+  // 表单字段定义 (原始模板)
+  const formItemOrigin = reactive([
+    { key: 'name', label: 'name', comment: t('templateName') },
+    { key: 'target_type', label: 'target_type', comment: t('targetType'), select: [] },
+    { key: 'playbook', label: 'playbook', comment: 'playbook' },
+    { key: 'job_type', label: 'job_type', comment: t('jobType'), select: [] },
+    { key: 'comment', label: 'comment', comment: t('comment') }
+  ])
+  
+  const formItem = ref([])
+  const formItemValidate = reactive({
+    name: [
+      { required: true, message: t('inputTemplateNameTips'), trigger: 'blur' },
+      { validator: util.validatorGenerator(), trigger: 'blur' }
+    ],
+    target_type: [
+      { required: true, message: t('selectTargetTypeTips'), trigger: 'blur' }
+    ],
+    playbook: [
+      { required: true, message: t('inputPlaybookTips'), trigger: 'blur' },
+      { validator: util.validatorGenerator(), trigger: 'blur' }
+    ],
+    job_type: [
+      { required: true, message: t('selectJobTypeTips'), trigger: 'blur' }
+    ],
+    comment: [
+      { required: true, message: t('inputCommentTips'), trigger: 'blur' }
+    ]
+  })
+  
+  
+  // 初始化获取数据
+  const initGetData = () => {
+    getJobTypes()
+    getTargetTypes()
+    getCurrentPage()
+  }
+  
+  const cancelFormInfo = () => {
+    switchTmplType.value = false
+    jobType.value = util.dictDeepCopy(jobTypeOld.value)
+    jobTypeTmp.value = util.dictDeepCopy(jobTypeOld.value)
+    targetType.value = util.dictDeepCopy(targetTypeOld.value)
+    targetTypeTmp.value = util.dictDeepCopy(targetTypeOld.value)
+  }
+  
+  const putJobType = (val) => {
+    jobTypeTmp.value.push(val)
+  }
+  
+  const putTargetType = (val) => {
+    targetTypeTmp.value.push(val)
+  }
+        
+  // 获取任务类型
+  const getJobTypes = async () => {
+    try {
+      const res = await vconfig.getKey('job_types')
+      const data = res.data['data']
+      
+      jobTypeOld.value = util.dictDeepCopy(data)
+      jobTypeTmp.value = util.dictDeepCopy(data)
+      jobType.value = util.dictDeepCopy(data)
+      
+      // 更新表单选项
+      formItemOrigin.forEach(item => {
+        if (item.key === 'job_type') {
+          item.select = data
         }
-        if ( this.targetType != this.targetTypeOld) {
-          // vconfig.postKey('target_types',this.target_type.split(','),'set')
-          vconfig.postKey('target_types',this.targetType,'set')
-            .then(res => {
-              if (res.data['status'] >= 1) {
-                util.notice(this, 'target types '+this.$t('modifySuccess'), 'success')
-                this.getTargetTypes()
-              } else {
-                util.notice(this, `target types ${res.data['msg']}`, 'warning')
-              }
-            }).catch(error => {
-              util.notice(this, error, 'error')
-            })
+      })
+      
+      // 更新表格筛选器
+      columns.value.forEach(col => {
+        if (col.key === 'job_type') {
+          col.filters = data.map(t => ({ label: t, value: t }))
         }
-      },
-      targetinfoDetail (row) {
-        let info = util.dictDeepCopy(row)
-        info['name'] = info['name_s']
-        this.name_o = row['name']
-        this.formItem = util.dictDeepCopy(this.formItemOrigin)
-        this.formItem.forEach((item,i) => {
-          item['value'] = info[item['key']]
-        })
-        this.switchTmplDetail = true
-        this.isAdd = false
-        this.modelTitle = this.$t('templateDetail')
-      },
-      targetinfoAdd () {
-        this.switchTmplDetail = true
-        this.formItem = this.formItemOrigin
-        this.isAdd = true
-        this.modelTitle = this.$t('addTemplate')
-      },
-      formSubmit(data) {
-        let formInfo = util.dictDeepCopy(data)
-        formInfo['name'] = this.$route.name + ':' + formInfo['name']
-        if (!this.isAdd) {
-          formInfo['name_o'] = this.name_o 
-        }
-        this.addTarget(formInfo)
-        this.switchTmplDetail = false
-      },
-      generateJob (row) {
-        let tmplInfo = row;
-        tmplInfo['tmpl'] = tmplInfo['name']
-        tmplInfo['name'] = tmplInfo['name_s']
-        tmplInfo['target'] = ''
-        let x = ['name_s','target_type','playbook','job_type']
-        x.forEach((item,i) => {
-          delete tmplInfo[item]
-        })
-        this.$router.push({name: 'execDetail', query: {row: JSON.stringify(tmplInfo), tag: 'add'}})
-        this.appStore.setTagBreadBeforeOpen('execDetail')
-      },
-      getCurrentPageNew (pagesize) {
-        this.pagesize=pagesize
-        this.getCurrentPage(1)
-      },
-      getCurrentPage (vl) {
-        this.filter = this.$route.name + ':*'
-        if (!vl) {
-          vl = sessionStorage.getItem('tmplexecCurrentpage')
-        }
-        if (!vl) {
-          vl = 1
-        }
-        this.currentPage = parseInt(vl)
-        sessionStorage.setItem('tmplexecCurrentpage', vl)
-        exec.getExecutionInfo(this.filter,vl,this.pagesize,'name')
-          .then(res => {
-            this.tableData = res.data.data;
-            this.tableData.forEach((item) => {
-              item['name_s'] = item['name'].split('tmpl:')[1]
-            })
-            this.pageNumber = parseInt(res.data['page'])
-          })
-          .catch(error => {
-            util.notice(this, error, 'error')
-          })
-      },
-      delTarget (d) {
-        this.delname = d.name
-        // this.deleteConfirm=true
-        this.$Modal.confirm({'title': this.$t('confirmDelete')+` ${this.delname} ？`,'onOk': this.realDelTarget, 'okText':this.$t('delete'), 'cancelText': this.$t('cancel') , 'width': '700px'});
-      },
-      realDelTarget () {
-        // this.deleteConfirm=false
-        let d = this.delname
-        exec.delExecutionInfo(d)
-          .then(res => {
-            if (res.data['status'] === 1) {
-              this.getCurrentPage();
-              util.notice(this, `${d} `+this.$t('deleteSuccess'), 'success')
-            } else if (res.data['status'] === 0) {
-              util.notice(this, `${d} `+this.$t('deleteFailed'), 'error')
-            }
-          })
-          .catch(error => {
-            util.notice(this, error, 'error')
-          });
-      },
-      addTarget (info) {
-        exec.postExecutionInfo(info)
-          .then(res => {
-            this.addName = info['name'].split('tmpl:')[1]
-            if (res.data['status'] >= 1) {
-              util.notice(this, `${this.addName} ${res.data['msg']}`, 'success')
-            } else {
-              util.notice(this, `${this.addName} ${res.data['msg']}`, 'warning')
-            }
-            this.getCurrentPage();
-          }).catch(error => {
-            util.notice(this, error, 'error')
-          });
-      },
-    },
-    watch: {
-      '$route': function () {
-        this.getCurrentPage();
-      }
-    },
-    mounted () {
-      this.getCurrentPage()
-    },
-    created () {
-      this.getJobTypes()
-      this.getTargetTypes()
+      })
+    } catch (error) {
+      util.notice(proxy, error, 'error')
     }
   }
+  
+  // 获取目标类型
+  const getTargetTypes = async () => {
+    try {
+      const res = await vconfig.getKey('target_types')
+      const data = res.data['data']
+      
+      targetTypeOld.value = util.dictDeepCopy(data)
+      targetTypeTmp.value = util.dictDeepCopy(data)
+      targetType.value = util.dictDeepCopy(data)
+      
+      formItemOrigin.forEach(item => {
+        if (item.key === 'target_type') {
+          item.select = data
+        }
+      })
+      
+      columns.value.forEach(col => {
+        if (col.key === 'target_type') {
+          col.filters = data.map(t => ({ label: t, value: t }))
+        }
+      })
+    } catch (error) {
+      util.notice(proxy, error, 'error')
+    }
+  }
+  
+  // 提交表单信息 (保存配置)
+  const commitFormInfo = async () => {
+    switchTmplType.value = false
+    
+    let updateJobTypes = false
+    let updateTargetTypes = false
+  
+    // 比较并更新 jobType
+    if (JSON.stringify(jobType.value) !== JSON.stringify(jobTypeOld.value)) {
+      try {
+        const res = await vconfig.postKey('job_types', jobType.value, 'set')
+        if (res.data['status'] >= 1) {
+          util.notice(proxy, 'job_types ' + t('modifySuccess'), 'success')
+          updateJobTypes = true
+        } else {
+          util.notice(proxy, `job_types ${res.data['msg']}`, 'warning')
+        }
+      } catch (error) {
+        util.notice(proxy, error, 'error')
+      }
+    }
+  
+    // 比较并更新 targetType
+    if (JSON.stringify(targetType.value) !== JSON.stringify(targetTypeOld.value)) {
+      try {
+        const res = await vconfig.postKey('target_types', targetType.value, 'set')
+        if (res.data['status'] >= 1) {
+          util.notice(proxy, 'target types ' + t('modifySuccess'), 'success')
+          updateTargetTypes = true
+        } else {
+          util.notice(proxy, `target types ${res.data['msg']}`, 'warning')
+        }
+      } catch (error) {
+        util.notice(proxy, error, 'error')
+      }
+    }
+  
+    // 如果有更新，重新拉取数据以同步 UI
+    if (updateJobTypes) {
+        getJobTypes()
+    }
+    if (updateTargetTypes) {
+        getTargetTypes()
+    }
+  }
+  
+  // 表格行操作：详情
+  const targetinfoDetail = (row) => {
+    const info = util.dictDeepCopy(row)
+    info['name'] = info['name_s']
+    name_o.value = row['name']
+    
+    formItem.value = util.dictDeepCopy(formItemOrigin)
+    formItem.value.forEach(item => {
+      item['value'] = info[item['key']]
+    })
+    
+    switchTmplDetail.value = true
+    isAdd.value = false
+    modelTitle.value = t('templateDetail')
+  }
+  
+  // 新增模板
+  const targetinfoAdd = () => {
+    switchTmplDetail.value = true
+    formItem.value = formItemOrigin
+    isAdd.value = true
+    modelTitle.value = t('addTemplate')
+  }
+  
+  // 表单提交
+  const formSubmit = (data) => {
+    const formInfo = util.dictDeepCopy(data)
+    formInfo['name'] = route.name + ':' + formInfo['name']
+    if (!isAdd.value) {
+      formInfo['name_o'] = name_o.value
+    }
+    addTarget(formInfo)
+    switchTmplDetail.value = false
+  }
+  
+  // 生成任务
+  const generateJob = (row) => {    
+    const tmplInfo = { ...row }
+    //const tmplInfo = util.dictDeepCopy(row)
+    tmplInfo['tmpl'] = tmplInfo['name']
+    tmplInfo['name'] = tmplInfo['name_s']
+    tmplInfo['target'] = ''
+    
+    const x = ['name_s', 'target_type', 'playbook', 'job_type', '_index', '_rowKey']
+    x.forEach(key => delete tmplInfo[key])
+
+    router.push({ 
+      name: 'execDetail', 
+      query: { row: JSON.stringify(tmplInfo), tag: 'add' } 
+    })
+    appStore.setTagBreadBeforeOpen('execDetail')
+  }
+  
+  // 分页处理
+  const getCurrentPageNew = (size) => {
+    pagesize.value = size
+    getCurrentPage(1)
+  }
+  
+  const getCurrentPage = async (page) => {
+    if (!page) {
+      page = sessionStorage.getItem('tmplexecCurrentpage') || 1
+    }
+    currentPage.value = parseInt(page)
+    sessionStorage.setItem('tmplexecCurrentpage', page)
+  
+    const filter = route.name + ':*'
+    
+    try {
+      const res = await exec.getExecutionInfo(filter, page, pagesize.value, 'name')
+      if (res.data['data'].length === 0 && parseInt(page) > 1 ) {
+        getCurrentPage(parseInt(page)-1)
+        return
+      }
+      tableData.value = res.data.data
+      tableData.value.forEach(item => {
+        item['name_s'] = item['name'].split('tmpl:')[1]
+      })
+      pageNumber.value = parseInt(res.data['page'])
+    } catch (error) {
+      util.notice(proxy, error, 'error')
+    }
+  }
+  
+  // 删除操作
+  const delTarget = (d) => {
+    proxy.$Modal.confirm({
+      'title': t('confirmDelete') + ` ${d.name} ?`,
+      'onOk': () => { realDelTarget(d.name) },
+      'okText': t('delete'),
+      'cancelText': t('cancel'),
+      'width': '700px'
+    })
+  }
+  
+  const realDelTarget = async (dName) => {
+    try {
+      const res = await exec.delExecutionInfo(dName)
+      if (res.data['status'] === 1) {
+        getCurrentPage()
+        util.notice(proxy, `${dName} ${t('deleteSuccess')}`, 'success')
+      } else if (res.data['status'] === 0) {
+        util.notice(proxy, `${dName} ${t('deleteFailed')}`, 'error')
+      }
+    } catch (error) {
+      util.notice(proxy, error, 'error')
+    }
+  }
+  
+  const addTarget = async (info) => {
+    try {
+      const res = await exec.postExecutionInfo(info)
+      const addName = info['name'].split('tmpl:')[1]
+      if (res.data['status'] >= 1) {
+        util.notice(proxy, `${addName} ${res.data['msg']}`, 'success')
+      } else {
+        util.notice(proxy, `${addName} ${res.data['msg']}`, 'warning')
+      }
+      getCurrentPage()
+    } catch (error) {
+      util.notice(proxy, error, 'error')
+    }
+  }
+  
+  initGetData()
+  
 </script>
