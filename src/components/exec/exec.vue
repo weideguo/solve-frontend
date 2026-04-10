@@ -292,8 +292,8 @@
         sessionFull.value.forEach((item) => {
           item['value'] = sessionInfo.value[item['key']]
         })
-  
-        if (varsForm.value.checkValidate()) {
+
+        if (await varsForm.value.checkValidate()) {
           current.value += 1
           summary(execExtraInfo.value)
         } else {

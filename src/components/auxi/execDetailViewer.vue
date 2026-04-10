@@ -217,8 +217,8 @@ html {
     })
     
     console.log('formatContent')
-    console.log(this.tableColumns)
-    console.log(this.tableData)
+    console.log(tableColumns.value)
+    console.log(tableData.value)
   }
   
   // 行需要以正则指定如何分割成列

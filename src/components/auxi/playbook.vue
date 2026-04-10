@@ -23,7 +23,7 @@
 
 <script setup>
   //
-  import { ref, onMounted, nextTick, watch } from 'vue'
+  import { ref, onMounted, nextTick, watch, getCurrentInstance } from 'vue'
   import Prism from 'prismjs'
   import 'prismjs/themes/prism-tomorrow.css'
   import 'prismjs/plugins/line-numbers/prism-line-numbers.css'
@@ -34,6 +34,8 @@
   import util from '@/libs/util'
   import file from '@/api/file'
   
+  const { proxy } = getCurrentInstance()
+
   // 响应式数据
   const title = ref('')
   const playbook = ref('')
@@ -65,10 +67,10 @@
         content.value = res.data['content']
         // 数据赋值后，watch 会自动触发 highlightCode
       } else {
-        util.notice(this, res.data['msg'], 'error')
+        util.notice(proxy, res.data['msg'], 'error')
       }
     } catch (error) {
-      util.notice(this, error, 'error')
+      util.notice(proxy, error, 'error')
     }
   })
 </script>

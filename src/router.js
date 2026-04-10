@@ -204,7 +204,7 @@ export const appRouter = [
     icon: 'md-cog',
     name: 'execution',
     title: 'execution',
-    redirect: '/',
+    redirect: '/execution/exec',
     component: Main,
     children: [
       {

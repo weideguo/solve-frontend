@@ -2,8 +2,6 @@
   <div>
     <Card>
       <template #title>
-        <!--Icon type="md-people"></Icon>
-        <b>{{ $t('userList') }}</b-->
         <Button type="info" icon="md-add" shape="circle" size="small" @click="addUser"></Button>
       </template>
       

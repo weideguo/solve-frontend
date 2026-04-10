@@ -35,7 +35,8 @@ router.push = function push(location) {
 }
 
 // 路由守卫
-router.beforeEach((to, from, next) => {
+// router.beforeEach((to, from, next) => {
+router.beforeEach((to, from) => {
   iView.LoadingBar.start()
   
   let title = to.meta.title
@@ -48,17 +49,17 @@ router.beforeEach((to, from, next) => {
 
 
   if (['about', 'login', 'test'].includes(to.name)) {
-    next()
+    return true 
   } else if (sessionStorage.getItem('locking') === '1') {
-    next({ name: 'locking' })
+    return { name: 'locking' }
   } else if (to.name === 'locking' && !sessionStorage.getItem('user')) {
-    next({ name: 'login' })
+    return { name: 'login' }
   } else if (to.name === 'locking' && sessionStorage.getItem('user')) {
-    next()
+    return true
   } else if (!sessionStorage.getItem('hasLogin')) {
-    next({ name: 'login' })
+    return { name: 'login' }
   } else {
-    next()
+    return true
   }
 })
 
@@ -82,8 +83,8 @@ if (_locale === null) {
 
 const i18n = createI18n({
   locale: _locale,
-  legacy: false, // 使用 Composition API 模式，如果是 Options API 项目可设为 true
-  globalInjection: true, // 全局注入 $t
+  legacy: false, 
+  globalInjection: true,
   messages
 })
 
@@ -107,7 +108,6 @@ const app = createApp(App)
 // 使用插件
 app.use(iView)
 app.use(router)
-//app.use(store)
 app.use(pinia)
 app.use(i18n)
 

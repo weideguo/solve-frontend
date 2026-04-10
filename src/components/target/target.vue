@@ -277,7 +277,7 @@
   
   const delTarget = (targetName) => {
     proxy.$Modal.confirm({
-      title: t('confirmDelete') + ` ${t} ？`,
+      title: t('confirmDelete') + ` ${targetName} ？`,
       onOk: () => {
         realDelTarget(targetName)
       },
