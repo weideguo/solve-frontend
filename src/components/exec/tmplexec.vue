@@ -65,7 +65,6 @@
   import exec from '@/api/exec'
   import vconfig from '@/api/config'
   import util from '@/libs/util'
-  import config from '@/config/config'
   import safeForm from '@/components/common/safeForm.vue'
   
   const appStore = useAppStore()
