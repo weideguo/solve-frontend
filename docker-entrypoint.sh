@@ -5,5 +5,5 @@
 #
 cd /data/solve-frontend
 BACKEND_NAME=${BACKEND_NAME:-test}
-sed -i "s|config.baseurl.*|config.baseurl = [['${BACKEND_NAME}', 'http://${BACKEND_HOST}:${BACKEND_PORT}/api/v1']]|g" src/config/config.js
+sed -i "s|baseurl.*|baseurl: [['${BACKEND_NAME}', 'http://${BACKEND_HOST}:${BACKEND_PORT}/api1']]\n,_baseurl:[|g" public/config.js
 npm run dev

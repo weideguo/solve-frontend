@@ -6,7 +6,6 @@
     margin: 0 auto;
     right: 0;
     left: 0;
-    //background: #000000;
   }
 
   #login-form {
@@ -99,7 +98,6 @@
   import { useI18n } from 'vue-i18n'
   import login from '@/api/login'
   import util from '@/libs/util'
-  import config from '@/config/config'
   
   // 初始化 Hooks
   const route = useRoute()
@@ -119,7 +117,7 @@
   const formInline = reactive({
     user: '',
     password: '',
-    baseurl: JSON.stringify(config.baseurl[0])
+    baseurl: JSON.stringify(window.SITE_CONFIG.baseurl[0])
   })
   
   // 表单验证规则
@@ -309,6 +307,6 @@
   })
   
   // created 钩子逻辑直接执行
-  baseurlConfig.value = config.baseurl
+  baseurlConfig.value = window.SITE_CONFIG.baseurl
   languageList.value = JSON.parse(sessionStorage.getItem('languageList'))
 </script>

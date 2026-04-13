@@ -18,7 +18,6 @@ import myZH from './libs/lang/zh-CN'
 import { router } from './router'
 import App from './App.vue'
 import { pinia } from './store'
-import config from './config/config'
 
 
 
@@ -41,9 +40,9 @@ router.beforeEach((to, from) => {
   
   let title = to.meta.title
   if (title) {
-    title = `${config.platformname} - ${title}`
+    title = `${window.SITE_CONFIG.platformname} - ${title}`
   } else {
-    title = config.platformname
+    title = window.SITE_CONFIG.platformname
   }
   window.document.title = title
 
