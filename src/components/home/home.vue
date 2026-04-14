@@ -53,12 +53,14 @@
 </template>
 
 <script setup>
-  import { ref, onMounted } from 'vue'
+  import { ref, onMounted, getCurrentInstance } from 'vue'
   import home from '@/api/home'
   import util from '@/libs/util'
   import toDoList from './components/toDoList.vue'
   import infoCard from './components/infoCard.vue'
   import dataChart from './components/dataChart.vue'
+
+  const { proxy } = getCurrentInstance()
   
   const count = ref({
     user: 0,
@@ -77,7 +79,7 @@
         count.value = res.data
       })
       .catch(error => {
-        util.notice(null, error, 'error')
+        util.notice(proxy, error, 'error')
       })
   }
   
