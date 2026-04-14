@@ -209,7 +209,7 @@
         if (shouldTagetCommit.value || targetInfoOld.value != JSON.stringify(targetInfo)) {
           targetInfoOld.value = JSON.stringify(targetInfo)
           targetName.value = 'container_auto_' 
-                             + util.formatDate((new Date().getTime()) / 1000)
+                             + util.formatTimestamp((new Date().getTime()) / 1000)
                                 .replace(/-/g, '').replace(/:/g, '').replace(/ /g, '_') 
                              + '_' + Math.round(Math.random() * 10000)
           targetInfo['name'] = targetName.value

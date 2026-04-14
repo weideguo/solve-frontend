@@ -71,11 +71,13 @@
   //
   import { ref, reactive, onMounted, getCurrentInstance } from 'vue'
   import { useI18n } from 'vue-i18n'
+  import { useRoute } from 'vue-router'
   import user from '@/api/user'
   import util from '@/libs/util'
   
   const { t } = useI18n()
   const { proxy } = getCurrentInstance()
+  const route = useRoute()
   
   const currentUser = ref(sessionStorage.getItem('user'))
   const currentPage = ref(1)
@@ -178,15 +180,25 @@
       })
   }
   
-  const refreshuser = (vl = 1) => {
-    user.getUserinfo(vl, pagesize.value)
-      .then(res => {
-        userdata.value = res.data['data']
-        pagenumber.value = parseInt(res.data['page'])
-      })
-      .catch(error => {
-        util.notice(proxy, error, 'error')
-      })
+  const refreshuser = async (page) => {
+    const filter = route.name
+    if (!page) {
+      page = sessionStorage.getItem(`${filter}Currentpage`) || 1
+    }
+    currentPage.value = parseInt(page)
+    sessionStorage.setItem(`${filter}Currentpage`, page)
+    try {
+      const res = await user.getUserinfo(page, pagesize.value)
+      if (res.data['data'].length === 0 && parseInt(page) > 1 ) {
+        refreshuser(parseInt(page)-1)
+        return
+      }
+
+      userdata.value = res.data['data']
+      pagenumber.value = parseInt(res.data['page'])      
+    } catch (error) {
+      util.notice(proxy, error, 'error')
+    }
   }
   
   const splicpage = (page) => {

@@ -148,13 +148,21 @@ util.listCombine = function (list1, list2) {
   return list1
 }
 
-util.formatDate = function (ts) {
-  function p (s) {
-       return s < 10 ? '0' + s : s;
+util.formatDate = function (d) {
+  if (d instanceof Date != true) {
+    return d
   }
-  let d = new Date(ts * 1000)
+  // let d = new Date()
+  function p (s) {
+    return s < 10 ? '0' + s : s;
+  }
   let date = (d.getFullYear()) + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
   return date
+}
+
+util.formatTimestamp = function (ts) {
+  let d = new Date(ts * 1000)
+  return util.formatDate(d)
 }
 
 util.dictDeepCopy = function (dict) {

@@ -70,7 +70,7 @@
     realhost: 0
   })
   
-  const time = ref(util.formatDate(sessionStorage.getItem('loginTimestamp')))
+  const time = ref(util.formatTimestamp(sessionStorage.getItem('loginTimestamp')))
   const username = ref(sessionStorage.getItem('user'))
   
   const getHomeinfo = () => {

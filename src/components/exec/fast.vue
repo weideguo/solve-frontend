@@ -199,7 +199,7 @@
   
   const save = () => {
     // 修复 replaceAll 兼容性问题，使用正则全局替换
-    let timeStr = util.formatDate((new Date().getTime()) / 1000)
+    let timeStr = util.formatTimestamp((new Date().getTime()) / 1000)
       .replace(/-/g, '')
       .replace(/:/g, '')
       .replace(/ /g, '_')

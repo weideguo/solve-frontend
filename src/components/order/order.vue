@@ -1,7 +1,7 @@
 <template>
   <div>
     <Card>
-      <Table border :columns="columns" :data="tableData" stripe @on-row-dblclick="orderDetail" size="small">
+      <Table border :loading="dataLoading" :columns="columns" :data="tableData" stripe @on-row-dblclick="orderDetail" size="small">
         <template #operation="{ row, index }">
           <Button type="success" size="small" style="margin-right: 20px" @click="orderDetail(row)">{{ $t('detail') }}</Button>
           <Button type="error" size="small" @click="deleteRow(row)">{{ $t('delete') }}</Button>
@@ -81,6 +81,7 @@
   const currentPage = ref(1)
   const pageSizeOpts = ref([10,20,40,80,100,200])
   const tableData = ref([])
+  const dataLoading = ref(false)
   
   const orderDetail = (paramsDict) => {
     router.push({name: 'orderDetail', query: {workid: paramsDict['work_id']}})
@@ -116,17 +117,19 @@
     }
     currentPage.value = parseInt(vl)
     sessionStorage.setItem('orderCurrentpage', vl)
-    
+    dataLoading.value = true
     order.getOrder(vl, pagesize.value)
       .then(res => {
         tableData.value = res.data['data']
         tableData.value.forEach((item) => {
-          item['date'] = util.formatDate(parseFloat(item['begin_time']))
+          item['date'] = util.formatTimestamp(parseFloat(item['begin_time']))
         })
         pageNumber.value = parseInt(res.data['page'])
+        dataLoading.value = false
       })
       .catch(error => {
         util.notice(proxy, error, 'error')
+        dataLoading.value = false
       })
   }
   

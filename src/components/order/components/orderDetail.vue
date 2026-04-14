@@ -602,10 +602,10 @@
           playbook.value = res.data['playbook']
           TableDataNew.value.forEach((item) => {
             if (item['begin_date']) {
-              item['begin_date'] = util.formatDate(parseFloat(item['begin_date']))
+              item['begin_date'] = util.formatTimestamp(parseFloat(item['begin_date']))
             }
             if (item['end_date']) {
-              item['end_date'] = util.formatDate(parseFloat(item['end_date']))
+              item['end_date'] = util.formatTimestamp(parseFloat(item['end_date']))
             }
           })
         } else {
