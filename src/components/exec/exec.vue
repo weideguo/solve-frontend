@@ -404,7 +404,7 @@
     targetType.value = targetConstict['constrict']
     if (targetType.value != '') {
       switchSubTargetSelect.value = true
-      let selectedItem = []
+      let selectedItem = targetConstict['value']? [targetConstict['value']]: []
       try {
         let res = await target.getNameList(`${targetType.value}`)
         subTargetTreeData.value = []
@@ -423,7 +423,7 @@
     if (checkedleaf.length === 1) {
       switchSubTargetSelect.value = false
       // 即对subTargetAdd函数的对象的value属性进行赋值
-      activeTargetConstict.value.value = checkedleaf[0]
+      activeTargetConstict.value['value'] = checkedleaf[0]
     } else {
       proxy.$Message.error(t('onlyOneOndeSelectTips'))
     }

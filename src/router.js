@@ -275,7 +275,27 @@ export const appRouter = [
         },
         icon: 'md-people',
         component: () => import('./components/user/userInfo.vue')
-      }
+      },
+      {
+        path: 'token',
+        name: 'token',
+        title: 'token',
+        meta: {
+          title: 'token'
+        },
+        icon: 'md-key',
+        component: () => import('./components/user/token.vue')
+      },
+      {
+        path: 'apiInvokeRule',
+        name: 'apiInvokeRule',
+        title: 'invoke rule',
+        meta: {
+          title: 'apiInvokeRule'
+        },
+        icon: 'md-key',
+        component: () => import('./components/user/apiInvokeRule.vue')
+      },
     ]
   }
 ]
