@@ -1,38 +1,42 @@
 # solve-frontend Dockfile
-# Version 1.0
-
-# Base images 
-FROM node:22.14.0
-LABEL maintainer="wdg(https://github.com/weideguo)"
+# FROM node:24.15.0-alpine3.22
+FROM node:24 AS builder
 
 ARG REGISTRY="https://registry.npmjs.org/"
-
 ENV REGISTRY=${REGISTRY}
 
-ENV BACKEND_HOST=127.0.0.1
-ENV BACKEND_PORT=8000
-#ENV LC_ALL=en_US.UTF-8
+WORKDIR /app
 
-#RUN rm /etc/localtime && ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-RUN apk update && apk add tzdata
+# 利用 Docker 缓存层，加速构建
+COPY package*.json ./
 
-ENV TZ=Asia/Shanghai
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
-RUN mkdir -p /data/solve-frontend
-#ADD  ./.npmrc    ~
-ADD  ./  /data/solve-frontend/
-
-#EXPOSE 8080:8080
-
-WORKDIR /data/solve-frontend
-
-RUN chmod 755 docker-entrypoint.sh
-RUN cp docker-entrypoint.sh /usr/local/bin/
 
 RUN npm set registry ${REGISTRY}
-RUN npm install -g @vue/cli
 RUN npm install
 
-#ENTRYPOINT ["docker-entrypoint.sh"]
+
+COPY . .
+
+# 自定义高亮
+COPY doc/highlight/prism-bash.js node_modules/prismjs/components/prism-bash.js
+
+RUN npm run build
+
+# FROM nginx:1.29.8-alpine
+FROM nginx:alpine
+
+
+ENV TZ=Asia/Shanghai
+
+COPY doc/nginx.conf /etc/nginx/conf.d/default.conf
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 8080
+
+COPY --from=builder /app/docker-entrypoint.sh /usr/local/bin/
+RUN chmod 755 /usr/local/bin/docker-entrypoint.sh
+
+
+# 启动nginx
 CMD ["docker-entrypoint.sh"]

@@ -15,7 +15,7 @@ running
 ### prerun ###
 ```shell
 # 修改后端的url以及其他配置参数
-vim src/config/config.js
+vim public/config.js
 
 # 安装依赖项 
 # package.json和package-lock.json指定
@@ -46,5 +46,5 @@ Others
 
 > 使用vue框架
 > 
-> UI组件库 [iviewui](https://www.iviewui.com/)
+> UI组件库 [view-ui-plus](https://www.iviewui.com/)
 

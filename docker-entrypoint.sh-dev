@@ -11,7 +11,7 @@ if [ -z ${BACKEND_HOST} ];then
     BACKEND_URL=/api/v1
 fi
 
-cat > config.js <<EOF
+cat > public/config.js <<EOF
 window.SITE_CONFIG = {
     baseurl: [ 
         ['${BACKEND_NAME}', '${BACKEND_URL}'], 
@@ -19,4 +19,4 @@ window.SITE_CONFIG = {
     platformname: '简单命令分发系统',
 };
 EOF
-nginx -g "daemon off;"
+npm run dev

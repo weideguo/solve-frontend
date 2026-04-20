@@ -19,6 +19,8 @@ import { router } from './router'
 import App from './App.vue'
 import { pinia } from './store'
 
+// 为什需要在这里import？在页面中import则会出现Prism找不到？
+import Prism from 'prismjs'
 
 
 // 重写 push 方法以处理重复导航错误

@@ -1,0 +1,27 @@
+# solve-frontend Dockfile
+FROM node:24
+
+ARG REGISTRY="https://registry.npmjs.org/"
+ENV REGISTRY=${REGISTRY}
+
+#ENV LC_ALL=en_US.UTF-8
+
+RUN apk update && apk add tzdata
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN mkdir -p /data/solve-frontend
+ADD  ./  /data/solve-frontend/
+
+EXPOSE 8080
+
+WORKDIR /data/solve-frontend
+
+RUN chmod 755 docker-entrypoint.sh
+RUN cp docker-entrypoint.sh /usr/local/bin/
+
+RUN npm set registry ${REGISTRY}
+RUN npm install
+
+#ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["docker-entrypoint.sh"]

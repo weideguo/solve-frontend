@@ -24,7 +24,7 @@
 <script setup>
   //
   import { ref, onMounted, nextTick, watch, getCurrentInstance } from 'vue'
-  import Prism from 'prismjs'
+  import Prism from 'prismjs'  // 为什需要在main.js 放这样一行，否者编译后下面的import则会出现Prism找不到？
   import 'prismjs/themes/prism-tomorrow.css'
   import 'prismjs/plugins/line-numbers/prism-line-numbers.css'
   import 'prismjs/components/prism-bash'
