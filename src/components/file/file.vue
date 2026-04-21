@@ -29,7 +29,7 @@
             <Upload multiple type="drag" :action="uploadUrl" :headers='myheader' :on-success="refresh" ref="upload"> 
               <div :style="{height: (defaultHeight > changeHeight ? defaultHeight : changeHeight)+'px'}">
                 <div style="margin-left: 30%" :style="{paddingTop: (defaultHeight > changeHeight ? defaultHeight/2 : changeHeight/2)+'px'}">
-                  <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+                  <Icon type="md-cloud-upload" size="52" style="color: #3399ff"></Icon>
                   <p>{{ $t('uploadTips') }}</p>
                 </div>
               </div>

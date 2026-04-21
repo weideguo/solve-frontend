@@ -293,7 +293,7 @@ export const appRouter = [
         meta: {
           title: 'apiInvokeRule'
         },
-        icon: 'md-key',
+        icon: 'md-locate',
         component: () => import('./components/user/apiInvokeRule.vue')
       },
     ]

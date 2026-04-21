@@ -69,9 +69,7 @@ router.afterEach(() => {
   window.scrollTo(0, 0)
 })
 
-// ----------------------
-// 2. 国际化配置 (Vue I18n 9+)
-// ----------------------
+// 国际化配置
 const messages = {
   'en-US': Object.assign(myEN, en),
   'zh-CN': Object.assign(myZH, zh)
@@ -92,18 +90,14 @@ const i18n = createI18n({
 // 设置 View UI Plus 的语言
 iviewLocale(messages[_locale])
 
-// ----------------------
-// 3. 全局变量与 SessionStorage
-// ----------------------
+// 全局变量与 SessionStorage
 const languageList = [
   { 'name': 'zh-CN', 'value': '中文' },
-  { 'name': 'en-US', 'value': 'english' }
+  { 'name': 'en-US', 'value': 'English' }
 ]
 sessionStorage.setItem('languageList', JSON.stringify(languageList))
 
-// ----------------------
-// 4. 初始化 Vue 应用
-// ----------------------
+// 初始化 Vue 应用
 const app = createApp(App)
 
 // 使用插件
@@ -111,11 +105,6 @@ app.use(iView)
 app.use(router)
 app.use(pinia)
 app.use(i18n)
-
-// 挂载全局属性
-// 如果需要使用 axios，请取消下方注释
-// import axios from 'axios'
-// app.config.globalProperties.$http = axios
 
 // 挂载应用
 app.mount('#app')
