@@ -4,7 +4,7 @@ import { router } from '@/router.js'
 
 // 创建 axios 实例
 const request = axios.create({
-  timeout: 5000 // 超时时间
+  timeout: 15000 // 超时时间，注意要大于后端的最大返回时间
 })
 
 // 请求拦截器
