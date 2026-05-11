@@ -21,6 +21,13 @@
       </template>
     </Modal>
 
+    <Modal v-model="switchTargetSelect"  width="800"  :title="$t('executeTarget')">
+      <Tree :data="targetTreeData" ref="targetTree" show-checkbox></Tree>
+      
+      <template #footer>
+        <Button type="primary" @click="targetSelect"> {{ $t('confirm') }} </Button>
+      </template>
+    </Modal>
 
     <Modal v-model="switchExecutionInfo" @on-cancel="current = 0" scrollable :mask-closable="false" width="50%">
 
@@ -28,19 +35,23 @@
         <div>
           <Icon type="md-pin"></Icon>
           <b>{{openinfo.name_s}}-{{ $t('executeTarget') }}</b>
+
+          <Button v-if="targetConstict.length === 0 || showTargets.length != 0" type="info" @click="selectTarget">{{ $t('reselect target') }}</Button>
           <br><br>
         </div>
-
-        <Form v-if="showTargets.length === 0" :label-width="100">
-
+        
+        <!-- 设置执行对象字段、创建任务时不选择执行对象，两个都满足时才在运行时构造执行对象 -->
+        <Form v-if="targetConstict.length != 0  && showTargets.length === 0" :label-width="100">
           <FormItem v-for="(item, i) in targetConstict" :key="i" :label="item.field">
             
             <Input v-model="item.value" :placeholder="item.comment" @click.native="subTargetAdd(item)" clearable></Input>
           </FormItem>
           
         </Form>
-
-        <p v-else v-for="item in showTargets" :key="item">{{item}}</p>
+        <div v-else>
+          <p v-for="item in showTargets" :key="item">{{item}}</p>
+        </div>
+        
       </div>
 
       <div v-else-if="current === 1">
@@ -184,6 +195,10 @@
   const debugList = ref([])
   
   const activeTargetConstict = ref({})
+  const subTargetType = ref('')
+
+  const switchTargetSelect = ref(false)
+  const targetTreeData = ref([])
   const targetType = ref('') 
   
   const varsForm = ref(null)
@@ -237,15 +252,21 @@
         } else {
           current.value += 1
         }
-      } else {
-        targetName.valule = ''
-        execExtraInfo.value = {}
+      } else if (showTargets.value.length) {
+        targetName.valule = showTargets.value.join(',')
+        execExtraInfo.value = {'number': showTargets.value.length, 'target': targetName.value }
         current.value += 1
+      } else {
+        proxy.$Message.error(t('select at least one target'))
       }
       // 处理 select_field_key 类型的 Session 变量
       let targetNameForSession = targetName.value
       if (showTargets.value.length != 0) {
         targetNameForSession = showTargets.value[0]
+      }
+
+      if ( !targetNameForSession ) {
+        return
       }
   
       sessionFull.value.forEach((sessionItem) => {
@@ -376,6 +397,7 @@
       sessionFull.value = res.data['session']
       debugList.value = res.data['pause']
       targetConstict.value = res.data['target_constrict']
+      targetType.value = res.data['target_type']
       
       if (!(debugList.value instanceof Object)) {
         debugList.value = [debugList.value]
@@ -384,10 +406,9 @@
       formItem.value = util.arry2dict(sessionFull.value)
       errFlag.value = false
   
-      if (!targetConstict.value.length && !parseInt(row['number'])) {
-        proxy.$Message.error(t('getExecuteTargetTips'))
-      } else {
-        switchExecutionInfo.value = !switchExecutionInfo.value
+      switchExecutionInfo.value = !switchExecutionInfo.value
+      console.log(targetConstict.value.length , !parseInt(row['number']))
+      if (targetConstict.value.length && !parseInt(row['number'])) {
         shouldTagetCommit.value = true
       }
     } catch (error) {
@@ -401,12 +422,12 @@
   const subTargetAdd = async (targetConstict) => {
     // 根据传入的constrict 显示选择树
     activeTargetConstict.value = targetConstict
-    targetType.value = targetConstict['constrict']
-    if (targetType.value != '') {
+    subTargetType.value = targetConstict['constrict']
+    if (subTargetType.value != '') {
       switchSubTargetSelect.value = true
       let selectedItem = targetConstict['value']? [targetConstict['value']]: []
       try {
-        let res = await target.getNameList(`${targetType.value}`)
+        let res = await target.getNameList(`${subTargetType.value}`)
         subTargetTreeData.value = []
         subTargetTreeData.value.push(util.formateTreeData(res.data['data'], selectedItem))
       } catch (error) {
@@ -524,6 +545,24 @@
     }
   }
   
+  const selectTarget = async () => {
+    // console.log(showTargets.value,targetType.value)
+    switchTargetSelect.value = true
+    try {
+      let res = await target.getNameList(`${targetType.value}*`)
+      targetTreeData.value = []
+      targetTreeData.value.push(util.formateTreeData(res.data['data'], showTargets.value))
+    } catch (error) {
+      util.notice(proxy, error, 'error')
+    }
+  }
+
+  const targetSelect = () => {
+    let checkedleaf = util.getCheckedLeaf(targetTreeData.value)
+    showTargets.value = checkedleaf
+    targetName.value = showTargets.value.join(',')
+    switchTargetSelect.value = false
+  }
   
   onMounted(() => {
     getCurrentPage()

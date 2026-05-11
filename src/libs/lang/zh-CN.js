@@ -310,6 +310,8 @@ const lang = {
     'http source ip': '请求IP',
     'http query params': '查询参数',
     'http body': '请求体',
+    'reselect target': '重新选择',
+    'select at least one target': '选择至少一个执行对象',
 }
 
 export default lang;
