@@ -407,7 +407,6 @@
       errFlag.value = false
   
       switchExecutionInfo.value = !switchExecutionInfo.value
-      console.log(targetConstict.value.length , !parseInt(row['number']))
       if (targetConstict.value.length && !parseInt(row['number'])) {
         shouldTagetCommit.value = true
       }
